@@ -11,7 +11,7 @@ import plotly.express as px
 import streamlit as st
 
 from client import LyceumClient
-from loaders import classify_metric
+from loaders import classify_metric, parse_boltzgen_csv, parse_rfd3_json
 from tracker import CampaignTracker
 
 st.set_page_config(page_title="PGDH Design Tracker", page_icon="🧬", layout="wide")
@@ -87,7 +87,11 @@ init_auth()
 def get_client() -> LyceumClient:
     try:
         return LyceumClient(api_key=st.secrets["lyceum"]["api_key"])
-    except (KeyError, Exception):
+    except KeyError:
+        st.error("Missing `[lyceum] api_key` in Streamlit secrets.")
+        return None
+    except Exception as e:
+        st.error(f"Lyceum client error: {e}")
         return None
 
 
@@ -177,6 +181,14 @@ STATUS_COLORS = {
     "failed": "🔴",
 }
 
+STAGE_COLORS = {
+    "raw": "⚪",
+    "collected": "🔵",
+    "validated": "🟡",
+    "scored": "🟠",
+    "selected": "🟢",
+}
+
 TOOL_LABELS = {
     "boltzgen": "BoltzGen",
     "rfdiffusion3": "RFdiffusion3",
@@ -206,35 +218,39 @@ if page == "Dashboard":
     st.header("Campaign Dashboard")
 
     # Summary cards
-    c1, c2, c3, c4 = st.columns(4)
-    c1.metric("Total Designs", len(designs))
-
     by_tool = {}
     for d in designs:
         by_tool[d.get("tool", "?")] = by_tool.get(d.get("tool", "?"), 0) + 1
-    c2.metric("BoltzGen", by_tool.get("boltzgen", 0))
-    c3.metric("RFdiffusion3", by_tool.get("rfdiffusion3", 0))
-
     by_status = {}
     for d in designs:
         s = d.get("status", "designed")
         by_status[s] = by_status.get(s, 0) + 1
-    c4.metric("Selected", by_status.get("selected", 0))
+    by_stage = {}
+    for d in designs:
+        stage = d.get("evaluation_stage", "raw")
+        by_stage[stage] = by_stage.get(stage, 0) + 1
 
-    # Pipeline funnel
-    st.subheader("Pipeline Funnel")
-    funnel_stages = ["designed", "validated", "scored", "selected"]
-    funnel_counts = [by_status.get(s, 0) for s in funnel_stages]
+    c1, c2, c3, c4, c5 = st.columns(5)
+    c1.metric("Total Designs", len(designs))
+    c2.metric("BoltzGen", by_tool.get("boltzgen", 0))
+    c3.metric("RFdiffusion3", by_tool.get("rfdiffusion3", 0))
+    c4.metric("Raw (unevaluated)", by_stage.get("raw", 0))
+    c5.metric("Selected", by_status.get("selected", 0))
+
+    # Pipeline funnel (by evaluation_stage)
+    st.subheader("Evaluation Pipeline Funnel")
+    funnel_stages = ["raw", "collected", "validated", "scored", "selected"]
+    funnel_counts = [by_stage.get(s, 0) for s in funnel_stages]
     if any(funnel_counts):
         fig = px.funnel(
             x=funnel_counts,
             y=[s.capitalize() for s in funnel_stages],
-            title="Design Pipeline",
+            title="Evaluation Pipeline",
         )
         fig.update_layout(height=300)
         st.plotly_chart(fig, use_container_width=True)
     else:
-        st.info("No designs tracked yet. Use 'Sync from S3' below or submit new runs.")
+        st.info("No designs tracked yet. Use 'Sync Raw Designs from S3' below or submit new runs.")
 
     # By strategy breakdown
     if designs:
@@ -259,6 +275,26 @@ if page == "Dashboard":
         st.dataframe(job_df[display_cols], use_container_width=True, hide_index=True)
     else:
         st.info("No jobs tracked yet.")
+
+    # Sync raw designs from S3 (fast, no GPU)
+    st.subheader("Sync Raw Designs from S3")
+    st.caption(
+        "Scans tool output directories on S3 (output/boltzgen/, output/rfdiffusion3/) "
+        "and imports designs into the tracker with designer-native metrics. "
+        "Fast operation — no GPU, just parsing CSVs/JSONs."
+    )
+    if st.button("Sync Raw Designs from S3", type="secondary"):
+        with st.spinner("Syncing raw designs from S3..."):
+            try:
+                n_bg = tracker.sync_boltzgen(parse_boltzgen_csv)
+                n_rfd = tracker.sync_rfd3(parse_rfd3_json)
+                st.session_state.pop("tracker", None)
+                st.success(f"Synced {n_bg} BoltzGen + {n_rfd} RFD3 raw designs into tracker.")
+                st.rerun()
+            except Exception as e:
+                st.error(f"Sync failed: {e}")
+                import traceback
+                st.code(traceback.format_exc())
 
     # Evaluation pipeline
     st.subheader("Evaluation Pipeline")
@@ -358,74 +394,119 @@ elif page == "Designs":
     tracker = require_tracker()
     designs = tracker.list_designs()
 
-    st.header("All Designs")
+    st.header("Designs")
 
     if not designs:
         st.info("No designs tracked. Go to Dashboard and sync from S3, or submit new runs.")
         st.stop()
 
-    # Filters
-    fc1, fc2, fc3 = st.columns(3)
-    tools = sorted({d.get("tool", "") for d in designs})
-    strategies = sorted({d.get("strategy", "") for d in designs})
-    statuses = sorted({d.get("status", "") for d in designs})
+    # Tabs
+    tab_all, tab_raw, tab_evaluated = st.tabs(["All Designs", "Raw (unevaluated)", "Evaluated"])
 
-    sel_tool = fc1.multiselect("Tool", tools, default=tools)
-    sel_strategy = fc2.multiselect("Strategy", strategies, default=strategies)
-    sel_status = fc3.multiselect("Status", statuses, default=statuses)
+    def _render_designs_table(design_list, tab_key="all"):
+        """Render a filtered design table inside a tab."""
+        if not design_list:
+            st.info("No designs in this view.")
+            return
 
-    filtered = [
-        d for d in designs
-        if d.get("tool", "") in sel_tool
-        and d.get("strategy", "") in sel_strategy
-        and d.get("status", "") in sel_status
-    ]
+        # Filters
+        fc1, fc2, fc3 = st.columns(3)
+        tools = sorted({d.get("tool", "") for d in design_list})
+        strategies = sorted({d.get("strategy", "") for d in design_list})
+        statuses = sorted({d.get("status", "") for d in design_list})
 
-    # Build flat table
-    rows = []
-    for d in filtered:
-        m = d.get("metrics", {})
-        rows.append({
-            "id": d["id"],
-            "tool": TOOL_LABELS.get(d.get("tool", ""), d.get("tool", "")),
-            "strategy": d.get("strategy", ""),
-            "status": f"{STATUS_COLORS.get(d.get('status', ''), '')} {d.get('status', '')}",
-            "rank": d.get("rank", ""),
-            "score": _fmt_metric(d.get("composite_score", "")),
-            "residues": d.get("num_residues", ""),
-            "iptm": _fmt_metric(m.get("iptm", m.get("design_to_target_iptm", ""))),
-            "ptm": _fmt_metric(m.get("ptm", m.get("design_ptm", ""))),
-            "rmsd": _fmt_metric(m.get("filter_rmsd", "")),
-            "pae": _fmt_metric(m.get("min_design_to_target_pae", "")),
-            "helix": _fmt_metric(m.get("helix", "")),
-            "sheet": _fmt_metric(m.get("sheet", "")),
-        })
+        sel_tool = fc1.multiselect("Tool", tools, default=tools, key=f"tool_{tab_key}")
+        sel_strategy = fc2.multiselect("Strategy", strategies, default=strategies, key=f"strat_{tab_key}")
+        sel_status = fc3.multiselect("Status", statuses, default=statuses, key=f"status_{tab_key}")
 
-    df = pd.DataFrame(rows)
-    st.dataframe(
-        df,
-        use_container_width=True,
-        hide_index=True,
-        column_config={
-            "id": st.column_config.TextColumn("Design ID", width="medium"),
-            "tool": st.column_config.TextColumn("Tool", width="small"),
-            "strategy": st.column_config.TextColumn("Strategy", width="small"),
-            "status": st.column_config.TextColumn("Status", width="small"),
-            "rank": st.column_config.TextColumn("Rank", width="small"),
-            "score": st.column_config.TextColumn("Score", width="small"),
-            "iptm": st.column_config.TextColumn("ipTM"),
-            "ptm": st.column_config.TextColumn("pTM"),
-            "rmsd": st.column_config.TextColumn("RMSD"),
-            "pae": st.column_config.TextColumn("PAE"),
-        },
-    )
+        filtered = [
+            d for d in design_list
+            if d.get("tool", "") in sel_tool
+            and d.get("strategy", "") in sel_strategy
+            and d.get("status", "") in sel_status
+        ]
 
-    # Bulk actions (auth required)
-    if is_authenticated():
+        # Build flat table
+        rows = []
+        for d in filtered:
+            m = d.get("metrics", {})
+            stage = d.get("evaluation_stage", "raw")
+            rows.append({
+                "id": d["id"],
+                "tool": TOOL_LABELS.get(d.get("tool", ""), d.get("tool", "")),
+                "strategy": d.get("strategy", ""),
+                "stage": f"{STAGE_COLORS.get(stage, '')} {stage}",
+                "status": f"{STATUS_COLORS.get(d.get('status', ''), '')} {d.get('status', '')}",
+                "rank": d.get("rank", ""),
+                "score": _fmt_metric(d.get("composite_score", "")),
+                "residues": d.get("num_residues", ""),
+                "iptm": _fmt_metric(m.get("iptm", m.get("design_to_target_iptm", ""))),
+                "ptm": _fmt_metric(m.get("ptm", m.get("design_ptm", ""))),
+                "rmsd": _fmt_metric(m.get("filter_rmsd", "")),
+                "pae": _fmt_metric(m.get("min_design_to_target_pae", "")),
+                "helix": _fmt_metric(m.get("helix", "")),
+                "sheet": _fmt_metric(m.get("sheet", "")),
+            })
+
+        df = pd.DataFrame(rows)
+        st.dataframe(
+            df,
+            use_container_width=True,
+            hide_index=True,
+            column_config={
+                "id": st.column_config.TextColumn("Design ID", width="medium"),
+                "tool": st.column_config.TextColumn("Tool", width="small"),
+                "strategy": st.column_config.TextColumn("Strategy", width="small"),
+                "stage": st.column_config.TextColumn("Stage", width="small"),
+                "status": st.column_config.TextColumn("Status", width="small"),
+                "rank": st.column_config.TextColumn("Rank", width="small"),
+                "score": st.column_config.TextColumn("Score", width="small"),
+                "iptm": st.column_config.TextColumn("ipTM"),
+                "ptm": st.column_config.TextColumn("pTM"),
+                "rmsd": st.column_config.TextColumn("RMSD"),
+                "pae": st.column_config.TextColumn("PAE"),
+            },
+        )
+        return filtered
+
+    with tab_all:
+        filtered = _render_designs_table(designs, "all")
+
+    with tab_raw:
+        raw_designs = [d for d in designs if d.get("evaluation_stage", "raw") == "raw"]
+        if raw_designs:
+            st.caption(f"{len(raw_designs)} designs with designer metrics only — not yet evaluated.")
+        filtered_raw = _render_designs_table(raw_designs, "raw")
+
+        # Run evaluation button for raw designs
+        if raw_designs:
+            if st.button("Run Evaluation Pipeline on Raw Designs", type="primary") and require_auth():
+                with st.spinner("Running evaluation pipeline..."):
+                    try:
+                        eval_path = Path(__file__).resolve().parent.parent / "pgdh_campaign"
+                        sys.path.insert(0, str(eval_path))
+                        from evaluate_designs import run_evaluation
+                        results = run_evaluation(client=get_client())
+                        st.session_state.pop("tracker", None)
+                        st.success(f"Evaluated {len(results)} designs. Tracker synced.")
+                        st.rerun()
+                    except Exception as e:
+                        st.error(f"Evaluation failed: {e}")
+                        import traceback
+                        st.code(traceback.format_exc())
+
+    with tab_evaluated:
+        evaluated_designs = [d for d in designs if d.get("evaluation_stage", "raw") != "raw"]
+        if evaluated_designs:
+            st.caption(f"{len(evaluated_designs)} designs that have been through the evaluation pipeline.")
+        filtered_eval = _render_designs_table(evaluated_designs, "eval")
+
+    # Bulk actions (auth required) — uses the "All" tab filtered list
+    if is_authenticated() and designs:
         st.subheader("Bulk Actions")
         selected_ids = st.multiselect(
             "Select designs",
-            [d["id"] for d in filtered],
+            [d["id"] for d in designs],
         )
         ba1, ba2, ba3 = st.columns(3)
         with ba1:
@@ -446,7 +527,7 @@ elif page == "Designs":
 
     # Click to detail
     st.markdown("---")
-    detail_id = st.selectbox("View design detail", [""] + [d["id"] for d in filtered])
+    detail_id = st.selectbox("View design detail", [""] + [d["id"] for d in designs])
     if detail_id:
         st.session_state.detail_design_id = detail_id
         st.info(f"Switch to 'Design Detail' page in the sidebar to view {detail_id}")
@@ -809,11 +890,13 @@ elif page == "Design Detail":
         st.stop()
 
     # Header info
-    hc1, hc2, hc3, hc4 = st.columns(4)
+    hc1, hc2, hc3, hc4, hc5 = st.columns(5)
     hc1.metric("Tool", TOOL_LABELS.get(design.get("tool", ""), design.get("tool", "")))
     hc2.metric("Strategy", design.get("strategy", ""))
     hc3.metric("Status", f"{STATUS_COLORS.get(design.get('status', ''), '')} {design.get('status', '')}")
-    hc4.metric("Residues", design.get("num_residues", "?"))
+    stage = design.get("evaluation_stage", "raw")
+    hc4.metric("Eval Stage", f"{STAGE_COLORS.get(stage, '')} {stage}")
+    hc5.metric("Residues", design.get("num_residues", "?"))
 
     # Metrics
     st.subheader("Metrics")
