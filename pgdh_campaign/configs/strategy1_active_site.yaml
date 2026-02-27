@@ -1,0 +1,18 @@
+entities:
+  # Designed binder protein (80-120 residues)
+  - protein:
+      id: B
+      sequence: 80..120
+
+  # 15-PGDH target (PDB 2GDZ, chain A)
+  - file:
+      path: ../structures/2GDZ.cif
+      include:
+        - chain:
+            id: A
+      # Active site hotspots (label_seq_id = auth_seq_id + 2)
+      # Ser138->140, Gln148->150, Tyr151->153, Lys155->157, Phe185->187, Tyr217->219
+      binding_types:
+        - chain:
+            id: A
+            binding: 140,150,153,157,187,219

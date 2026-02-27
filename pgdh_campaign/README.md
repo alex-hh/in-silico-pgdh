@@ -1,0 +1,323 @@
+# 15-PGDH Binder Design Campaign
+
+Design protein binders targeting 15-PGDH (PDB: 2GDZ) for the Berlin Bio Hackathon x Adaptyv competition.
+
+## Quick Start: Score a binder with ipSAE
+
+Use the `/pgdh_ipsae` skill in Claude Code to score binder designs against the PGDH target.
+
+### What ipSAE needs (and doesn't need)
+
+ipSAE scores the **predicted confidence** of a protein-protein interaction. It does NOT
+score a raw crystal structure — it needs outputs from a structure predictor (AF2, AF3, or Boltz)
+that ran on your binder + PGDH complex together.
+
+You cannot use `structures/2GDZ.pdb` directly — that's the raw PGDH crystal structure
+(single chain, no binder, no PAE matrix). The workflow is:
+
+```
+1. Design a binder sequence
+2. Predict the binder+PGDH complex with Boltz/AF2/AF3
+   → produces a PAE file + predicted structure (2 chains)
+3. Score that prediction with ipSAE
+```
+
+### 1. Get prediction files
+
+Run a structure predictor on your binder sequence + PGDH sequence together.
+The predictor outputs two files you need:
+
+| File | What it is | Why ipSAE needs it |
+|------|------------|-------------------|
+| **PAE file** | Predicted Aligned Error matrix (NxN) | Core input — ipSAE scores inter-chain PAE confidence |
+| **Structure file** | Predicted complex (target + binder) | Provides chain IDs, residue positions, CB distances |
+
+The format depends on which predictor you used:
+
+| Predictor | PAE file | Structure file |
+|-----------|----------|----------------|
+| AlphaFold2 | `scores_rank_001.json` | `unrelaxed_rank_001.pdb` |
+| AlphaFold3 | `fold_full_data_0.json` | `fold_model_0.cif` |
+| Boltz1 | `pae_model_0.npz` | `model_0.cif` |
+
+### 2. Run ipSAE scoring
+
+```bash
+python projects/biolyceum/src/lyceum_ipsae.py \
+    --pae-file <path_to_pae> \
+    --structure-file <path_to_predicted_complex> \
+    --pae-cutoff 10 --dist-cutoff 10 \
+    --output-dir pgdh_campaign/out/ipsae/<candidate_name>
+```
+
+On Lyceum, upload both prediction files first, then run:
+
+```bash
+# Upload prediction outputs to Lyceum storage
+lyceum storage upload boltz2_output/pae.json input/pae.json
+lyceum storage upload boltz2_output/model_0.cif input/model.cif
+
+# Run scoring (CPU, no GPU needed)
+lyceum python run lyceum_ipsae.py -r requirements/ipsae.txt -m cpu \
+    -- --pae-file /job/work/input/pae.json \
+       --structure-file /job/work/input/model.cif \
+       --pae-cutoff 10 --dist-cutoff 10
+```
+
+### 3. Read the results
+
+The `.txt` file contains one row per chain pair. Look for the `max` row:
+
+```
+Chn1,Chn2,PAE,Dist,Type,ipSAE,...
+A,B,10,10,max,0.723456,...
+```
+
+**Key metrics** (from the `max` row, comma-separated):
+
+| Column | Field | Pass | Strong |
+|--------|-------|------|--------|
+| 6 | ipSAE | > 0.61 | > 0.70 |
+| 11 | pDockQ | > 0.50 | > 0.60 |
+| 12 | pDockQ2 | > 0.50 | > 0.60 |
+| 13 | LIS | > 0.35 | > 0.45 |
+
+### 4. Visualize in PyMOL
+
+```
+# Load your structure, then run the .pml script:
+@pgdh_campaign/out/ipsae/candidate_1/complex_10_10.pml
+color_A_B
+```
+
+This colors interface residues on each chain (magenta = target, marine = binder).
+
+## Example run (synthetic test data)
+
+Since real prediction files require running Boltz/AF2 first, a synthetic test is included
+at `out/ipsae_test/` to verify the scoring pipeline works. It contains:
+
+- `pgdh_binder_complex.pdb` — 2-chain PDB: PGDH chain A (from 2GDZ) + a fake 60-residue
+  helical binder as chain B, simulating what a structure predictor would output
+- `pgdh_binder_scores.json` — synthetic AF2-format PAE JSON with fabricated inter-chain
+  PAE values (low PAE at target residues 135-155 / binder residues 26-41)
+
+These are **not** real predictions — they just test that the scoring code runs correctly.
+
+```bash
+python projects/biolyceum/src/lyceum_ipsae.py \
+    --pae-file pgdh_campaign/out/ipsae_test/pgdh_binder_scores.json \
+    --structure-file pgdh_campaign/out/ipsae_test/pgdh_binder_complex.pdb \
+    --pae-cutoff 10 --dist-cutoff 10 \
+    --output-dir pgdh_campaign/out/ipsae_test/results
+```
+
+Output:
+```
+Wrote 3 output files:
+  pgdh_campaign/out/ipsae_test/results/pgdh_binder_complex_10_10.txt
+  pgdh_campaign/out/ipsae_test/results/pgdh_binder_complex_10_10_byres.txt
+  pgdh_campaign/out/ipsae_test/results/pgdh_binder_complex_10_10.pml
+```
+
+To score real designs, run the full pipeline: design binder → predict complex with
+Boltz-2/AF2 → then score with ipSAE (see Campaign workflow below).
+
+## Batch scoring
+
+```python
+from pathlib import Path
+from projects.biolyceum.src.lyceum_ipsae import compute_ipsae
+
+for candidate_dir in sorted(Path("pgdh_campaign/out/boltz2").iterdir()):
+    pae = next(candidate_dir.glob("*.json"), None)
+    struct = next(candidate_dir.glob("*.cif"), None) or next(candidate_dir.glob("*.pdb"), None)
+    if pae and struct:
+        compute_ipsae(str(struct), str(pae), 10.0, 10.0, f"pgdh_campaign/out/ipsae/{candidate_dir.name}")
+```
+
+## BoltzGen Binder Design (Lyceum)
+
+Generate PGDH binder candidates using BoltzGen on Lyceum. Use the `/boltzgen-pgdh` skill for guided execution.
+
+### Strategies
+
+3 pre-configured binding strategies in `configs/`:
+
+| # | Config | Approach | Hotspots |
+|---|--------|----------|----------|
+| 1 | `strategy1_active_site.yaml` | Active site blocker | Ser138, Gln148, Tyr151, Lys155, Phe185, Tyr217 |
+| 2 | `strategy2_dimer_interface.yaml` | Dimer disruptor | Ala146, Ala153, Phe161, Leu167, Ala168, Leu171, Met172, Tyr206 |
+| 3 | `strategy3_surface.yaml` | Model-free surface | None (auto-detect) |
+
+### Running on Lyceum
+
+```bash
+source .venv/bin/activate
+
+# 1. Upload target structure + YAML config
+#    Note: YAML paths must use flat filenames (2GDZ.cif not ../structures/2GDZ.cif)
+#    because run_boltzgen.sh copies all input/boltzgen/* to the same working dir
+lyceum storage load pgdh_campaign/structures/2GDZ.cif --key input/boltzgen/2GDZ.cif
+lyceum storage load /tmp/my_config.yaml --key input/boltzgen/config.yaml
+
+# 2. Run BoltzGen (Docker mode, A100 GPU)
+lyceum docker run pytorch/pytorch:2.6.0-cuda12.6-cudnn9-runtime \
+  -m gpu.a100 -t 600 \
+  -c "bash /mnt/s3/scripts/boltzgen/run_boltzgen.sh \
+      --input-yaml /root/boltzgen_work/config.yaml \
+      --output-dir /mnt/s3/output/boltzgen \
+      --num-designs 3 \
+      --cache /mnt/s3/models/boltzgen"
+
+# 3. Download results
+lyceum storage download output/boltzgen/final_ranked_designs/all_designs_metrics.csv \
+  --output pgdh_campaign/out/boltzgen/all_designs_metrics.csv
+lyceum storage download output/boltzgen/final_ranked_designs/results_overview.pdf \
+  --output pgdh_campaign/out/boltzgen/results_overview.pdf
+```
+
+### Preparing YAML configs for Lyceum
+
+The configs in `configs/` use relative paths (`../structures/2GDZ.cif`) for local use. For Lyceum, you need flat-path versions since `run_boltzgen.sh` copies all `input/boltzgen/*` into a single working directory:
+
+```bash
+# Create a Lyceum-compatible version (change path to flat filename)
+sed 's|path: ../structures/2GDZ.cif|path: 2GDZ.cif|' \
+  pgdh_campaign/configs/strategy3_surface.yaml > /tmp/pgdh_strategy3.yaml
+
+# Upload it
+lyceum storage load /tmp/pgdh_strategy3.yaml --key input/boltzgen/config.yaml
+```
+
+### Uploading scripts (one-time setup)
+
+The BoltzGen Docker execution needs two scripts on Lyceum storage:
+
+```bash
+lyceum storage load projects/biolyceum/src/lyceum_boltzgen.py \
+  --key scripts/boltzgen/lyceum_boltzgen.py
+lyceum storage load projects/biolyceum/src/run_boltzgen.sh \
+  --key scripts/boltzgen/run_boltzgen.sh
+```
+
+These persist in storage and don't need to be re-uploaded unless you change them.
+
+### Lyceum storage layout
+
+BoltzGen on Lyceum uses Docker execution mode. Storage is mounted at `/mnt/s3/`:
+
+| Storage Path | Purpose | Persists? |
+|-------------|---------|-----------|
+| `/mnt/s3/input/boltzgen/` | Input YAML + structure files | Yes |
+| `/mnt/s3/output/boltzgen/` | Pipeline outputs (designs, metrics, PDFs) | Yes |
+| `/mnt/s3/models/boltzgen/` | Cached model weights (~5 GB) | Yes |
+| `/mnt/s3/scripts/boltzgen/` | Lyceum scripts | Yes |
+| `/mnt/s3/pip_cache/boltzgen/` | Cached pip wheels (speeds up installs) | Yes |
+| `/mnt/s3/boltzgen_repo/` | Cached git repo (skips clone) | Yes |
+
+Model weights are downloaded on the first run and cached. The git repo and pip wheels are also cached to reduce setup time on subsequent runs.
+
+### Downloading results
+
+```bash
+# List what's available
+lyceum storage ls output/boltzgen/
+lyceum storage ls output/boltzgen/final_ranked_designs/
+
+# Download metrics CSV
+lyceum storage download output/boltzgen/final_ranked_designs/all_designs_metrics.csv \
+  --output pgdh_campaign/out/boltzgen/all_designs_metrics.csv
+
+# Download aggregate metrics (more detailed)
+lyceum storage download output/boltzgen/intermediate_designs_inverse_folded/aggregate_metrics_analyze.csv \
+  --output pgdh_campaign/out/boltzgen/aggregate_metrics.csv
+
+# Download summary PDF
+lyceum storage download output/boltzgen/final_ranked_designs/results_overview.pdf \
+  --output pgdh_campaign/out/boltzgen/results_overview.pdf
+
+# Download top design CIF files
+lyceum storage ls output/boltzgen/final_ranked_designs/final_30_designs/
+# Then for each file:
+lyceum storage download output/boltzgen/final_ranked_designs/final_30_designs/<filename>.cif \
+  --output pgdh_campaign/out/boltzgen/designs/<filename>.cif
+
+# Clean outputs before a new run
+echo "y" | lyceum storage rmdir output/boltzgen/
+```
+
+### Auth troubleshooting
+
+If you get `Token verification timeout`, re-authenticate:
+
+```bash
+lyceum auth login
+```
+
+Auth tokens are stored at `~/.lyceum/config.json` and expire periodically.
+
+### Timing (PGDH target, A100)
+
+Measured from actual runs against 2GDZ (266 residues):
+
+| Phase | Per Design | 3 Designs |
+|-------|-----------|-----------|
+| Setup (apt + pip, cached) | — | ~120s |
+| Design (diffusion) | ~55s | ~170s |
+| Inverse folding | ~3s | ~9s |
+| Folding validation | ~26s | ~77s |
+| Design folding | ~11s | ~33s |
+| Analysis + filtering | ~30s | ~90s |
+| **Total** | — | **~500s** |
+
+| Designs | Fits in 600s timeout? |
+|---------|-----------------------|
+| 1-3 | Yes |
+| 5+ | No — split into multiple runs |
+| 50 | ~17 runs of 3 designs each |
+
+### Via Python client
+
+```python
+from projects.biolyceum.src.utils.client import LyceumClient
+
+client = LyceumClient()
+success, files = client.run_boltzgen(
+    yaml_path="/tmp/pgdh_surface.yaml",
+    structure_files=["pgdh_campaign/structures/2GDZ.cif"],
+    output_dir="pgdh_campaign/out/boltzgen",
+    num_designs=3,
+)
+```
+
+### Visualization
+
+An interactive Jupyter notebook is provided at `visualize_designs.ipynb` for exploring results:
+- Metrics overview and filtering
+- RMSD distribution plots
+- Amino acid composition
+- 3D structure visualization (py3Dmol)
+- Binder sequence extraction and FASTA export
+
+## Campaign workflow
+
+See [CAMPAIGN_PLAN.md](CAMPAIGN_PLAN.md) for the full pipeline:
+
+1. **BoltzGen** — generate 150 binder candidates (3 strategies x 50) ← `/boltzgen-pgdh`
+2. **protein-qc** — filter to ~30 candidates
+3. **Boltz-2** — cross-validate with structure prediction
+4. **ipSAE** — rank by binding confidence ← `/pgdh_ipsae`
+5. **Submit** — top 10 designs
+
+## Files
+
+| Path | Description |
+|------|-------------|
+| `structures/2GDZ.cif` | PGDH target structure (CIF format, preferred by BoltzGen) |
+| `structures/2GDZ.pdb` | PGDH target structure (PDB format) |
+| `configs/strategy[1-3]_*.yaml` | BoltzGen design configs (3 binding strategies) |
+| `out/boltzgen/` | BoltzGen design outputs |
+| `out/ipsae_test/` | Synthetic test data + results |
+| `visualize_designs.ipynb` | Interactive notebook for exploring designs |
+| `CAMPAIGN_PLAN.md` | Full campaign strategy |

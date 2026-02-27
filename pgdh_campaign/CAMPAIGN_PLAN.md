@@ -4,13 +4,15 @@
 
 Design protein binders targeting 15-PGDH (PDB: 2GDZ, UniProt: P15428) for the Berlin Bio Hackathon x Adaptyv competition. Submissions: up to 10 designs (max 250 AA), judged on **novelty/originality** then **binding affinity (KD)**. Deadline: Feb 27-28.
 
-The workflow is **agentic**: Claude Code orchestrates the campaign by invoking skills (`/boltzgen`, `/boltz`, `/protein-qc`, etc.) and running Modal commands step-by-step. No standalone orchestrator script — Claude Code _is_ the orchestrator.
+The workflow is **agentic**: Claude Code orchestrates the campaign by invoking skills (`/boltzgen`, `/boltz`, `/protein-qc`, etc.) and running Lyceum commands step-by-step. No standalone orchestrator script — Claude Code _is_ the orchestrator.
+
+**Platform**: Lyceum (via biolyceum client at `projects/biolyceum/src/utils/client.py`)
 
 ## Target: 15-PGDH
 
 - 1.65 Å crystal structure, homodimer, NAD+ bound
 - Active site: Ser138, Tyr151, Lys155, Gln148, Phe185, Tyr217
-- Dimer interface: Phe161, Leu150, Ala153, Ala146, Leu167, Ala168, Tyr206, Leu171, Met172
+- Dimer interface: Phe161, **Val150** (not Leu), Ala153, Ala146, Leu167, Ala168, Tyr206, Leu171, Met172
 
 ## Campaign Strategy: 3 Binding Approaches
 
@@ -25,14 +27,15 @@ The workflow is **agentic**: Claude Code orchestrates the campaign by invoking s
 ### Step 0: Setup & Target Prep
 **Skills**: `/setup`, `/pdb`
 
-1. Verify Modal is authenticated: `modal token list`
-2. Confirm biomodals repo exists at `resources/biomodals/`
-3. Download 2GDZ structure:
+1. Activate venv: `source .venv/bin/activate`
+2. Verify Lyceum auth: `lyceum auth status` or check `~/.lyceum/config.json`
+3. Confirm biolyceum scripts exist at `projects/biolyceum/src/`
+4. Download 2GDZ structure:
    ```bash
    wget -O pgdh_campaign/structures/2GDZ.cif https://files.rcsb.org/download/2GDZ.cif
    ```
-4. Inspect CIF to verify chain IDs and `label_seq_id` numbering for hotspot residues
-5. Create campaign directory structure:
+5. Inspect CIF to verify chain IDs and `label_seq_id` numbering for hotspot residues
+6. Create campaign directory structure:
    ```
    pgdh_campaign/
      structures/2GDZ.cif
@@ -51,12 +54,14 @@ Write 3 YAML files in `pgdh_campaign/configs/`, one per strategy. Each reference
 **strategy2_dimer_interface.yaml** — hotspots on dimer interface
 **strategy3_surface.yaml** — no hotspots, free targeting
 
-### Step 2: Run BoltzGen (3 parallel Modal jobs)
+### Step 2: Run BoltzGen (3 parallel Lyceum jobs)
 **Skills**: `/boltzgen`
 
-Launch all 3 strategies in parallel from `pgdh_campaign/`:
+Launch all 3 strategies in parallel. Two options:
+
+**Option A — Via Modal (existing, tested)**:
 ```bash
-cd pgdh_campaign
+source .venv/bin/activate && cd pgdh_campaign
 
 # Strategy 1: Active site
 TIMEOUT=300 modal run ../resources/biomodals/modal_boltzgen.py \
@@ -80,6 +85,10 @@ TIMEOUT=300 modal run ../resources/biomodals/modal_boltzgen.py \
   --out-dir out/boltzgen --run-name s3_surface
 ```
 
+**Option B — Via Lyceum (biolyceum)**:
+Uses `projects/biolyceum/src/lyceum_boltzgen.py` + `run_boltzgen.sh` Docker execution.
+Upload YAML + CIF to Lyceum storage, submit Docker job with BoltzGen image, stream output, download results.
+
 **Expected output per strategy**: `out/boltzgen/<run_name>/` containing:
 - `final_ranked_designs/` — top candidates with metrics
 - `intermediate_designs_inverse_folded/aggregate_metrics_analyze.csv` — all metrics
@@ -100,9 +109,9 @@ Rank by composite score and select top ~10 per strategy (30 total) for cross-val
 For each top candidate:
 1. Extract binder sequence from BoltzGen output CIF
 2. Create Boltz-2 YAML with target + binder sequences
-3. Run Boltz-2 prediction:
+3. Run Boltz-2 prediction (Modal for now — Lyceum port pending):
    ```bash
-   modal run ../resources/biomodals/modal_boltz.py \
+   modal run resources/biomodals/modal_boltz.py \
      --input-yaml validation_N.yaml \
      --params-str "--use_msa_server --recycling_steps 10 --diffusion_samples 5" \
      --out-dir out/boltz2 --run-name candidate_N
@@ -126,6 +135,61 @@ Selection rules:
 
 Output: `out/final/submission.fasta` with 10 binder sequences
 
+## PGDH MSA Cache
+
+The AlphaFast MSA server enriches input JSONs with pre-computed MSAs (multiple sequence alignments).
+Since the PGDH target sequence never changes, we **cache the enriched MSA data** to avoid redundant
+server calls during cross-validation.
+
+- **Cache location**: `pgdh_campaign/msa_cache/`
+- **Target MSA**: `pgdh_campaign/msa_cache/pgdh_target_msa.json` — enriched AF3 input for the full PGDH monomer
+- **Homodimer MSA**: `pgdh_campaign/msa_cache/pgdh_homodimer_msa.json` — enriched AF3 input for the PGDH homodimer
+
+**How to use cached MSA for binder validation**:
+1. Create AF3 input JSON with target + binder sequences
+2. Call `lyceum_alphafast.py --input complex.json --skip-msa` if MSA is pre-embedded
+3. Or merge cached target MSA data into the complex input JSON before running inference
+
+**MSA server**: `https://romero-lab--alphafold3-msa-server-msa.modal.run` (public, free, GPU-accelerated)
+
+**Note**: AF3 model weights are required for inference. They must be obtained from Google DeepMind
+(approval takes 2-5 business days) and uploaded to Lyceum storage at `models/alphafast/weights/af3.bin`.
+
+## RFdiffusion3 (Alternative/Complementary to BoltzGen)
+
+**Skill**: `/pgdh_rfdiffusion3`
+
+RFdiffusion3 is the latest Baker lab tool — designs at the atomic level (full sidechains, not just backbone). Uses the `rosettacommons/foundry` Docker image on Lyceum.
+
+### Key differences from BoltzGen
+- JSON config (not YAML)
+- Comma-separated contigs (not space-separated)
+- Hotspots specify exact atom names (must match PDB)
+- Output: `.cif.gz` + `.json` per design (not a ranked pipeline)
+- No built-in inverse folding or refolding — needs separate validation
+
+### How to run
+
+```bash
+source .venv/bin/activate && cd pgdh_campaign
+python run_rfd3_pgdh.py
+```
+
+Config: `pgdh_campaign/configs/rfd3_pgdh_binder.json` (2 strategies: active site + dimer interface)
+
+### Tested parameters (PGDH, A100)
+- `--num-designs 4 --step-scale 3 --gamma-0 0.2` — quick test, ~16 min total
+- Docker image: `rosettacommons/foundry`, machine: `gpu.a100`
+
+### Output
+- `pgdh_campaign/out/rfd3/*.cif.gz` — designed structures
+- `pgdh_campaign/out/rfd3/*.json` — metrics (clashes, SS fractions, RoG, etc.)
+
+### Known issues
+- Res 150 is **Val** (CG1/CG2), not Leu (CD1/CD2) — hotspot atoms must match PDB exactly
+- Container pull takes ~13 min on first run (cached after)
+- RFD3 outputs need sequence extraction + cross-validation (no built-in QC pipeline like BoltzGen)
+
 ## Files to Create
 
 | File | Purpose |
@@ -134,14 +198,22 @@ Output: `out/final/submission.fasta` with 10 binder sequences
 | `pgdh_campaign/configs/strategy1_active_site.yaml` | BoltzGen config — active site |
 | `pgdh_campaign/configs/strategy2_dimer_interface.yaml` | BoltzGen config — dimer interface |
 | `pgdh_campaign/configs/strategy3_surface.yaml` | BoltzGen config — free surface |
+| `pgdh_campaign/msa_cache/pgdh_target_msa.json` | Cached MSA for PGDH monomer |
+| `pgdh_campaign/msa_cache/pgdh_homodimer_msa.json` | Cached MSA for PGDH homodimer |
+| `pgdh_campaign/configs/rfd3_pgdh_binder.json` | RFdiffusion3 config — active site + dimer |
 | `pgdh_campaign/out/final/submission.fasta` | Final 10 sequences for submission |
 
-## Existing Files (no changes needed)
+## Existing Files
 
 | File | Used in |
 |------|---------|
-| `resources/biomodals/modal_boltzgen.py` | Step 2 — design generation |
-| `resources/biomodals/modal_boltz.py` | Step 4 — cross-validation |
+| `projects/biolyceum/src/lyceum_alphafast.py` | AlphaFast inference (Lyceum) |
+| `projects/biolyceum/src/run_alphafast.sh` | Docker setup for AlphaFast on Lyceum |
+| `projects/biolyceum/src/lyceum_boltzgen.py` | Step 2 — design generation (Lyceum) |
+| `projects/biolyceum/src/lyceum_rfdiffusion3.py` | RFD3 Docker entrypoint (Lyceum) |
+| `projects/biolyceum/src/utils/client.py` | Lyceum API client |
+| `projects/biolyceum/src/run_boltzgen.sh` | Docker setup for BoltzGen on Lyceum |
+| `pgdh_campaign/run_rfd3_pgdh.py` | RFD3 submission script |
 
 ## Verification
 

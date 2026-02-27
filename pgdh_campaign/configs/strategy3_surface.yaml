@@ -1,0 +1,13 @@
+entities:
+  # Designed binder protein (60-140 residues, wider range for exploration)
+  - protein:
+      id: B
+      sequence: 60..140
+
+  # 15-PGDH target (PDB 2GDZ, chain A)
+  # No binding_types specified — let BoltzGen auto-detect binding site
+  - file:
+      path: ../structures/2GDZ.cif
+      include:
+        - chain:
+            id: A

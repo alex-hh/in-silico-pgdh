@@ -1,0 +1,19 @@
+entities:
+  # Designed binder protein (80-140 residues)
+  - protein:
+      id: B
+      sequence: 80..140
+
+  # 15-PGDH target (PDB 2GDZ, chain A)
+  - file:
+      path: ../structures/2GDZ.cif
+      include:
+        - chain:
+            id: A
+      # Dimer interface hotspots (label_seq_id = auth_seq_id + 2)
+      # Ala146->148, Ala153->155, Phe161->163, Leu167->169, Ala168->170,
+      # Leu171->173, Met172->174, Tyr206->208
+      binding_types:
+        - chain:
+            id: A
+            binding: 148,155,163,169,170,173,174,208
