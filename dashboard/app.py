@@ -99,27 +99,47 @@ def get_client() -> LyceumClient:
         return None
 
 
-TRACKER_TTL_SECONDS = 300  # Cache tracker for 5 minutes
+TRACKER_TTL_SECONDS = 300  # Refresh from S3 every 5 minutes
+
+
+@st.cache_data(ttl=TRACKER_TTL_SECONDS, persist="disk", show_spinner=False)
+def _fetch_tracker_state() -> dict | None:
+    """Download tracker/state.json from S3. Cached to disk so it survives app sleep."""
+    client = get_client()
+    if client is None:
+        return None
+    try:
+        data = client.download_bytes("tracker/state.json")
+        return json.loads(data)
+    except Exception:
+        return None
+
 
 def get_tracker() -> CampaignTracker | None:
-    """Get tracker, reloading from S3 if stale (TTL-based cache)."""
+    """Get tracker with disk-cached fallback.
+
+    On cold start, serves the last-known-good state from disk cache instantly
+    while the TTL-based refresh fetches fresh data from S3 in the background.
+    """
+    # Check session state first (for write operations that modify in-memory state)
+    tracker = st.session_state.get("tracker")
+    if tracker is not None:
+        return tracker
+
+    # Load from disk-cached S3 fetch
+    state = _fetch_tracker_state()
+    if state is None:
+        return None
+
     client = get_client()
     if client is None:
         return None
 
-    now = time.time()
-    last_load = st.session_state.get("tracker_loaded_at", 0)
-    tracker = st.session_state.get("tracker")
-
-    if tracker is None or (now - last_load) > TRACKER_TTL_SECONDS:
-        try:
-            st.session_state.tracker = CampaignTracker(client)
-            st.session_state.tracker_loaded_at = now
-        except Exception as e:
-            st.error(f"Failed to load tracker: {e}")
-            return None
-
-    return st.session_state.tracker
+    tracker = CampaignTracker.__new__(CampaignTracker)
+    tracker.client = client
+    tracker.state = state
+    st.session_state.tracker = tracker
+    return tracker
 
 
 def require_tracker(write=False) -> CampaignTracker | None:
@@ -144,7 +164,8 @@ page = st.sidebar.radio(
 )
 
 if st.sidebar.button("Refresh from S3"):
-    st.session_state.pop("tracker", None)
+    st.session_state.pop("tracker", None); _fetch_tracker_state.clear()
+    _fetch_tracker_state.clear()  # Clear disk cache to force fresh S3 fetch
     st.rerun()
 
 st.sidebar.markdown("---")
@@ -187,11 +208,18 @@ st.sidebar.caption("Target: 2GDZ")
 
 # ── Helpers ──────────────────────────────────────────────────────────────
 
-@st.cache_data(ttl=600, show_spinner=False)
-def _load_structure(_client, cif_key: str) -> str | None:
-    """Download and cache a CIF structure from S3 (10 min TTL)."""
+@st.cache_data(ttl=3600, persist="disk", show_spinner=False)
+def _load_structure(cif_key: str) -> str | None:
+    """Download and cache a CIF structure from S3.
+
+    Cached to disk with 1-hour TTL — survives app sleep/restart.
+    On cold start, serves last-known-good from disk instantly.
+    """
+    client = get_client()
+    if client is None:
+        return None
     try:
-        data = _client.download_bytes(cif_key)
+        data = client.download_bytes(cif_key)
         if cif_key.endswith(".gz"):
             import gzip
             data = gzip.decompress(data)
@@ -317,7 +345,7 @@ if page == "Dashboard":
             try:
                 n_bg = tracker.sync_boltzgen(parse_boltzgen_csv)
                 n_rfd = tracker.sync_rfd3(parse_rfd3_json)
-                st.session_state.pop("tracker", None)
+                st.session_state.pop("tracker", None); _fetch_tracker_state.clear()
                 st.success(f"Synced {n_bg} BoltzGen + {n_rfd} RFD3 raw designs into tracker.")
                 st.rerun()
             except Exception as e:
@@ -341,7 +369,7 @@ if page == "Dashboard":
                 from evaluate_designs import run_evaluation
                 results = run_evaluation(client=get_client())
                 # Force tracker reload
-                st.session_state.pop("tracker", None)
+                st.session_state.pop("tracker", None); _fetch_tracker_state.clear()
                 st.success(f"Evaluated {len(results)} designs. Tracker synced.")
             except Exception as e:
                 st.error(f"Evaluation failed: {e}")
@@ -557,7 +585,7 @@ elif page == "Designs":
                         sys.path.insert(0, str(eval_path))
                         from evaluate_designs import run_evaluation
                         results = run_evaluation(client=get_client())
-                        st.session_state.pop("tracker", None)
+                        st.session_state.pop("tracker", None); _fetch_tracker_state.clear()
                         st.success(f"Evaluated {len(results)} designs. Tracker synced.")
                         st.rerun()
                     except Exception as e:
@@ -652,7 +680,7 @@ elif page == "Jobs":
                     sys.path.insert(0, str(eval_path))
                     from evaluate_designs import run_evaluation
                     results = run_evaluation(client=get_client())
-                    st.session_state.pop("tracker", None)
+                    st.session_state.pop("tracker", None); _fetch_tracker_state.clear()
                     st.success(f"Auto-evaluated {len(results)} designs after job completion.")
                 except Exception as e:
                     st.warning(f"Auto-evaluation failed: {e}")
@@ -925,7 +953,7 @@ elif page == "New Run":
                             client=get_client(),
                             extra_designs=extra_designs,
                         )
-                        st.session_state.pop("tracker", None)
+                        st.session_state.pop("tracker", None); _fetch_tracker_state.clear()
                         st.success(f"Uploaded {len(sequences)} designs. {len(results)} total designs evaluated.")
                     except Exception as e:
                         st.error(f"Evaluation failed: {e}")
@@ -1005,7 +1033,7 @@ elif page == "Design Detail":
         client = get_client()
         if client:
             try:
-                cif_data = _load_structure(client, cif_key)
+                cif_data = _load_structure(cif_key)
                 if cif_data:
                     view = py3Dmol.view(width=700, height=500)
                     view.addModel(cif_data, "cif")
