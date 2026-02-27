@@ -1,0 +1,24 @@
+{
+  "env": {
+    "VIRTUAL_ENV": "/Users/alex/projects/biohack/.venv",
+    "PATH": "/Users/alex/projects/biohack/.venv/bin:$PATH"
+  },
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:docs.lyceum.technology)",
+      "WebFetch(domain:lyceum.technology)",
+      "WebFetch(domain:pypi.org)",
+      "WebFetch(domain:lyceum.mintlify.app)",
+      "Bash(wc:*)",
+      "Bash(grep:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(python3:*)",
+      "Bash(source:*)",
+      "Bash(source)",
+      "Bash(source /Users/alex/projects/biohack/.venv/bin/activate && *)",
+      "WebFetch(domain:proteinbase.com)",
+      "WebFetch(domain:www.rcsb.org)"
+    ]
+  }
+}
