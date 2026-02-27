@@ -27,10 +27,16 @@ def _load_lyceum_config():
 
 
 class LyceumClient:
-    def __init__(self, api_key=None, base_url=None):
+    SUPABASE_URL = "https://tqcebgbexyxzvqhnwnhh.supabase.co"
+
+    def __init__(self, api_key=None, refresh_token=None, base_url=None):
         config = _load_lyceum_config()
         self.api_key = api_key or os.environ.get("LYCEUM_API_KEY") or config.get("api_key")
+        self.refresh_token = refresh_token or os.environ.get("LYCEUM_REFRESH_TOKEN") or config.get("refresh_token")
         self.base_url = base_url or config.get("base_url", "https://api.lyceum.technology")
+        # If we have a refresh token, try to get a fresh API key
+        if self.refresh_token and not self.api_key:
+            self._refresh_api_key()
         if not self.api_key:
             raise ValueError(
                 "No API key found. Set LYCEUM_API_KEY env var or run `lyceum auth login`."
@@ -39,12 +45,41 @@ class LyceumClient:
         self._s3_client = None
         self._s3_bucket = None
 
+    def _refresh_api_key(self):
+        """Use the refresh token to get a fresh JWT access token."""
+        try:
+            resp = httpx.post(
+                f"{self.SUPABASE_URL}/auth/v1/token?grant_type=refresh_token",
+                headers={"apikey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxY2ViZ2JleHlzenZxaG53bmhoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjkxMTM0MzgsImV4cCI6MjA0NDY4OTQzOH0.7x4TtwGs0mP_GCxYVrOiMG6KQX3I0kmuTFcbpHkxjj4",
+                         "Content-Type": "application/json"},
+                json={"refresh_token": self.refresh_token},
+                timeout=15.0,
+            )
+            resp.raise_for_status()
+            data = resp.json()
+            self.api_key = data["access_token"]
+            self.refresh_token = data.get("refresh_token", self.refresh_token)
+        except Exception:
+            pass
+
     # ── Storage ──────────────────────────────────────────────────────────
 
     def _ensure_s3(self):
         """Get S3 credentials and create boto3 client (cached)."""
         if self._s3_client is not None:
             return
+        try:
+            self._init_s3()
+        except httpx.HTTPStatusError as e:
+            if e.response.status_code == 401 and self.refresh_token:
+                # Token expired — refresh and retry
+                self._refresh_api_key()
+                self._headers = {"Authorization": f"Bearer {self.api_key}"}
+                self._init_s3()
+            else:
+                raise
+
+    def _init_s3(self):
         resp = httpx.post(
             f"{self.base_url}/api/v2/external/storage/credentials",
             headers=self._headers,

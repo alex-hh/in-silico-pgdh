@@ -86,7 +86,10 @@ init_auth()
 @st.cache_resource
 def get_client() -> LyceumClient:
     try:
-        return LyceumClient(api_key=st.secrets["lyceum"]["api_key"])
+        return LyceumClient(
+            api_key=st.secrets["lyceum"].get("api_key", ""),
+            refresh_token=st.secrets["lyceum"].get("refresh_token", ""),
+        )
     except KeyError:
         st.error("Missing `[lyceum] api_key` in Streamlit secrets.")
         return None
