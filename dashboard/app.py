@@ -85,14 +85,35 @@ init_auth()
 
 @st.cache_resource
 def get_client() -> LyceumClient:
-    return LyceumClient(api_key=st.secrets["lyceum"]["api_key"])
+    try:
+        return LyceumClient(api_key=st.secrets["lyceum"]["api_key"])
+    except (KeyError, Exception):
+        return None
 
 
-def get_tracker() -> CampaignTracker:
+def get_tracker() -> CampaignTracker | None:
     """Get tracker, reloading from S3 if stale."""
+    client = get_client()
+    if client is None:
+        return None
     if "tracker" not in st.session_state:
-        st.session_state.tracker = CampaignTracker(get_client())
+        try:
+            st.session_state.tracker = CampaignTracker(client)
+        except Exception:
+            return None
     return st.session_state.tracker
+
+
+def require_tracker() -> CampaignTracker:
+    """Get tracker or show error and stop."""
+    tracker = get_tracker()
+    if tracker is None:
+        st.error(
+            "Could not connect to Lyceum. Check that `[lyceum] api_key` is set "
+            "in Streamlit secrets (Settings → Secrets)."
+        )
+        st.stop()
+    return tracker
 
 
 # ── Sidebar ──────────────────────────────────────────────────────────────
@@ -178,7 +199,7 @@ def _fmt_metric(val):
 # ══════════════════════════════════════════════════════════════════════════
 
 if page == "Dashboard":
-    tracker = get_tracker()
+    tracker = require_tracker()
     designs = tracker.list_designs()
     jobs = tracker.list_jobs()
 
@@ -334,7 +355,7 @@ if page == "Dashboard":
 # ══════════════════════════════════════════════════════════════════════════
 
 elif page == "Designs":
-    tracker = get_tracker()
+    tracker = require_tracker()
     designs = tracker.list_designs()
 
     st.header("All Designs")
@@ -436,7 +457,7 @@ elif page == "Designs":
 # ══════════════════════════════════════════════════════════════════════════
 
 elif page == "Jobs":
-    tracker = get_tracker()
+    tracker = require_tracker()
     jobs = tracker.list_jobs()
 
     st.header("Job Tracker")
@@ -558,7 +579,7 @@ elif page == "New Run":
                         timeout=timeout,
                     )
                     job_id = f"job_{uuid.uuid4().hex[:8]}"
-                    tracker = get_tracker()
+                    tracker = require_tracker()
                     tracker.add_job({
                         "id": job_id,
                         "tool": "boltzgen",
@@ -605,7 +626,7 @@ elif page == "New Run":
                         timeout=timeout,
                     )
                     job_id = f"job_{uuid.uuid4().hex[:8]}"
-                    tracker = get_tracker()
+                    tracker = require_tracker()
                     tracker.add_job({
                         "id": job_id,
                         "tool": "rfdiffusion3",
@@ -622,7 +643,7 @@ elif page == "New Run":
         st.subheader("Boltz-2 Validation")
         st.info("Select designs from the Designs page, then validate their predicted complexes with Boltz-2.")
 
-        tracker = get_tracker()
+        tracker = require_tracker()
         designs = tracker.list_designs()
         design_ids = [d["id"] for d in designs if d.get("sequence")]
 
@@ -660,7 +681,7 @@ elif page == "New Run":
         st.subheader("ipSAE Scoring")
         st.info("Score predicted complexes with ipSAE to rank binding affinity.")
 
-        tracker = get_tracker()
+        tracker = require_tracker()
         designs = tracker.list_designs()
         design_ids = [d["id"] for d in designs]
 
@@ -766,7 +787,7 @@ elif page == "New Run":
 # ══════════════════════════════════════════════════════════════════════════
 
 elif page == "Design Detail":
-    tracker = get_tracker()
+    tracker = require_tracker()
     designs = tracker.list_designs()
 
     st.header("Design Detail")
