@@ -1,0 +1,1 @@
+Never write plans, notes, or scratchpad files to ~/.claude or any directory outside this project. If you need to write planning or progress files, use the .claude/ directory within this project root.
