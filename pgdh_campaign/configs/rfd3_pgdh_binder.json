@@ -1,0 +1,31 @@
+{
+    "pgdh_active_site": {
+        "dialect": 2,
+        "infer_ori_strategy": "hotspots",
+        "input": "/mnt/s3/input/rfdiffusion3/2GDZ.pdb",
+        "contig": "60-120,/0,A0-265",
+        "select_hotspots": {
+            "A138": "OG",
+            "A148": "OE1,NE2",
+            "A151": "OH",
+            "A155": "NZ",
+            "A185": "CZ",
+            "A217": "OH"
+        },
+        "is_non_loopy": true
+    },
+    "pgdh_dimer_interface": {
+        "dialect": 2,
+        "infer_ori_strategy": "hotspots",
+        "input": "/mnt/s3/input/rfdiffusion3/2GDZ.pdb",
+        "contig": "60-140,/0,A0-265",
+        "select_hotspots": {
+            "A161": "CZ",
+            "A150": "CG1",
+            "A206": "OH",
+            "A167": "CD2",
+            "A172": "SD"
+        },
+        "is_non_loopy": true
+    }
+}
