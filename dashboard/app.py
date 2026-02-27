@@ -20,14 +20,32 @@ st.set_page_config(page_title="PGDH Design Tracker", page_icon="🧬", layout="w
 # ── Auth ─────────────────────────────────────────────────────────────────
 
 def check_auth():
-    """Google OAuth with email allowlist. Allowlist is in secrets.toml (never in repo)."""
+    """Google OAuth with email allowlist. All credentials live in secrets.toml (never in repo)."""
     if st.session_state.get("authenticated"):
         return
 
+    import json
+    import tempfile
+
     from streamlit_google_auth import Authenticate
 
+    # Build the Google credentials JSON from secrets.toml values
+    # so we don't need a separate google_credentials.json file
+    creds = {
+        "web": {
+            "client_id": st.secrets["google"]["client_id"],
+            "client_secret": st.secrets["google"]["client_secret"],
+            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+            "token_uri": "https://oauth2.googleapis.com/token",
+            "redirect_uris": [st.secrets["auth"]["redirect_uri"]],
+        }
+    }
+    creds_path = tempfile.mktemp(suffix=".json")
+    with open(creds_path, "w") as f:
+        json.dump(creds, f)
+
     authenticator = Authenticate(
-        secret_credentials_path="google_credentials.json",
+        secret_credentials_path=creds_path,
         cookie_name="pgdh_tracker",
         cookie_key=st.secrets["auth"]["cookie_key"],
         redirect_uri=st.secrets["auth"]["redirect_uri"],
