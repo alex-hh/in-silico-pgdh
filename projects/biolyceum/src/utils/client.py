@@ -173,6 +173,8 @@ class LyceumClient:
         Returns:
             (execution_id, streaming_url) tuple.
         """
+        if isinstance(command, str):
+            command = command.split()
         env_str = "\n".join(f"{k}={v}" for k, v in (env or {}).items())
         payload = {
             "docker_image_ref": docker_image,
@@ -297,6 +299,66 @@ class LyceumClient:
         """Fallback polling when streaming fails."""
         success, status = self.wait_for_completion(execution_id)
         return success, status
+
+    # ── BoltzGen ────────────────────────────────────────────────────────
+
+    def run_boltzgen(self, yaml_path, structure_files=None, output_dir="./output/boltzgen",
+                     protocol="protein-anything", num_designs=10, machine="gpu.a100",
+                     timeout=600):
+        """Run BoltzGen protein design on Lyceum via Docker execution.
+
+        Args:
+            yaml_path: Local path to YAML design spec.
+            structure_files: List of local paths to structure files (CIF/PDB)
+                referenced in the YAML.
+            output_dir: Local directory to download results to.
+            protocol: Design protocol.
+            num_designs: Number of designs to generate.
+            machine: Machine type.
+            timeout: Timeout in seconds (max 600).
+
+        Returns:
+            (success: bool, downloaded_files: list[str])
+        """
+        # Upload YAML and structure files
+        print("Uploading BoltzGen inputs...")
+        self.upload_file(yaml_path, f"input/boltzgen/{Path(yaml_path).name}")
+        for f in (structure_files or []):
+            self.upload_file(f, f"input/boltzgen/{Path(f).name}")
+
+        # Build command
+        yaml_name = Path(yaml_path).name
+        cmd = (
+            f"bash /mnt/s3/scripts/boltzgen/run_boltzgen.sh"
+            f" --input-yaml /root/boltzgen_work/{yaml_name}"
+            f" --output-dir /mnt/s3/output/boltzgen"
+            f" --protocol {protocol}"
+            f" --num-designs {num_designs}"
+            f" --cache /mnt/s3/models/boltzgen"
+        )
+
+        print(f"Submitting BoltzGen Docker job on {machine}...")
+        exec_id, stream_url = self.submit_docker_job(
+            docker_image="pytorch/pytorch:2.6.0-cuda12.6-cudnn9-runtime",
+            command=cmd,
+            execution_type=machine,
+            timeout=timeout,
+        )
+        print(f"  execution_id: {exec_id}")
+
+        # Stream output
+        success, output = self.stream_output(exec_id, stream_url)
+        if not success:
+            print("BoltzGen execution failed.")
+            return False, []
+
+        print("BoltzGen execution completed.")
+
+        # Download results
+        print(f"Downloading results to {output_dir}...")
+        downloaded = self.download_prefix("output/boltzgen/final_ranked_designs/", output_dir)
+        print(f"  downloaded {len(downloaded)} files")
+        return True, downloaded
 
     # ── High-Level Run ───────────────────────────────────────────────────
 

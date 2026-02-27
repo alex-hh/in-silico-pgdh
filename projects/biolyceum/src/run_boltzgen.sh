@@ -29,6 +29,12 @@ else
     pip install -e .
 fi
 
+# Copy input files to a working directory so boltzgen resolves relative paths
+WORK_DIR="/root/boltzgen_work"
+mkdir -p "$WORK_DIR"
+cp /mnt/s3/input/boltzgen/* "$WORK_DIR/" 2>/dev/null || true
+cd "$WORK_DIR"
+
 # Run the actual script
 echo "=== Running BoltzGen ==="
 python /mnt/s3/scripts/boltzgen/lyceum_boltzgen.py "$@"

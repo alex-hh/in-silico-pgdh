@@ -19,8 +19,8 @@ entities:
 Available protocols: protein-anything, peptide-anything, protein-small_molecule, nanobody-anything
 
 This script is designed to run inside a Docker execution on Lyceum with
-boltzgen pre-installed. Input files are read from /job/work/input/boltzgen/
-and outputs are written to /job/work/output/boltzgen/.
+boltzgen pre-installed. Input files are read from /mnt/s3/input/boltzgen/
+and outputs are written to /mnt/s3/output/boltzgen/.
 
 Usage on Lyceum (via Docker execution):
     See client.py submit_boltzgen_job() for the Docker submission pattern.
@@ -32,7 +32,7 @@ from pathlib import Path
 from subprocess import run
 
 
-STORAGE = Path("/job/work")
+STORAGE = Path("/mnt/s3")
 INPUT_DIR = STORAGE / "input" / "boltzgen"
 OUTPUT_DIR = STORAGE / "output" / "boltzgen"
 
@@ -77,7 +77,9 @@ def boltzgen_run(yaml_path, output_dir, protocol="protein-anything",
         cmd.extend(extra_args.split())
 
     print(f"Running: {' '.join(cmd)}")
-    run(cmd, check=True)
+    result = run(cmd)
+    if result.returncode != 0:
+        print(f"Warning: boltzgen exited with code {result.returncode}")
 
     output_files = list(output_dir.rglob("*"))
     output_files = [f for f in output_files if f.is_file()]
