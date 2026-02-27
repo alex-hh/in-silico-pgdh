@@ -111,13 +111,13 @@ def get_tracker() -> CampaignTracker | None:
     return st.session_state.tracker
 
 
-def require_tracker() -> CampaignTracker:
-    """Get tracker or show error and stop."""
+def require_tracker(write=False) -> CampaignTracker | None:
+    """Get tracker. For write=True, shows error and stops. For read, returns None gracefully."""
     tracker = get_tracker()
-    if tracker is None:
+    if tracker is None and write:
         st.error(
-            "Could not connect to Lyceum. Check that `[lyceum] api_key` is set "
-            "in Streamlit secrets (Settings → Secrets)."
+            "Could not connect to Lyceum. Check that `[lyceum] api_key` and "
+            "`refresh_token` are set in Streamlit secrets (Settings → Secrets)."
         )
         st.stop()
     return tracker
@@ -215,10 +215,12 @@ def _fmt_metric(val):
 
 if page == "Dashboard":
     tracker = require_tracker()
-    designs = tracker.list_designs()
-    jobs = tracker.list_jobs()
+    designs = tracker.list_designs() if tracker else []
+    jobs = tracker.list_jobs() if tracker else []
 
     st.header("Campaign Dashboard")
+    if tracker is None:
+        st.info("Lyceum not configured — showing empty dashboard. Team members: sign in and configure secrets to load data.")
 
     # Summary cards
     by_tool = {}
@@ -395,7 +397,7 @@ if page == "Dashboard":
 
 elif page == "Designs":
     tracker = require_tracker()
-    designs = tracker.list_designs()
+    designs = tracker.list_designs() if tracker else []
 
     st.header("Designs")
 
@@ -541,7 +543,7 @@ elif page == "Designs":
 # ══════════════════════════════════════════════════════════════════════════
 
 elif page == "Jobs":
-    tracker = require_tracker()
+    tracker = require_tracker(write=True)
     jobs = tracker.list_jobs()
 
     st.header("Job Tracker")
@@ -663,7 +665,7 @@ elif page == "New Run":
                         timeout=timeout,
                     )
                     job_id = f"job_{uuid.uuid4().hex[:8]}"
-                    tracker = require_tracker()
+                    tracker = require_tracker(write=True)
                     tracker.add_job({
                         "id": job_id,
                         "tool": "boltzgen",
@@ -710,7 +712,7 @@ elif page == "New Run":
                         timeout=timeout,
                     )
                     job_id = f"job_{uuid.uuid4().hex[:8]}"
-                    tracker = require_tracker()
+                    tracker = require_tracker(write=True)
                     tracker.add_job({
                         "id": job_id,
                         "tool": "rfdiffusion3",
@@ -727,7 +729,7 @@ elif page == "New Run":
         st.subheader("Boltz-2 Validation")
         st.info("Select designs from the Designs page, then validate their predicted complexes with Boltz-2.")
 
-        tracker = require_tracker()
+        tracker = require_tracker(write=True)
         designs = tracker.list_designs()
         design_ids = [d["id"] for d in designs if d.get("sequence")]
 
@@ -765,7 +767,7 @@ elif page == "New Run":
         st.subheader("ipSAE Scoring")
         st.info("Score predicted complexes with ipSAE to rank binding affinity.")
 
-        tracker = require_tracker()
+        tracker = require_tracker(write=True)
         designs = tracker.list_designs()
         design_ids = [d["id"] for d in designs]
 
@@ -872,7 +874,7 @@ elif page == "New Run":
 
 elif page == "Design Detail":
     tracker = require_tracker()
-    designs = tracker.list_designs()
+    designs = tracker.list_designs() if tracker else []
 
     st.header("Design Detail")
 

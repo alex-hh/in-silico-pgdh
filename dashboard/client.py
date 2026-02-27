@@ -36,10 +36,10 @@ class LyceumClient:
         self.base_url = base_url or config.get("base_url", "https://api.lyceum.technology")
         # If we have a refresh token, try to get a fresh API key
         if self.refresh_token and not self.api_key:
-            self._refresh_api_key()
+            self._refresh_api_key()  # raises RuntimeError with details on failure
         if not self.api_key:
             raise ValueError(
-                "No API key found. Set LYCEUM_API_KEY env var or run `lyceum auth login`."
+                "No Lyceum credentials. Provide api_key and/or refresh_token."
             )
         self._headers = {"Authorization": f"Bearer {self.api_key}"}
         self._s3_client = None
@@ -47,20 +47,20 @@ class LyceumClient:
 
     def _refresh_api_key(self):
         """Use the refresh token to get a fresh JWT access token."""
-        try:
-            resp = httpx.post(
-                f"{self.SUPABASE_URL}/auth/v1/token?grant_type=refresh_token",
-                headers={"apikey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxY2ViZ2JleHlzenZxaG53bmhoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjkxMTM0MzgsImV4cCI6MjA0NDY4OTQzOH0.7x4TtwGs0mP_GCxYVrOiMG6KQX3I0kmuTFcbpHkxjj4",
-                         "Content-Type": "application/json"},
-                json={"refresh_token": self.refresh_token},
-                timeout=15.0,
+        resp = httpx.post(
+            f"{self.SUPABASE_URL}/auth/v1/token?grant_type=refresh_token",
+            headers={"apikey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxY2ViZ2JleHlzenZxaG53bmhoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjkxMTM0MzgsImV4cCI6MjA0NDY4OTQzOH0.7x4TtwGs0mP_GCxYVrOiMG6KQX3I0kmuTFcbpHkxjj4",
+                     "Content-Type": "application/json"},
+            json={"refresh_token": self.refresh_token},
+            timeout=15.0,
+        )
+        if resp.status_code != 200:
+            raise RuntimeError(
+                f"Lyceum token refresh failed (HTTP {resp.status_code}): {resp.text}"
             )
-            resp.raise_for_status()
-            data = resp.json()
-            self.api_key = data["access_token"]
-            self.refresh_token = data.get("refresh_token", self.refresh_token)
-        except Exception:
-            pass
+        data = resp.json()
+        self.api_key = data["access_token"]
+        self.refresh_token = data.get("refresh_token", self.refresh_token)
 
     # ── Storage ──────────────────────────────────────────────────────────
 
@@ -77,7 +77,9 @@ class LyceumClient:
                 self._headers = {"Authorization": f"Bearer {self.api_key}"}
                 self._init_s3()
             else:
-                raise
+                raise RuntimeError(
+                    f"Lyceum S3 credentials failed (HTTP {e.response.status_code}): {e.response.text}"
+                ) from e
 
     def _init_s3(self):
         resp = httpx.post(
