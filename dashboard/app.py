@@ -2,6 +2,7 @@
 
 import json
 import sys
+import time
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
@@ -98,16 +99,26 @@ def get_client() -> LyceumClient:
         return None
 
 
+TRACKER_TTL_SECONDS = 300  # Cache tracker for 5 minutes
+
 def get_tracker() -> CampaignTracker | None:
-    """Get tracker, reloading from S3 if stale."""
+    """Get tracker, reloading from S3 if stale (TTL-based cache)."""
     client = get_client()
     if client is None:
         return None
-    if "tracker" not in st.session_state:
+
+    now = time.time()
+    last_load = st.session_state.get("tracker_loaded_at", 0)
+    tracker = st.session_state.get("tracker")
+
+    if tracker is None or (now - last_load) > TRACKER_TTL_SECONDS:
         try:
             st.session_state.tracker = CampaignTracker(client)
-        except Exception:
+            st.session_state.tracker_loaded_at = now
+        except Exception as e:
+            st.error(f"Failed to load tracker: {e}")
             return None
+
     return st.session_state.tracker
 
 
@@ -175,6 +186,19 @@ st.sidebar.caption("Target: 2GDZ")
 
 
 # ── Helpers ──────────────────────────────────────────────────────────────
+
+@st.cache_data(ttl=600, show_spinner=False)
+def _load_structure(_client, cif_key: str) -> str | None:
+    """Download and cache a CIF structure from S3 (10 min TTL)."""
+    try:
+        data = _client.download_bytes(cif_key)
+        if cif_key.endswith(".gz"):
+            import gzip
+            data = gzip.decompress(data)
+        return data.decode()
+    except Exception:
+        return None
+
 
 STATUS_COLORS = {
     "designed": "🔵",
@@ -926,26 +950,35 @@ elif page == "Design Detail":
     else:
         st.info("No sequence (backbone-only design from RFdiffusion3)")
 
-    # Structure viewer placeholder
+    # 3D Structure viewer
     st.subheader("3D Structure")
-    st.info(
-        "Structure viewer requires `stmol` or `streamlit-molstar`. "
-        "Install with `pip install stmol py3Dmol` and uncomment the viewer code below."
-    )
-    # Uncomment when stmol is installed:
-    # import py3Dmol
-    # from stmol import showmol
-    # cif_key = design.get("source_key", "").replace(".csv", ".cif").replace(".json", ".cif")
-    # if cif_key:
-    #     try:
-    #         cif_data = get_client().download_bytes(cif_key).decode()
-    #         view = py3Dmol.view(width=700, height=500)
-    #         view.addModel(cif_data, "cif")
-    #         view.setStyle({"cartoon": {"color": "spectrum"}})
-    #         view.zoomTo()
-    #         showmol(view, height=500, width=700)
-    #     except Exception as e:
-    #         st.warning(f"Could not load structure: {e}")
+    try:
+        import py3Dmol
+        from stmol import showmol
+
+        # Try to load CIF from designs/ source of truth on S3
+        tool = design.get("tool", "unknown")
+        did = design.get("id", "")
+        cif_key = f"designs/{tool}/{did}/designed.cif"
+
+        client = get_client()
+        if client:
+            try:
+                cif_data = _load_structure(client, cif_key)
+                if cif_data:
+                    view = py3Dmol.view(width=700, height=500)
+                    view.addModel(cif_data, "cif")
+                    view.setStyle({"cartoon": {"color": "spectrum"}})
+                    view.zoomTo()
+                    showmol(view, height=500, width=700)
+                else:
+                    st.info("No structure file available for this design.")
+            except Exception as e:
+                st.warning(f"Could not load structure: {e}")
+        else:
+            st.info("Sign in to view 3D structures.")
+    except ImportError:
+        st.info("3D viewer not available (requires `stmol` and `py3Dmol`).")
 
     # Notes & status (auth required)
     if is_authenticated():
