@@ -69,6 +69,8 @@ def _detect_strategy(key: str) -> str:
         return "dimer_interface"
     if "surface" in key_lower or "s3" in key_lower:
         return "surface"
+    if "helix_hairpin_inpaint" in key_lower:
+        return "helix_hairpin_inpaint"
     return "unknown"
 
 
@@ -109,6 +111,7 @@ def parse_boltzgen_csv(csv_text: str, source_key: str = "") -> list[dict]:
             "tool": "boltzgen",
             "strategy": strategy,
             "status": "designed",
+            "evaluation_stage": "raw",
             "sequence": seq,
             "num_residues": len(seq) if seq else int(row.get("num_residues", 0) or 0),
             "metrics": metrics,
@@ -158,6 +161,7 @@ def parse_rfd3_json(json_text: str, source_key: str = "") -> list[dict]:
         "tool": "rfdiffusion3",
         "strategy": strategy,
         "status": "designed",
+        "evaluation_stage": "raw",
         "sequence": "",  # RFD3 outputs are backbone-only
         "num_residues": num_diffused,
         "metrics": metrics,

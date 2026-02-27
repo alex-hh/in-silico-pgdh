@@ -348,6 +348,47 @@ if page == "Dashboard":
                 import traceback
                 st.code(traceback.format_exc())
 
+    # Refolding (BoltzGen folding mode)
+    st.subheader("Refolding (Designability Check)")
+    n_need_refold = sum(
+        1 for d in designs
+        if d.get("sequence") and not d.get("metrics", {}).get("filter_rmsd")
+        and d.get("evaluation_stage") not in ("validated", "scored", "selected")
+    )
+    st.caption(
+        f"Submit BoltzGen folding jobs to test whether designed sequences fold into "
+        f"the predicted structure. **{n_need_refold} designs** may need refolding."
+    )
+    if st.button("Submit Refolding Jobs", type="secondary") and require_auth():
+        with st.spinner("Submitting BoltzGen refolding jobs..."):
+            try:
+                eval_path = Path(__file__).resolve().parent.parent / "pgdh_campaign"
+                sys.path.insert(0, str(eval_path))
+                from evaluate_designs import submit_refold_jobs, collect_designs
+                client = get_client()
+                designs_full = collect_designs(client)
+                submitted = submit_refold_jobs(client, designs_full)
+                if submitted:
+                    # Track refolding jobs
+                    tracker_inst = require_tracker(write=True)
+                    for design_id, exec_id in submitted:
+                        job_id = f"job_{uuid.uuid4().hex[:8]}"
+                        tracker_inst.add_job({
+                            "id": job_id,
+                            "tool": "boltzgen_refold",
+                            "execution_id": exec_id,
+                            "status": "pending",
+                            "config": {"design_id": design_id, "step": "folding"},
+                            "submitted_at": datetime.now(timezone.utc).isoformat(),
+                        })
+                    st.success(f"Submitted {len(submitted)} refolding jobs. Check Jobs page for status.")
+                else:
+                    st.info("No designs need refolding.")
+            except Exception as e:
+                st.error(f"Refolding submission failed: {e}")
+                import traceback
+                st.code(traceback.format_exc())
+
     # Suggest next steps
     st.subheader("Suggested Next Steps")
     if designs:

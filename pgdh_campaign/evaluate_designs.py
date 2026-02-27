@@ -59,6 +59,8 @@ def _detect_strategy(key: str) -> str:
         return "dimer_interface"
     if "surface" in k or "s3" in k:
         return "surface"
+    if "helix_hairpin_inpaint" in k:
+        return "helix_hairpin_inpaint"
     return "unknown"
 
 
@@ -136,6 +138,7 @@ def parse_boltzgen_outputs(client: LyceumClient, prefix: str = "output/boltzgen/
                 "tool": "boltzgen",
                 "strategy": strategy,
                 "status": "designed",
+                "evaluation_stage": "raw",
                 "created_at": _now(),
                 "sequence": seq,
                 "num_residues": len(seq) if seq else 0,
@@ -201,6 +204,7 @@ def parse_rfd3_outputs(client: LyceumClient, prefix: str = "output/rfdiffusion3/
             "tool": "rfdiffusion3",
             "strategy": strategy,
             "status": "designed",
+            "evaluation_stage": "raw",
             "created_at": _now(),
             "sequence": "",
             "num_residues": num_diffused,
@@ -243,6 +247,12 @@ def collect_designs(client: LyceumClient) -> list[dict]:
     # Merge with existing designs/ on S3 (preserve validation/scoring data)
     existing = _load_existing_designs(client)
     merged = _merge_designs(all_designs, existing)
+
+    # Mark all collected designs as at least "collected"
+    for d in merged:
+        if d.get("evaluation_stage", "raw") == "raw":
+            d["evaluation_stage"] = "collected"
+
     return merged
 
 
@@ -326,6 +336,7 @@ def attach_ipsae_scores(client: LyceumClient, designs: list[dict]) -> int:
                     if d["design_id"] in name or name in d["design_id"]:
                         d["scoring"] = {"source": "ipsae", "scored_at": _now(), **scores}
                         d["status"] = "scored" if d["status"] == "designed" else d["status"]
+                        d["evaluation_stage"] = "scored"
                         updated += 1
                         break
         except Exception as e:
@@ -363,6 +374,7 @@ def attach_boltz2_validation(client: LyceumClient, designs: list[dict]) -> int:
                     }
                     if d["status"] == "designed":
                         d["status"] = "validated"
+                    d["evaluation_stage"] = "validated"
                     updated += 1
                     break
         except Exception as e:
@@ -371,34 +383,194 @@ def attach_boltz2_validation(client: LyceumClient, designs: list[dict]) -> int:
     return updated
 
 
+def attach_refolding_results(client: LyceumClient, designs: list[dict]) -> int:
+    """Scan output/refolding/ on S3 for completed BoltzGen folding results and attach them.
+
+    For each design with results in output/refolding/<design_id>/, finds the refolded
+    CIF and any metrics, then attaches refolding data including RMSD if computable.
+    """
+    refolding_dirs = client.list_files("output/refolding/")
+    if not refolding_dirs:
+        return 0
+
+    # Group files by design_id (first path component after output/refolding/)
+    by_design: dict[str, list[str]] = {}
+    for f in refolding_dirs:
+        # output/refolding/<design_id>/...
+        parts = f.split("/")
+        if len(parts) >= 4:
+            did = parts[2]
+            by_design.setdefault(did, []).append(f)
+
+    updated = 0
+    for d in designs:
+        if d.get("refolding"):
+            continue  # Already has refolding data
+
+        did = d["design_id"]
+        if did not in by_design:
+            continue
+
+        files = by_design[did]
+
+        # Find refolded CIF
+        cif_files = [f for f in files if f.endswith(".cif")]
+        if not cif_files:
+            continue
+
+        refolded_cif = cif_files[0]
+
+        # Try to find BoltzGen's metrics CSV for RMSD / pLDDT
+        csv_files = [f for f in files if f.endswith(".csv")]
+        rmsd = None
+        plddt = None
+        iptm = None
+
+        if csv_files:
+            try:
+                csv_data = client.download_bytes(csv_files[0]).decode()
+                reader = csv.DictReader(io.StringIO(csv_data))
+                for row in reader:
+                    # BoltzGen metrics columns
+                    if row.get("filter_rmsd"):
+                        try:
+                            rmsd = float(row["filter_rmsd"])
+                        except ValueError:
+                            pass
+                    if row.get("design_plddt"):
+                        try:
+                            plddt = float(row["design_plddt"])
+                        except ValueError:
+                            pass
+                    if row.get("design_to_target_iptm"):
+                        try:
+                            iptm = float(row["design_to_target_iptm"])
+                        except ValueError:
+                            pass
+                    break  # Only need first row for this design
+            except Exception as e:
+                print(f"    Warning: could not parse refolding CSV for {did}: {e}")
+
+        # Also check for JSON confidence files (BoltzGen sometimes writes these)
+        json_files = [f for f in files if f.endswith(".json") and "confidence" in f.lower()]
+        if json_files and plddt is None:
+            try:
+                jdata = json.loads(client.download_bytes(json_files[0]).decode())
+                plddt = jdata.get("plddt") or jdata.get("confidence_score", {}).get("plddt")
+            except Exception:
+                pass
+
+        d["refolding"] = {
+            "source": "boltzgen_folding",
+            "refolded_at": _now(),
+            "rmsd": rmsd,
+            "plddt": plddt,
+            "iptm": iptm,
+        }
+        d["source_files"] = d.get("source_files") or {}
+        d["source_files"]["refolded_structure"] = refolded_cif
+
+        # Advance evaluation stage if not already beyond
+        if d.get("evaluation_stage") in ("raw", "collected"):
+            d["evaluation_stage"] = "validated"
+        if d.get("status") == "designed":
+            d["status"] = "validated"
+        updated += 1
+        print(f"    Attached refolding for {did}: rmsd={rmsd}, plddt={plddt}")
+
+    return updated
+
+
 # ══════════════════════════════════════════════════════════════════════════
-# STEP 3: REFOLD — Boltz-2 in folding mode for designability (optional, --refold)
+# STEP 3: REFOLD — BoltzGen folding mode for designability (optional, --refold)
 #
 # Refolding tests whether the designed sequence actually folds into the
 # predicted structure. The RMSD between the designer's predicted structure
-# and the Boltz-2 refolded structure is a key designability metric.
+# and the refolded structure is a key designability metric.
+# Uses BoltzGen --steps folding (MSA-free, suitable for de novo sequences).
 # ══════════════════════════════════════════════════════════════════════════
 
-def submit_refold_jobs(client: LyceumClient, designs: list[dict]) -> int:
-    """Submit Boltz-2 refolding for designs that have sequences but no refolding result."""
+def _generate_refold_yaml(design_id: str, sequence: str, target_cif: str = "2GDZ.cif") -> str:
+    """Generate a BoltzGen YAML for refolding a binder sequence against the PGDH target.
+
+    The binder is specified as a fixed-sequence protein entity, so BoltzGen's
+    folding step predicts its structure without designing new residues.
+    """
+    # Escape any special YAML characters in sequence (shouldn't happen for AA sequences)
+    return (
+        f"# Refolding YAML for {design_id}\n"
+        f"entities:\n"
+        f"  - protein:\n"
+        f"      id: B\n"
+        f"      sequence: {sequence}\n"
+        f"  - file:\n"
+        f"      path: {target_cif}\n"
+        f"      include:\n"
+        f"        - chain:\n"
+        f"            id: A\n"
+    )
+
+
+def submit_refold_jobs(client: LyceumClient, designs: list[dict]) -> list[tuple[str, str]]:
+    """Submit BoltzGen folding jobs for designs that have sequences but no refolding result.
+
+    Uses BoltzGen's --steps folding mode to predict structure from fixed sequence,
+    reusing the existing BoltzGen Docker infrastructure.
+
+    Returns:
+        List of (design_id, execution_id) pairs for tracking.
+    """
     candidates = [
         d for d in designs
-        if d.get("sequence") and not d.get("refolding")
+        if d.get("sequence")
+        and not d.get("refolding")
+        # BoltzGen designs already have filter_rmsd from built-in self-consistency
+        and not (d.get("design_metrics") or {}).get("filter_rmsd")
     ]
     if not candidates:
-        print("  No designs need refolding (all refolded or no sequences)")
-        return 0
+        print("  No designs need refolding (all refolded or have filter_rmsd)")
+        return []
+
+    # Ensure PGDH target CIF is available on S3 for the refolding YAMLs
+    target_key = "input/boltzgen/2GDZ.cif"
+    existing_target = client.list_files(target_key)
+    if not existing_target:
+        print(f"  WARNING: {target_key} not found on S3. Upload it before jobs run.")
 
     print(f"  {len(candidates)} designs to refold")
-    submitted = 0
+    submitted = []
     for d in candidates:
-        # TODO: Build Boltz-2 input for monomer folding (binder sequence only)
-        # Then compute RMSD between designer structure and refolded structure
-        print(f"    Would refold: {d['design_id']} ({d['num_residues']} AA)")
-        submitted += 1
+        design_id = d["design_id"]
+        sequence = d["sequence"]
 
-    print(f"  NOTE: Boltz-2 refolding submission not yet implemented in this script.")
-    print(f"  Use the Streamlit app's 'New Run' page or the /boltz skill to submit manually.")
+        # Generate and upload refolding YAML
+        yaml_content = _generate_refold_yaml(design_id, sequence)
+        yaml_key = f"input/boltzgen/refold_{design_id}.yaml"
+        client.upload_bytes(yaml_content.encode(), yaml_key)
+
+        # Submit BoltzGen Docker job with --steps folding
+        output_dir = f"output/refolding/{design_id}/"
+        cmd = (
+            f"bash /mnt/s3/scripts/boltzgen/run_boltzgen.sh"
+            f" --input-yaml /root/boltzgen_work/refold_{design_id}.yaml"
+            f" --output-dir /mnt/s3/{output_dir}"
+            f" --steps folding"
+            f" --cache /mnt/s3/models/boltzgen"
+        )
+
+        try:
+            exec_id, _ = client.submit_docker_job(
+                docker_image="pytorch/pytorch:2.6.0-cuda12.6-cudnn9-runtime",
+                command=cmd,
+                execution_type="gpu.a100",
+                timeout=300,
+            )
+            submitted.append((design_id, exec_id))
+            print(f"    Submitted refolding: {design_id} → {exec_id}")
+        except Exception as e:
+            print(f"    Failed to submit {design_id}: {e}")
+
+    print(f"  Submitted {len(submitted)} refolding jobs")
     return submitted
 
 
@@ -636,6 +808,7 @@ def sync_tracker(client: LyceumClient, designs: list[dict]):
             "tool": d["tool"],
             "strategy": d.get("strategy", ""),
             "status": d.get("status", "designed"),
+            "evaluation_stage": d.get("evaluation_stage", "collected"),
             "sequence": d.get("sequence", ""),
             "num_residues": d.get("num_residues", 0),
             "metrics": d.get("design_metrics", {}),
@@ -673,7 +846,7 @@ def run_evaluation(client: LyceumClient = None, refold: bool = False, score: boo
 
     Args:
         client: LyceumClient instance (created if None).
-        refold: If True, submit Boltz-2 refolding jobs for designability.
+        refold: If True, submit BoltzGen refolding jobs for designability.
         score: If True, submit ipSAE scoring jobs.
         extra_designs: Additional designs to inject (e.g. custom FASTA uploads).
     """
@@ -693,12 +866,13 @@ def run_evaluation(client: LyceumClient = None, refold: bool = False, score: boo
     # Step 2: Attach existing validation/scoring/refolding results
     print("--- Step 2: Attach existing scores ---")
     n_val = attach_boltz2_validation(client, designs)
+    n_refold = attach_refolding_results(client, designs)
     n_scr = attach_ipsae_scores(client, designs)
-    print(f"  Attached {n_val} validations, {n_scr} scores\n")
+    print(f"  Attached {n_val} validations, {n_refold} refoldings, {n_scr} scores\n")
 
     # Step 3: Refold for designability (if --refold)
     if refold:
-        print("--- Step 3: Refold (Boltz-2 folding mode) ---")
+        print("--- Step 3: Refold (BoltzGen folding mode) ---")
         submit_refold_jobs(client, designs)
         print()
 

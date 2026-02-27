@@ -84,6 +84,54 @@ Use persistent storage to **cache model weights** so they don't re-download ever
 # Models cached at /mnt/s3/models/ or /job/work/models/ persist across runs
 ```
 
+### Managing Storage for Tool Outputs
+
+Each tool writes outputs to a known storage prefix. Use these patterns to manage results:
+
+```bash
+# List all outputs from a tool
+lyceum storage ls output/boltzgen/
+lyceum storage ls output/esm2/
+
+# Download an entire output directory
+mkdir -p ./results/boltzgen
+for f in $(lyceum storage ls output/boltzgen/final_ranked_designs/ 2>/dev/null | awk '{print $1}'); do
+  lyceum storage download "output/boltzgen/final_ranked_designs/$f" \
+    --output "./results/boltzgen/$f"
+done
+
+# Download a single file
+lyceum storage download output/boltzgen/final_ranked_designs/all_designs_metrics.csv \
+  --output ./results/metrics.csv
+
+# Clean outputs before a new run (interactive confirmation)
+echo "y" | lyceum storage rmdir output/boltzgen/
+
+# Clean all storage (caution — removes cached models too)
+echo "y" | lyceum storage rmdir output/
+```
+
+**Storage layout convention**:
+
+| Prefix | Purpose | Persists? |
+|--------|---------|-----------|
+| `input/<tool>/` | Input files uploaded before execution | Yes |
+| `output/<tool>/` | Results written during execution | Yes |
+| `models/<tool>/` | Cached model weights | Yes |
+| `scripts/<tool>/` | Lyceum scripts (for Docker mode tools) | Yes |
+
+**Docker mode tools** (BoltzGen, etc.) read/write via `/mnt/s3/` which maps to the same S3 bucket. Upload scripts and inputs before running:
+
+```bash
+# Upload scripts (one-time)
+lyceum storage load src/lyceum_boltzgen.py --key scripts/boltzgen/lyceum_boltzgen.py
+lyceum storage load src/run_boltzgen.sh --key scripts/boltzgen/run_boltzgen.sh
+
+# Upload inputs (per run)
+lyceum storage load my_config.yaml --key input/boltzgen/config.yaml
+lyceum storage load target.cif --key input/boltzgen/target.cif
+```
+
 ### Script Arguments
 
 Pass arguments to scripts after `--`:

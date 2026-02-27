@@ -6,6 +6,7 @@ __pycache__/
 # Secrets — NEVER commit
 dashboard/.streamlit/secrets.toml
 dashboard/google_credentials.json
+dashboard/.secrets.toml
 
 # Local outputs
 pgdh_campaign/out/

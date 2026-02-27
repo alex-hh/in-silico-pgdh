@@ -205,20 +205,55 @@ These persist in storage and don't need to be re-uploaded unless you change them
 
 ### Lyceum storage layout
 
-BoltzGen on Lyceum uses Docker execution mode. Storage is mounted at `/mnt/s3/`:
+BoltzGen on Lyceum uses Docker execution mode. Storage is backed by **S3** and mounted at `/mnt/s3/` inside containers:
 
 | Storage Path | Purpose | Persists? |
 |-------------|---------|-----------|
-| `/mnt/s3/input/boltzgen/` | Input YAML + structure files | Yes |
-| `/mnt/s3/output/boltzgen/` | Pipeline outputs (designs, metrics, PDFs) | Yes |
-| `/mnt/s3/models/boltzgen/` | Cached model weights (~5 GB) | Yes |
-| `/mnt/s3/scripts/boltzgen/` | Lyceum scripts | Yes |
-| `/mnt/s3/pip_cache/boltzgen/` | Cached pip wheels (speeds up installs) | Yes |
-| `/mnt/s3/boltzgen_repo/` | Cached git repo (skips clone) | Yes |
+| `/mnt/s3/input/boltzgen/` | Input YAML + structure files | Unreliable |
+| `/mnt/s3/output/boltzgen/` | Pipeline outputs (designs, metrics, PDFs) | **Unreliable** |
+| `/mnt/s3/models/boltzgen/` | Cached model weights (~5 GB) | Usually yes |
+| `/mnt/s3/scripts/boltzgen/` | Lyceum scripts | Usually yes |
+| `/mnt/s3/pip_cache/boltzgen/` | Cached pip wheels (speeds up installs) | Usually yes |
+| `/mnt/s3/boltzgen_repo/` | Cached git repo (skips clone) | Usually yes |
 
-Model weights are downloaded on the first run and cached. The git repo and pip wheels are also cached to reduce setup time on subsequent runs.
+### Storage persistence warning
+
+**Lyceum storage is NOT guaranteed to persist.** Files can disappear between sessions.
+
+- The storage API uses **temporary S3 credentials** obtained from `POST /api/v2/external/storage/credentials`. These credentials (and file visibility) can expire.
+- We lost S1 and S2 BoltzGen CIF files — they showed up in `lyceum storage ls` but returned 404 on download minutes later.
+- Model weights and scripts *seem* more stable, but don't count on it.
+
+**Rules:**
+1. **Always download results immediately** after a job completes
+2. Download **both** metrics CSVs **and** CIF structure files (CSVs have sequences but not 3D coordinates)
+3. **Never run `lyceum storage rmdir`** without downloading everything first
+4. Use strategy-specific output subdirs (e.g. `output/boltzgen/s1_active_site/`) so runs don't overwrite each other
+
+### Browsing storage directly
+
+```bash
+# Via CLI
+lyceum storage ls output/boltzgen/
+lyceum storage ls output/boltzgen/s1_active_site/final_ranked_designs/
+
+# Via Python (boto3 S3 client)
+python3 -c "
+from projects.biolyceum.src.utils.client import LyceumClient
+c = LyceumClient()
+c._ensure_s3()
+print(f'Bucket: {c._s3_bucket}')
+print(f'Endpoint: {c._s3_client.meta.endpoint_url}')
+for f in c.list_files('output/boltzgen/'):
+    print(f)
+"
+```
+
+The Python client gives you raw boto3 access. You can also use `aws s3 ls` if you extract the credentials.
 
 ### Downloading results
+
+**Download immediately after each job completes:**
 
 ```bash
 # List what's available
@@ -242,9 +277,6 @@ lyceum storage ls output/boltzgen/final_ranked_designs/final_30_designs/
 # Then for each file:
 lyceum storage download output/boltzgen/final_ranked_designs/final_30_designs/<filename>.cif \
   --output pgdh_campaign/out/boltzgen/designs/<filename>.cif
-
-# Clean outputs before a new run
-echo "y" | lyceum storage rmdir output/boltzgen/
 ```
 
 ### Auth troubleshooting
