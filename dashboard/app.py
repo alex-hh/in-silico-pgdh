@@ -19,18 +19,13 @@ st.set_page_config(page_title="PGDH Design Tracker", page_icon="🧬", layout="w
 
 # ── Auth ─────────────────────────────────────────────────────────────────
 
-def check_auth():
-    """Google OAuth with email allowlist. All credentials live in secrets.toml (never in repo)."""
-    if st.session_state.get("authenticated"):
-        return
-
-    import json
+def _get_authenticator():
+    """Create Google OAuth authenticator from secrets.toml values."""
+    import json as _json
     import tempfile
 
     from streamlit_google_auth import Authenticate
 
-    # Build the Google credentials JSON from secrets.toml values
-    # so we don't need a separate google_credentials.json file
     creds = {
         "web": {
             "client_id": st.secrets["google"]["client_id"],
@@ -42,35 +37,48 @@ def check_auth():
     }
     creds_path = tempfile.mktemp(suffix=".json")
     with open(creds_path, "w") as f:
-        json.dump(creds, f)
+        _json.dump(creds, f)
 
-    authenticator = Authenticate(
+    return Authenticate(
         secret_credentials_path=creds_path,
         cookie_name="pgdh_tracker",
         cookie_key=st.secrets["auth"]["cookie_key"],
         redirect_uri=st.secrets["auth"]["redirect_uri"],
     )
-    authenticator.check_authentification()
-
-    if st.session_state.get("connected"):
-        email = st.session_state.get("user_info", {}).get("email", "")
-        allowed = [e.strip() for e in st.secrets["auth"]["allowed_emails"].split(",")]
-        if email in allowed:
-            st.session_state.authenticated = True
-            st.session_state.user_email = email
-            st.rerun()
-        else:
-            st.error(f"Access denied. Your account is not on the team allowlist.")
-            authenticator.logout()
-            st.stop()
-    else:
-        st.title("PGDH Design Tracker")
-        st.write("Sign in with Google to access the dashboard.")
-        authenticator.login()
-        st.stop()
 
 
-check_auth()
+def init_auth():
+    """Check for existing auth cookie on page load (non-blocking)."""
+    if st.session_state.get("authenticated"):
+        return
+    try:
+        auth = _get_authenticator()
+        auth.check_authentification()
+        if st.session_state.get("connected"):
+            email = st.session_state.get("user_info", {}).get("email", "")
+            allowed = [e.strip() for e in st.secrets["auth"]["allowed_emails"].split(",")]
+            if email in allowed:
+                st.session_state.authenticated = True
+                st.session_state.user_email = email
+    except Exception:
+        pass
+
+
+def is_authenticated() -> bool:
+    """True if the current user is signed in and on the allowlist."""
+    return st.session_state.get("authenticated", False)
+
+
+def require_auth():
+    """Gate for write actions. Shows sign-in prompt if not authenticated."""
+    if is_authenticated():
+        return True
+    st.warning("Sign in to perform this action (use the sidebar).")
+    return False
+
+
+# Check for existing session on load (doesn't block page rendering)
+init_auth()
 
 
 # ── Client & Tracker (cached) ───────────────────────────────────────────
@@ -99,6 +107,39 @@ page = st.sidebar.radio(
 if st.sidebar.button("Refresh from S3"):
     st.session_state.pop("tracker", None)
     st.rerun()
+
+st.sidebar.markdown("---")
+
+# Auth controls in sidebar
+if is_authenticated():
+    st.sidebar.success(f"Signed in as {st.session_state.get('user_email', 'team member')}")
+    if st.sidebar.button("Sign out"):
+        try:
+            auth = _get_authenticator()
+            auth.logout()
+        except Exception:
+            pass
+        st.session_state.pop("authenticated", None)
+        st.session_state.pop("user_email", None)
+        st.session_state.pop("connected", None)
+        st.rerun()
+else:
+    st.sidebar.info("Read-only mode. Sign in to submit jobs.")
+    if st.sidebar.button("Sign in with Google"):
+        auth = _get_authenticator()
+        auth.check_authentification()
+        if st.session_state.get("connected"):
+            email = st.session_state.get("user_info", {}).get("email", "")
+            allowed = [e.strip() for e in st.secrets["auth"]["allowed_emails"].split(",")]
+            if email in allowed:
+                st.session_state.authenticated = True
+                st.session_state.user_email = email
+                st.rerun()
+            else:
+                st.sidebar.error("Access denied — not on team allowlist.")
+                auth.logout()
+        else:
+            auth.login()
 
 st.sidebar.markdown("---")
 st.sidebar.caption("15-PGDH binder design campaign")
@@ -205,7 +246,7 @@ if page == "Dashboard":
         "and updates the tracker. This is the ONLY way to populate the "
         "`designs/` source of truth on S3."
     )
-    if st.button("Run Evaluation Pipeline", type="primary"):
+    if st.button("Run Evaluation Pipeline", type="primary") and require_auth():
         with st.spinner("Running evaluation pipeline (collect → rank → sync)..."):
             try:
                 # Import evaluate_designs from the pgdh_campaign directory
@@ -358,28 +399,29 @@ elif page == "Designs":
         },
     )
 
-    # Bulk actions
-    st.subheader("Bulk Actions")
-    selected_ids = st.multiselect(
-        "Select designs",
-        [d["id"] for d in filtered],
-    )
-    ba1, ba2, ba3 = st.columns(3)
-    with ba1:
-        if st.button("Mark as Validated") and selected_ids:
-            tracker.bulk_update_status(selected_ids, "validated")
-            st.success(f"Updated {len(selected_ids)} designs to 'validated'")
-            st.rerun()
-    with ba2:
-        if st.button("Mark as Scored") and selected_ids:
-            tracker.bulk_update_status(selected_ids, "scored")
-            st.success(f"Updated {len(selected_ids)} designs to 'scored'")
-            st.rerun()
-    with ba3:
-        if st.button("Mark as Selected") and selected_ids:
-            tracker.bulk_update_status(selected_ids, "selected")
-            st.success(f"Updated {len(selected_ids)} designs to 'selected'")
-            st.rerun()
+    # Bulk actions (auth required)
+    if is_authenticated():
+        st.subheader("Bulk Actions")
+        selected_ids = st.multiselect(
+            "Select designs",
+            [d["id"] for d in filtered],
+        )
+        ba1, ba2, ba3 = st.columns(3)
+        with ba1:
+            if st.button("Mark as Validated") and selected_ids:
+                tracker.bulk_update_status(selected_ids, "validated")
+                st.success(f"Updated {len(selected_ids)} designs to 'validated'")
+                st.rerun()
+        with ba2:
+            if st.button("Mark as Scored") and selected_ids:
+                tracker.bulk_update_status(selected_ids, "scored")
+                st.success(f"Updated {len(selected_ids)} designs to 'scored'")
+                st.rerun()
+        with ba3:
+            if st.button("Mark as Selected") and selected_ids:
+                tracker.bulk_update_status(selected_ids, "selected")
+                st.success(f"Updated {len(selected_ids)} designs to 'selected'")
+                st.rerun()
 
     # Click to detail
     st.markdown("---")
@@ -468,6 +510,10 @@ elif page == "Jobs":
 
 elif page == "New Run":
     st.header("Submit New Run")
+
+    if not is_authenticated():
+        st.warning("Sign in with Google to submit new runs (use the sidebar).")
+        st.stop()
 
     tool = st.selectbox("Tool", ["BoltzGen", "RFdiffusion3", "Boltz-2 Validation", "ipSAE Scoring", "Custom FASTA Upload"])
 
@@ -792,23 +838,23 @@ elif page == "Design Detail":
     #     except Exception as e:
     #         st.warning(f"Could not load structure: {e}")
 
-    # Notes
-    st.subheader("Notes")
-    notes = st.text_area("Design notes", value=design.get("notes", ""), key="design_notes")
-    if st.button("Save Notes"):
-        tracker.update_design(selected_id, notes=notes)
-        st.success("Notes saved!")
+    # Notes & status (auth required)
+    if is_authenticated():
+        st.subheader("Notes")
+        notes = st.text_area("Design notes", value=design.get("notes", ""), key="design_notes")
+        if st.button("Save Notes"):
+            tracker.update_design(selected_id, notes=notes)
+            st.success("Notes saved!")
 
-    # Status update
-    st.subheader("Update Status")
-    new_status = st.selectbox(
-        "New status",
-        ["designed", "validated", "scored", "selected", "failed"],
-        index=["designed", "validated", "scored", "selected", "failed"].index(
-            design.get("status", "designed")
-        ),
-    )
-    if st.button("Update Status"):
-        tracker.update_design(selected_id, status=new_status)
-        st.success(f"Status updated to '{new_status}'")
-        st.rerun()
+        st.subheader("Update Status")
+        new_status = st.selectbox(
+            "New status",
+            ["designed", "validated", "scored", "selected", "failed"],
+            index=["designed", "validated", "scored", "selected", "failed"].index(
+                design.get("status", "designed")
+            ),
+        )
+        if st.button("Update Status"):
+            tracker.update_design(selected_id, status=new_status)
+            st.success(f"Status updated to '{new_status}'")
+            st.rerun()
