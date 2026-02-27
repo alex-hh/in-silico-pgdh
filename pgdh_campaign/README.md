@@ -332,6 +332,50 @@ An interactive Jupyter notebook is provided at `visualize_designs.ipynb` for exp
 - 3D structure visualization (py3Dmol)
 - Binder sequence extraction and FASTA export
 
+## RFdiffusion3 Output Format
+
+RFD3 does **joint backbone + sequence design** — unlike RFdiffusion v1, no ProteinMPNN step is needed. The designed sequences are embedded in the output CIF files and extracted automatically by `evaluate_designs.py`.
+
+### Output types
+
+RFD3 produces two files per design:
+- **JSON** (`<name>.json`) — metadata, metrics, specification, `diffused_index_map`
+- **CIF** (`<name>.cif` or `.cif.gz`) — full atomic structure with designed sequences
+
+### Chain mapping (how to find the binder sequence)
+
+There are two RFD3 output formats depending on the design mode:
+
+#### 1. De novo binder design (multi-chain)
+
+Used for: `pgdh_active_site`, `pgdh_dimer_interface`, etc.
+
+| Chain | Content | Typical size |
+|-------|---------|-------------|
+| **A** | Designed binder | 60-100 residues |
+| **B** | PGDH target (fixed) | 266 residues |
+
+The `diffused_index_map` maps input target residues (keys like `A0`-`A265`) to output chain B positions (values like `B0`-`B265`). The binder is whichever chain is NOT the target — always chain A in observed outputs.
+
+#### 2. Inpainting / segment replacement (single-chain)
+
+Used for: `helix_hairpin_inpaint` with `segment_replace` contig
+
+| Chain | Content | Typical size |
+|-------|---------|-------------|
+| **A** | Complete binder (fixed + diffused residues) | 78-82 residues |
+
+The `diffused_index_map` maps input binder residues to output positions **within the same chain** (both keys and values are `A*`). The contig specifies which residues are fixed vs. diffused, e.g. `A96-121,15-25,A141-177` means: keep residues 96-121 and 141-177, replace the segment between them with 15-25 new residues.
+
+The extracted sequence includes the **full chain** (fixed + diffused residues together) — this is the complete binder sequence needed for refolding.
+
+### Detection logic in evaluate_designs.py
+
+`_detect_binder_chain()` determines the correct chain automatically:
+- If input chain letters == output chain letters → single-chain inpainting → binder is that chain
+- If they differ → multi-chain design → binder is the chain NOT in the output values
+- Fallback: chain A
+
 ## Campaign workflow
 
 See [CAMPAIGN_PLAN.md](CAMPAIGN_PLAN.md) for the full pipeline:
