@@ -1,0 +1,6 @@
+streamlit
+streamlit-google-auth
+pandas
+plotly
+httpx
+boto3

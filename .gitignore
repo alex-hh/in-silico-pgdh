@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Secrets — NEVER commit
+dashboard/.streamlit/secrets.toml
+dashboard/google_credentials.json
+
+# Local outputs
+pgdh_campaign/out/
+*.cif
+*.pdb
+
+# OS
+.DS_Store
