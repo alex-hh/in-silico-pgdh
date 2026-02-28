@@ -727,7 +727,7 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
 {uneval_cards if uneval_cards else '<div class="empty">No unevaluated designs.</div>'}
 </div>
 <div class="tab-panel" id="panel_all">
-<div class="tab-quote">&ldquo;A self does not amount to much, but no self is an island; each exists in a fabric of relations that is now more complex and mobile than ever before.&rdquo;<span class="tq-attr">&mdash; Jean-Fran&ccedil;ois Lyotard, <em>The Postmodern Condition</em></span></div>
+<div class="tab-quote">&ldquo;The point is not to judge but to understand what molecules are capable of when they are not defined by what we already know.&rdquo;<span class="tq-attr">&mdash; Isabelle Stengers, <em>Cosmopolitics I</em></span></div>
 {all_cards}
 </div>
 <div class="tab-panel" id="panel_table">
