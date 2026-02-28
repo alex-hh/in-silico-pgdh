@@ -2,12 +2,14 @@
 """Sync design data from Lyceum S3 to docs/data/ for GitHub Pages.
 
 Downloads designs/index.json, per-design metrics.json, and CIF structures
-from the S3 source of truth, then writes them to docs/data/ in a format
-the static viewer can consume.
+from the S3 source of truth (written by sync_designs.py), then writes them
+to docs/data/ in a format the static viewer can consume.
 
 Usage:
     source .venv/bin/activate
-    python pgdh_campaign/sync_to_pages.py
+    python pgdh_campaign/sync_designs.py      # ensure designs/ is up to date
+    python pgdh_campaign/sync_to_pages.py     # S3 designs/ -> docs/data/
+    python pgdh_campaign/generate_pages.py    # docs/data/ -> docs/index.html
 
 After running, commit and push docs/ to update the GitHub Pages site.
 """
@@ -33,8 +35,17 @@ def sync(client: LyceumClient):
         index_data = client.download_bytes("designs/index.json")
         index = json.loads(index_data)
     except Exception as e:
-        print(f"  No index found ({e}). Run evaluate_designs.py first.")
-        index = {"designs": []}
+        print(f"  No index found ({e}). Run sync_designs.py first.")
+        # Fall back to existing local index if available
+        local_idx = DOCS_DATA / "index.json"
+        if local_idx.exists():
+            index = json.loads(local_idx.read_text())
+            print(f"  Using existing local index ({len(index.get('designs', []))} designs)")
+        else:
+            index = {"designs": []}
+            (DOCS_DATA / "index.json").write_text(json.dumps(index, indent=2))
+        print(f"  {len(index.get('designs', []))} designs in index")
+        return
 
     (DOCS_DATA / "index.json").write_text(json.dumps(index, indent=2))
     print(f"  {len(index.get('designs', []))} designs in index")

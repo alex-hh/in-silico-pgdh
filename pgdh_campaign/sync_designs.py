@@ -547,6 +547,61 @@ def _promote_boltzgen_self_consistency(designs: list[dict]) -> int:
     return promoted
 
 
+def attach_pyrosetta_scores(client: LyceumClient, designs: list[dict]) -> int:
+    """Scan output/pyrosetta/ for interface scoring results and attach them.
+
+    Each design's results are at output/pyrosetta/<design_id>/interface_metrics.json.
+    """
+    pyrosetta_files = [f for f in client.list_files("output/pyrosetta/") if f.endswith("interface_metrics.json")]
+    if not pyrosetta_files:
+        return 0
+
+    updated = 0
+    for jf in pyrosetta_files:
+        try:
+            data = json.loads(client.download_bytes(jf).decode())
+            design_id_from_file = data.get("design_id", "")
+
+            # Match to a design — check both the JSON's design_id and the path
+            # Path format: output/pyrosetta/<design_id>/interface_metrics.json
+            parts = jf.split("/")
+            path_design_id = parts[2] if len(parts) >= 4 else ""
+
+            for d in designs:
+                if d.get("interface_metrics"):
+                    continue  # Already has interface scores
+                did = d["design_id"]
+                if did == design_id_from_file or did == path_design_id or did in path_design_id or path_design_id in did:
+                    d["interface_metrics"] = {
+                        "source": "pyrosetta",
+                        "scored_at": _now(),
+                        "interface_dG": data.get("interface_dG"),
+                        "interface_dSASA": data.get("interface_dSASA"),
+                        "interface_sc": data.get("interface_sc"),
+                        "interface_packstat": data.get("interface_packstat"),
+                        "interface_nres": data.get("interface_nres"),
+                        "interface_hbonds": data.get("interface_hbonds"),
+                        "interface_delta_unsat_hbonds": data.get("interface_delta_unsat_hbonds"),
+                        "interface_dG_SASA_ratio": data.get("interface_dG_SASA_ratio"),
+                        "interface_fraction": data.get("interface_fraction"),
+                        "interface_hydrophobicity": data.get("interface_hydrophobicity"),
+                        "surface_hydrophobicity": data.get("surface_hydrophobicity"),
+                        "binder_score": data.get("binder_score"),
+                        "clashes": data.get("clashes"),
+                        "binder_helix_fraction": data.get("binder_helix_fraction"),
+                        "binder_sheet_fraction": data.get("binder_sheet_fraction"),
+                        "binder_loop_fraction": data.get("binder_loop_fraction"),
+                    }
+                    updated += 1
+                    print(f"    Attached PyRosetta interface scores for {did}: "
+                          f"dG={data.get('interface_dG')}, sc={data.get('interface_sc')}")
+                    break
+        except Exception as e:
+            print(f"    Warning: could not parse {jf}: {e}")
+
+    return updated
+
+
 def attach_refolding_results(client: LyceumClient, designs: list[dict]) -> int:
     """Scan output/refolding/ on S3 for completed BoltzGen folding results and attach them.
 
@@ -823,11 +878,14 @@ def write_index(client: LyceumClient, designs: list[dict]):
             "has_refolding": d.get("refolding") is not None,
             "has_validation": d.get("validation") is not None,
             "has_scoring": d.get("scoring") is not None,
+            "has_interface_metrics": d.get("interface_metrics") is not None,
             "iptm": dm.get("iptm"),
             "ptm": dm.get("ptm"),
             "filter_rmsd": dm.get("filter_rmsd"),
             "refold_rmsd": refold.get("boltzgen_rmsd"),
             "ipsae": scr.get("ipsae"),
+            "interface_dG": (d.get("interface_metrics") or {}).get("interface_dG"),
+            "interface_sc": (d.get("interface_metrics") or {}).get("interface_sc"),
         })
 
     index = {
@@ -923,7 +981,8 @@ def sync_all(client: LyceumClient = None, extra_designs: list[dict] | None = Non
     n_val = attach_boltz2_validation(client, designs)
     n_refold = attach_refolding_results(client, designs)
     n_scr = attach_ipsae_scores(client, designs)
-    print(f"  Attached {n_val} validations, {n_refold} refoldings, {n_scr} scores\n")
+    n_iface = attach_pyrosetta_scores(client, designs)
+    print(f"  Attached {n_val} validations, {n_refold} refoldings, {n_scr} scores, {n_iface} interface metrics\n")
 
     # Step 3: Rank
     print("--- Step 3: Rank ---")

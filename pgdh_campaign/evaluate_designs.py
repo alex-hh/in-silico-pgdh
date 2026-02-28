@@ -31,6 +31,9 @@ Usage:
     python pgdh_campaign/evaluate_designs.py --fast --score
     python pgdh_campaign/evaluate_designs.py --score
 
+    # PyRosetta interface scoring (CPU, no GPU needed)
+    python pgdh_campaign/evaluate_designs.py --interface
+
 After jobs complete, run sync_designs.py to pick up results:
     python pgdh_campaign/sync_designs.py
 
@@ -140,12 +143,15 @@ def _generate_refold_yaml(design_id: str, sequence: str, target_cif: str = "2GDZ
 
 
 def submit_refold_jobs(client: LyceumClient, designs: list[dict]) -> list[tuple[str, str]]:
-    """Submit BoltzGen folding jobs for designs that have sequences but no refolding result.
+    """Submit a single BoltzGen batch job to refold all designs needing refolding.
+
+    Uploads all refolding YAMLs, generates a batch script that processes each
+    sequentially, and submits one Docker job.
 
     Skips BoltzGen designs (they get free promotion via promote_boltzgen_refolding).
 
     Returns:
-        List of (design_id, execution_id) pairs for tracking.
+        List of (batch_id, execution_id) pairs for tracking.
     """
     candidates = [
         d for d in designs
@@ -165,40 +171,50 @@ def submit_refold_jobs(client: LyceumClient, designs: list[dict]) -> list[tuple[
         print(f"  WARNING: {target_key} not found on S3. Upload it before jobs run.")
 
     print(f"  {len(candidates)} designs to refold")
-    submitted = []
+
+    # Upload all refolding YAMLs
+    design_ids = []
     for d in candidates:
         design_id = d["design_id"]
-        sequence = d["sequence"]
-
-        # Generate and upload refolding YAML
-        yaml_content = _generate_refold_yaml(design_id, sequence)
+        yaml_content = _generate_refold_yaml(design_id, d["sequence"])
         yaml_key = f"input/boltzgen/refold_{design_id}.yaml"
         client.upload_bytes(yaml_content.encode(), yaml_key)
+        design_ids.append(design_id)
 
-        # Submit BoltzGen Docker job with --steps folding
-        output_dir = f"output/refolding/{design_id}/"
-        cmd = (
+    # Generate and upload a batch script that processes each YAML
+    batch_lines = ["#!/bin/bash", "set -e", ""]
+    for design_id in design_ids:
+        batch_lines.append(f'echo "=== Refolding {design_id} ==="')
+        batch_lines.append(
             f"bash /mnt/s3/scripts/boltzgen/run_boltzgen.sh"
             f" --input-yaml /root/boltzgen_work/refold_{design_id}.yaml"
-            f" --output-dir /mnt/s3/{output_dir}"
+            f" --output-dir /mnt/s3/output/refolding/{design_id}/"
             f" --steps folding"
             f" --cache /mnt/s3/models/boltzgen"
         )
+        batch_lines.append("")
+    batch_lines.append('echo "=== Batch refolding complete ==="')
 
-        try:
-            exec_id, _ = client.submit_docker_job(
-                docker_image="pytorch/pytorch:2.6.0-cuda12.6-cudnn9-runtime",
-                command=cmd,
-                execution_type="gpu.a100",
-                timeout=300,
-            )
-            submitted.append((design_id, exec_id))
-            print(f"    Submitted refolding: {design_id} -> {exec_id}")
-        except Exception as e:
-            print(f"    Failed to submit {design_id}: {e}")
+    batch_script = "\n".join(batch_lines)
+    client.upload_bytes(batch_script.encode(), "input/boltzgen/batch_refold.sh")
 
-    print(f"  Submitted {len(submitted)} refolding jobs")
-    return submitted
+    # ~30s per design for folding, plus ~120s setup overhead
+    timeout = 120 + len(candidates) * 40
+    cmd = "bash /mnt/s3/input/boltzgen/batch_refold.sh"
+
+    try:
+        exec_id, _ = client.submit_docker_job(
+            docker_image="pytorch/pytorch:2.6.0-cuda12.6-cudnn9-runtime",
+            command=cmd,
+            execution_type="gpu.a100",
+            timeout=timeout,
+        )
+        print(f"  Submitted batch refolding job: {exec_id}")
+        print(f"  {len(candidates)} designs, timeout={timeout}s")
+        return [("batch_refold", exec_id)]
+    except Exception as e:
+        print(f"  Failed to submit batch job: {e}")
+        return []
 
 
 # ══════════════════════════════════════════════════════════════════════════
@@ -220,10 +236,13 @@ def _generate_boltz2_yaml(design_id: str, binder_sequence: str) -> str:
 
 
 def submit_boltz2_validation_jobs(client: LyceumClient, designs: list[dict]) -> list[tuple[str, str]]:
-    """Submit Boltz-2 cross-validation jobs for designs that have sequences but no validation.
+    """Submit a single Boltz-2 batch job to validate all designs needing validation.
+
+    Uploads all validation YAMLs, generates a batch script that processes each
+    sequentially, and submits one Docker job.
 
     Returns:
-        List of (design_id, execution_id) pairs for tracking.
+        List of (batch_id, execution_id) pairs for tracking.
     """
     candidates = [
         d for d in designs
@@ -235,19 +254,21 @@ def submit_boltz2_validation_jobs(client: LyceumClient, designs: list[dict]) -> 
         return []
 
     print(f"  {len(candidates)} designs to validate with Boltz-2")
-    submitted = []
 
+    # Upload all validation YAMLs
+    design_ids = []
     for d in candidates:
         design_id = d["design_id"]
-        sequence = d["sequence"]
-
-        # Generate and upload Boltz-2 YAML
-        yaml_content = _generate_boltz2_yaml(design_id, sequence)
+        yaml_content = _generate_boltz2_yaml(design_id, d["sequence"])
         yaml_key = f"input/boltz2/validate_{design_id}.yaml"
         client.upload_bytes(yaml_content.encode(), yaml_key)
+        design_ids.append(design_id)
 
-        # Submit Boltz-2 Docker job
-        cmd = (
+    # Generate and upload a batch script
+    batch_lines = ["#!/bin/bash", "set -e", ""]
+    for design_id in design_ids:
+        batch_lines.append(f'echo "=== Validating {design_id} ==="')
+        batch_lines.append(
             f"bash /mnt/s3/scripts/boltz2/run_boltz2.sh"
             f" --input-yaml /root/boltz2_work/validate_{design_id}.yaml"
             f" --output-dir /mnt/s3/output/boltz2/{design_id}"
@@ -256,21 +277,29 @@ def submit_boltz2_validation_jobs(client: LyceumClient, designs: list[dict]) -> 
             f" --cache /mnt/s3/models/boltz2"
             f" --use-msa-server"
         )
+        batch_lines.append("")
+    batch_lines.append('echo "=== Batch validation complete ==="')
 
-        try:
-            exec_id, _ = client.submit_docker_job(
-                docker_image="pytorch/pytorch:2.6.0-cuda12.6-cudnn9-runtime",
-                command=cmd,
-                execution_type="gpu.a100",
-                timeout=600,
-            )
-            submitted.append((design_id, exec_id))
-            print(f"    Submitted Boltz-2: {design_id} -> {exec_id}")
-        except Exception as e:
-            print(f"    Failed to submit {design_id}: {e}")
+    batch_script = "\n".join(batch_lines)
+    client.upload_bytes(batch_script.encode(), "input/boltz2/batch_validate.sh")
 
-    print(f"  Submitted {len(submitted)} Boltz-2 validation jobs")
-    return submitted
+    # ~120s per design for Boltz-2, plus ~300s setup overhead
+    timeout = 300 + len(candidates) * 150
+    cmd = "bash /mnt/s3/input/boltz2/batch_validate.sh"
+
+    try:
+        exec_id, _ = client.submit_docker_job(
+            docker_image="pytorch/pytorch:2.6.0-cuda12.6-cudnn9-runtime",
+            command=cmd,
+            execution_type="gpu.a100",
+            timeout=timeout,
+        )
+        print(f"  Submitted batch validation job: {exec_id}")
+        print(f"  {len(candidates)} designs, timeout={timeout}s")
+        return [("batch_validate", exec_id)]
+    except Exception as e:
+        print(f"  Failed to submit batch job: {e}")
+        return []
 
 
 # ══════════════════════════════════════════════════════════════════════════
@@ -294,14 +323,112 @@ def submit_scoring_jobs(client: LyceumClient, designs: list[dict]) -> int:
 
 
 # ══════════════════════════════════════════════════════════════════════════
+# INTERFACE — PyRosetta interface scoring (--interface)
+# ══════════════════════════════════════════════════════════════════════════
+
+def submit_pyrosetta_jobs(client: LyceumClient, designs: list[dict]) -> list[tuple[str, str]]:
+    """Submit PyRosetta interface scoring jobs for designs with structures on S3.
+
+    Looks for designer-predicted complex CIFs in designs/<tool>/<id>/designed.cif
+    (or the raw output location). Uploads them to input/pyrosetta/ and submits
+    a batch CPU Docker job.
+
+    Returns:
+        List of (design_id, execution_id) pairs for tracking.
+    """
+    candidates = [
+        d for d in designs
+        if not d.get("interface_metrics")
+    ]
+    if not candidates:
+        print("  No designs need interface scoring (all scored)")
+        return []
+
+    # Find CIF files on S3 for each candidate
+    to_score = []
+    for d in candidates:
+        did = d["design_id"]
+        tool = d.get("tool", "unknown")
+
+        # Check designs/<tool>/<did>/designed.cif (the standardised location)
+        cif_key = f"designs/{tool}/{did}/designed.cif"
+        existing = client.list_files(cif_key)
+        if existing:
+            to_score.append((did, cif_key))
+            continue
+
+        # Check for .cif.gz
+        cif_gz_key = f"designs/{tool}/{did}/designed.cif.gz"
+        existing = client.list_files(cif_gz_key)
+        if existing:
+            to_score.append((did, cif_gz_key))
+            continue
+
+        # Check raw output location from source_files
+        sf = d.get("source_files") or {}
+        raw_cif = sf.get("structure")
+        if raw_cif:
+            existing = client.list_files(raw_cif)
+            if existing:
+                to_score.append((did, raw_cif))
+                continue
+
+    if not to_score:
+        print("  No designs have CIF structures on S3 for interface scoring")
+        return []
+
+    print(f"  {len(to_score)} designs with structures available for interface scoring")
+
+    # Copy CIFs to input/pyrosetta/ with design_id as filename
+    for did, cif_key in to_score:
+        # Download from source and re-upload to input/pyrosetta/
+        try:
+            cif_data = client.download_bytes(cif_key)
+
+            # Handle gzipped CIFs
+            if cif_key.endswith(".cif.gz"):
+                import gzip
+                cif_data = gzip.decompress(cif_data)
+
+            dest_key = f"input/pyrosetta/{did}.cif"
+            client.upload_bytes(cif_data, dest_key)
+        except Exception as e:
+            print(f"    Warning: could not copy CIF for {did}: {e}")
+
+    # Submit single batch Docker job (CPU)
+    cmd = (
+        "bash /mnt/s3/scripts/pyrosetta/run_pyrosetta.sh"
+        " --input-dir /root/pyrosetta_work"
+        " --output-dir /mnt/s3/output/pyrosetta"
+    )
+
+    submitted = []
+    try:
+        exec_id, _ = client.submit_docker_job(
+            docker_image="python:3.11-slim",
+            command=cmd,
+            execution_type="cpu",
+            timeout=600,  # Max allowed by Lyceum; for large batches, split into chunks
+        )
+        submitted.append(("batch_pyrosetta", exec_id))
+        print(f"  Submitted PyRosetta batch scoring job: {exec_id}")
+        print(f"  Scoring {len(to_score)} designs (CPU, ~1-2 min each)")
+    except Exception as e:
+        print(f"  Failed to submit PyRosetta job: {e}")
+
+    return submitted
+
+
+# ══════════════════════════════════════════════════════════════════════════
 # MAIN
 # ══════════════════════════════════════════════════════════════════════════
 
 def run_evaluation(client: LyceumClient = None, fast: bool = False,
                    slow: bool = False, slow_ids: list[str] | None = None,
                    auto_slow: bool = False, score: bool = False,
+                   interface: bool = False,
                    extra_designs: list[dict] | None = None) -> list[dict]:
-    """Run sync + submit GPU evaluation jobs. Returns ranked designs.
+    """Run sync + submit evaluation jobs. Returns ranked designs.
 
     Callable from CLI or imported by the Streamlit app.
 
@@ -312,6 +439,7 @@ def run_evaluation(client: LyceumClient = None, fast: bool = False,
         slow_ids: Specific design IDs to validate (with --slow).
         auto_slow: If True, auto-select designs with refolding RMSD < threshold.
         score: If True, submit ipSAE scoring jobs.
+        interface: If True, submit PyRosetta interface scoring jobs (CPU).
         extra_designs: Additional designs to inject (e.g. custom FASTA uploads).
     """
     if client is None:
@@ -364,8 +492,13 @@ def run_evaluation(client: LyceumClient = None, fast: bool = False,
         submit_scoring_jobs(client, designs)
         print()
 
-    if fast or slow or score:
-        print("GPU jobs submitted. Run sync_designs.py again after jobs complete to pick up results.")
+    if interface:
+        print("--- Submit PyRosetta interface scoring (CPU) ---")
+        submit_pyrosetta_jobs(client, designs)
+        print()
+
+    if fast or slow or score or interface:
+        print("Jobs submitted. Run sync_designs.py again after jobs complete to pick up results.")
 
     return designs
 
@@ -393,6 +526,8 @@ def main():
                         help=f"With --slow: auto-select designs with refolding RMSD < {FAST_EVAL_RMSD_THRESHOLD}A")
     parser.add_argument("--score", action="store_true",
                         help="Submit ipSAE scoring jobs for validated designs")
+    parser.add_argument("--interface", action="store_true",
+                        help="Submit PyRosetta interface scoring (CPU) for designs with structures")
     args = parser.parse_args()
 
     slow = args.slow is not None  # --slow was passed (even without IDs)
@@ -402,14 +537,14 @@ def main():
         print("Error: --auto requires --slow")
         sys.exit(1)
 
-    if not (args.fast or slow or args.score):
-        print("No flags specified. Use --fast, --slow, and/or --score.")
+    if not (args.fast or slow or args.score or args.interface):
+        print("No flags specified. Use --fast, --slow, --score, and/or --interface.")
         print("To just sync designs (no GPU), use: python pgdh_campaign/sync_designs.py")
         parser.print_help()
         sys.exit(1)
 
     run_evaluation(fast=args.fast, slow=slow, slow_ids=slow_ids,
-                   auto_slow=args.auto, score=args.score)
+                   auto_slow=args.auto, score=args.score, interface=args.interface)
 
 
 if __name__ == "__main__":

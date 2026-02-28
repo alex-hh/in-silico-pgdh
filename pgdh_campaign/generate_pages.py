@@ -297,6 +297,59 @@ def design_card_html(d, idx):
     return card
 
 
+def build_table_data(all_designs):
+    """Build JSON-serializable table data for all designs."""
+    rows = []
+    for d in all_designs:
+        dm = d.get("metrics", {})
+        val = d.get("validation") or {}
+        scr = d.get("scoring") or {}
+        refold = d.get("refolding") or {}
+        rows.append({
+            "rank": d.get("rank") or "",
+            "design_id": d.get("design_id", ""),
+            "tool": d.get("tool", ""),
+            "strategy": d.get("strategy", ""),
+            "composite": d.get("composite_score") or "",
+            "iptm": dm.get("iptm", dm.get("design_to_target_iptm", "")),
+            "ptm": dm.get("ptm", dm.get("design_ptm", "")),
+            "filter_rmsd": dm.get("filter_rmsd", ""),
+            "min_pae": dm.get("min_pae", dm.get("min_design_to_target_pae", "")),
+            "bg_rmsd": refold.get("boltzgen_rmsd", ""),
+            "bg_plddt": refold.get("boltzgen_plddt", ""),
+            "bg_iptm": refold.get("boltzgen_iptm", ""),
+            "val_iptm": val.get("iptm", ""),
+            "val_plddt": val.get("plddt", ""),
+            "ipsae": scr.get("ipsae", ""),
+            "pdockq": scr.get("pdockq", ""),
+            "length": d.get("length", ""),
+            "status": d.get("status", ""),
+        })
+    return rows
+
+
+TABLE_COLUMNS = [
+    ("rank", "#", "low"),
+    ("design_id", "Design ID", None),
+    ("tool", "Tool", None),
+    ("strategy", "Strategy", None),
+    ("composite", "Composite", "high"),
+    ("iptm", "ipTM", "high"),
+    ("ptm", "pTM", "high"),
+    ("filter_rmsd", "Design RMSD", "low"),
+    ("min_pae", "Min PAE", "low"),
+    ("bg_rmsd", "BG RMSD", "low"),
+    ("bg_plddt", "BG pLDDT", "high"),
+    ("bg_iptm", "BG ipTM", "high"),
+    ("val_iptm", "Val ipTM", "high"),
+    ("val_plddt", "Val pLDDT", "high"),
+    ("ipsae", "ipSAE", "high"),
+    ("pdockq", "pDockQ", "high"),
+    ("length", "Length", None),
+    ("status", "Status", None),
+]
+
+
 def build_html():
     if (DOCS_DATA / "index.json").exists():
         print("Loading from docs/data/ (synced from S3)...")
@@ -350,6 +403,9 @@ def build_html():
             "binderChain": d.get("binder_chain", "B"),
             "tool": d.get("tool", "unknown"),
         })
+
+    # Table data for all designs
+    table_rows = build_table_data(all_designs)
 
     n_bg = len([d for d in all_designs if d.get("tool") == "boltzgen"])
     n_rfd = len([d for d in all_designs if d.get("tool") == "rfdiffusion3"])
@@ -414,6 +470,21 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
 .empty{{text-align:center;padding:48px;color:#999;font-size:16px}}
 .nav-links{{margin-top:8px;font-size:13px}}
 .nav-links a{{color:#4361ee;margin-right:16px}}
+/* Table view */
+.table-wrap{{overflow-x:auto;margin-top:8px}}
+.design-table{{width:100%;border-collapse:collapse;font-size:13px;background:white;border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.1)}}
+.design-table th{{background:#16213e;color:white;padding:10px 12px;text-align:left;font-weight:600;cursor:pointer;white-space:nowrap;user-select:none;position:sticky;top:0}}
+.design-table th:hover{{background:#1a2744}}
+.design-table th .sort-arrow{{margin-left:4px;font-size:10px;opacity:0.5}}
+.design-table th.sorted .sort-arrow{{opacity:1}}
+.design-table td{{padding:8px 12px;border-bottom:1px solid #f0f0f0;white-space:nowrap}}
+.design-table tr:hover td{{background:#f8f9ff}}
+.design-table td.good{{color:#27ae60;font-weight:600}}
+.design-table td.warn{{color:#f39c12;font-weight:600}}
+.design-table td.bad{{color:#e74c3c;font-weight:600}}
+.table-filter{{margin-bottom:12px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}}
+.table-filter input{{padding:8px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px;width:240px}}
+.table-filter select{{padding:8px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px}}
 @media(max-width:900px){{.card-body{{grid-template-columns:1fr}}.viewer-container{{border-right:none;border-bottom:1px solid #eee}}}}
 </style>
 </head>
@@ -438,6 +509,7 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
   <div class="tab active" onclick="switchTab('evaluated')">Evaluated<span class="count">{len(evaluated)}</span></div>
   <div class="tab" onclick="switchTab('unevaluated')">Unevaluated<span class="count">{len(unevaluated)}</span></div>
   <div class="tab" onclick="switchTab('all')">All<span class="count">{len(all_designs)}</span></div>
+  <div class="tab" onclick="switchTab('table')">Table<span class="count">{len(all_designs)}</span></div>
   <div class="tab" onclick="switchTab('target')">Target (2GDZ)</div>
 </div>
 <div class="tab-panel active" id="panel_evaluated">
@@ -448,6 +520,28 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
 </div>
 <div class="tab-panel" id="panel_all">
 {all_cards}
+</div>
+<div class="tab-panel" id="panel_table">
+  <div class="table-filter">
+    <input type="text" id="table-search" placeholder="Filter by design ID..." oninput="filterTable()">
+    <select id="table-tool-filter" onchange="filterTable()">
+      <option value="">All tools</option>
+      <option value="boltzgen">BoltzGen</option>
+      <option value="rfdiffusion3">RFdiffusion3</option>
+    </select>
+    <select id="table-strategy-filter" onchange="filterTable()">
+      <option value="">All strategies</option>
+      <option value="active_site">Active Site</option>
+      <option value="dimer_interface">Dimer Interface</option>
+      <option value="surface">Surface</option>
+    </select>
+  </div>
+  <div class="table-wrap">
+    <table class="design-table" id="design-table">
+      <thead><tr>{"".join(f'<th data-col="{col}" data-dir="{d or ""}" onclick="sortTable(this)">{label}<span class="sort-arrow">&#9650;</span></th>' for col, label, d in TABLE_COLUMNS)}</tr></thead>
+      <tbody id="table-body"></tbody>
+    </table>
+  </div>
 </div>
 """
 
@@ -475,11 +569,19 @@ var tc={json.dumps(target_cif_text)};
 var as={json.dumps([138,148,151,155,185,217])};
 var di={json.dumps([146,153,161,167,168,206])};
 var tclr={json.dumps(TOOL_COLORS)};
+var tableData={json.dumps(table_rows)};
+var tableCols={json.dumps([c[0] for c in TABLE_COLUMNS])};
 var vs={{}},tv=null,init={{}};
+var tableInit=false,curSort=null,curDir=1;
 function iv(i){{if(init[i])return;var e=document.getElementById('viewer_'+i);if(!e||e.offsetParent===null)return;var d=vd[i];if(!d)return;if(!d.cif){{e.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#999;font-size:14px">3D view available for top {MAX_CIF_EMBEDS} designs</div>';init[i]=true;return;}}var v=$3Dmol.createViewer(e,{{backgroundColor:'white'}});v.addModel(d.cif,'cif');var bc=d.binderChain,tc2=bc==='A'?'B':'A',c=tclr[d.tool]||'#00CED1';v.setStyle({{chain:tc2}},{{cartoon:{{color:'#999',opacity:0.8}}}});v.setStyle({{chain:bc}},{{cartoon:{{color:c}}}});v.zoomTo();v.render();vs[i]={{viewer:v,binderChain:bc,targetChain:tc2,color:c}};init[i]=true;}}
 function itv(){{if(tv)return;var e=document.getElementById('viewer_target');if(!e||e.offsetParent===null)return;tv=$3Dmol.createViewer('viewer_target',{{backgroundColor:'white'}});tv.addModel(tc,'cif');tv.setStyle({{}},{{cartoon:{{color:'#CCC',opacity:0.7}}}});tv.setStyle({{chain:'A',resi:as}},{{cartoon:{{color:'#FF4500'}},stick:{{color:'#FF4500'}}}});tv.setStyle({{chain:'A',resi:di}},{{cartoon:{{color:'#1E90FF'}},stick:{{color:'#1E90FF'}}}});tv.zoomTo();tv.render();}}
 function ivv(){{for(var i=0;i<vd.length;i++){{var e=document.getElementById('viewer_'+i);if(e&&e.offsetParent!==null&&!init[i])iv(i);}}if(document.getElementById('viewer_target')&&document.getElementById('viewer_target').offsetParent!==null)itv();}}
-function switchTab(t){{var ts=['evaluated','unevaluated','all','target'];document.querySelectorAll('.tab').forEach(function(e,i){{e.classList.toggle('active',ts[i]===t);}});document.querySelectorAll('.tab-panel').forEach(function(p){{p.classList.remove('active');}});var p=document.getElementById('panel_'+t);if(p)p.classList.add('active');setTimeout(ivv,100);}}
+function switchTab(t){{var ts=['evaluated','unevaluated','all','table','target'];document.querySelectorAll('.tab').forEach(function(e,i){{e.classList.toggle('active',ts[i]===t);}});document.querySelectorAll('.tab-panel').forEach(function(p){{p.classList.remove('active');}});var p=document.getElementById('panel_'+t);if(p)p.classList.add('active');if(t==='table'&&!tableInit){{renderTable();tableInit=true;}}setTimeout(ivv,100);}}
+function clsCell(val,dir){{if(val===''||val===null||val===undefined)return'';var v=parseFloat(val);if(isNaN(v))return'';if(dir==='high')return v>=0.7?'good':v>=0.5?'warn':'bad';if(dir==='low')return v<=2.0?'good':v<=3.0?'warn':'bad';return'';}}
+var colDirs={{{",".join(f'"{c[0]}":"{c[2] or ""}"' for c in TABLE_COLUMNS)}}};
+function renderTable(){{var tb=document.getElementById('table-body');if(!tb)return;var q=(document.getElementById('table-search')||{{}}).value||'';q=q.toLowerCase();var tf=(document.getElementById('table-tool-filter')||{{}}).value||'';var sf=(document.getElementById('table-strategy-filter')||{{}}).value||'';var rows=tableData.filter(function(r){{if(q&&r.design_id.toLowerCase().indexOf(q)<0)return false;if(tf&&r.tool!==tf)return false;if(sf&&r.strategy!==sf)return false;return true;}});if(curSort){{rows.sort(function(a,b){{var av=a[curSort],bv=b[curSort];var an=parseFloat(av),bn=parseFloat(bv);if(!isNaN(an)&&!isNaN(bn))return(an-bn)*curDir;av=String(av||'');bv=String(bv||'');return av.localeCompare(bv)*curDir;}});}}var h='';rows.forEach(function(r){{h+='<tr>';tableCols.forEach(function(c){{var v=r[c];if(v===''||v===null||v===undefined)v='—';else if(typeof v==='number')v=Number.isInteger(v)?v:parseFloat(v).toFixed(3);var cls=clsCell(r[c],colDirs[c]);h+='<td'+(cls?' class="'+cls+'"':'')+'>'+(c==='design_id'?'<span title="'+v+'">'+v+'</span>':v)+'</td>';}});h+='</tr>';}});tb.innerHTML=h;}}
+function filterTable(){{renderTable();}}
+function sortTable(th){{var col=th.getAttribute('data-col');if(curSort===col){{curDir*=-1;}}else{{curSort=col;curDir=1;}}document.querySelectorAll('.design-table th').forEach(function(h){{h.classList.remove('sorted');h.querySelector('.sort-arrow').innerHTML='&#9650;';}});th.classList.add('sorted');th.querySelector('.sort-arrow').innerHTML=curDir>0?'&#9650;':'&#9660;';renderTable();}}
 function toggleStyle(i,m){{var v=vs[i];if(!v)return;var vw=v.viewer;vw.removeAllSurfaces();var bc=v.binderChain,tc2=v.targetChain,c=v.color;if(m==='cartoon'){{vw.setStyle({{chain:tc2}},{{cartoon:{{color:'#999',opacity:0.8}}}});vw.setStyle({{chain:bc}},{{cartoon:{{color:c}}}});}}else if(m==='surface'){{vw.setStyle({{chain:tc2}},{{cartoon:{{color:'#999',opacity:0.5}}}});vw.setStyle({{chain:bc}},{{cartoon:{{color:c,opacity:0.5}}}});vw.addSurface($3Dmol.SurfaceType.VDW,{{opacity:0.6,color:'#999'}},{{chain:tc2}});vw.addSurface($3Dmol.SurfaceType.VDW,{{opacity:0.6,color:c}},{{chain:bc}});}}else if(m==='sticks'){{vw.setStyle({{chain:tc2}},{{cartoon:{{color:'#999',opacity:0.8}}}});vw.setStyle({{chain:bc}},{{cartoon:{{color:c}}}});vw.addStyle({{chain:bc,within:{{distance:5,sel:{{chain:tc2}}}}}},{{stick:{{color:c}}}});vw.addStyle({{chain:tc2,within:{{distance:5,sel:{{chain:bc}}}}}},{{stick:{{color:'#FF6347'}}}});}}else if(m==='sequence'){{var ac={{'ALA':'#E8860C','VAL':'#E8860C','LEU':'#E8860C','ILE':'#E8860C','MET':'#E8860C','PHE':'#E8860C','TRP':'#E8860C','PRO':'#E8860C','SER':'#2ECC71','THR':'#2ECC71','ASN':'#2ECC71','GLN':'#2ECC71','TYR':'#2ECC71','CYS':'#2ECC71','LYS':'#3498DB','ARG':'#3498DB','HIS':'#3498DB','ASP':'#E74C3C','GLU':'#E74C3C','GLY':'#95A5A6'}};vw.setStyle({{chain:tc2}},{{cartoon:{{color:'#DDD',opacity:0.5}}}});Object.keys(ac).forEach(function(r){{vw.setStyle({{chain:bc,resn:r}},{{cartoon:{{color:ac[r]}},stick:{{color:ac[r]}}}});}});}}vw.render();['cartoon','surface','sticks','sequence'].forEach(function(mm){{var b=document.getElementById('btn_'+mm+'_'+i);if(b)b.classList.toggle('active',mm===m);}});var l=document.getElementById('seqleg_'+i);if(l)l.classList.toggle('visible',m==='sequence');}}
 function resetView(i){{if(vs[i]){{vs[i].viewer.zoomTo();vs[i].viewer.render();}}}}
 function resetTargetView(){{if(tv){{tv.zoomTo();tv.render();}}}}
