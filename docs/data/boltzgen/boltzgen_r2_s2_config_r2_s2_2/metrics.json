@@ -4,11 +4,11 @@
   "strategy": "dimer_interface",
   "round": 2,
   "status": "validated",
-  "evaluation_stage": "collected",
-  "created_at": "2026-02-28T15:33:51.732808+00:00",
+  "evaluation_stage": "validated",
+  "created_at": "2026-02-28T16:27:15.892791+00:00",
   "sequence": "MTVDLLVNNAGVVDEENWEKTIEVNLLGTIRGSLLGLELMSKKRGGRGGVIINISSLAGVQPDPTHPVYTASKFAVVGFTASLQEACKLADSGVEVLTVEPGPVDVDF",
   "num_residues": 108,
-  "rank": 5,
+  "rank": 11,
   "source_files": {
     "metrics_csv": "output/boltzgen/r2/s2_dimer/final_ranked_designs/final_designs_metrics_30.csv",
     "structure": "output/boltzgen/r2/s2_dimer/final_ranked_designs/final_30_designs/before_refolding/rank03_config_r2_s2_2.cif"
@@ -30,9 +30,15 @@
     "quality_score": 0.7777777777777778,
     "source": "boltzgen"
   },
-  "validation": null,
+  "validation": {
+    "source": "boltz2",
+    "validated_at": "2026-02-28T16:29:49.507945+00:00",
+    "iptm": 0.9561805129051208,
+    "ptm": 0.9558584690093994,
+    "plddt": 0.9588843584060669
+  },
   "scoring": null,
-  "composite_score": 0.7824,
+  "composite_score": 0.7437,
   "refolding": {
     "source": "boltzgen_self_consistency",
     "boltzgen_rmsd": 1.14845,

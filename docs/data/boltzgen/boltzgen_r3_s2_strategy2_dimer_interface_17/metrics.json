@@ -5,10 +5,10 @@
   "round": 3,
   "status": "validated",
   "evaluation_stage": "collected",
-  "created_at": "2026-02-28T15:34:04.895612+00:00",
+  "created_at": "2026-02-28T16:27:28.727658+00:00",
   "sequence": "SVAEEFLRKYKPKVVINAAGVIDNENWLETIEINLLETIRASLEAVRLLSNANGGSGVVINISSLAGLQPDPEHPVYSASKFAVVGFAESLNLACKLANSGVTVLSVLPGP",
   "num_residues": 111,
-  "rank": 10,
+  "rank": 4,
   "source_files": {
     "metrics_csv": "output/boltzgen/r3/s2_dimer/final_ranked_designs/final_designs_metrics_30.csv",
     "structure": "output/boltzgen/r3/s2_dimer/final_ranked_designs/final_30_designs/before_refolding/rank05_strategy2_dimer_interface_17.cif"
