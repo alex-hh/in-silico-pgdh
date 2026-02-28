@@ -334,7 +334,7 @@ An interactive Jupyter notebook is provided at `visualize_designs.ipynb` for exp
 
 ## RFdiffusion3 Output Format
 
-RFD3 does **joint backbone + sequence design** — unlike RFdiffusion v1, no ProteinMPNN step is needed. The designed sequences are embedded in the output CIF files and extracted automatically by `evaluate_designs.py`.
+RFD3 does **joint backbone + sequence design** — unlike RFdiffusion v1, no ProteinMPNN step is needed. The designed sequences are embedded in the output CIF files and extracted automatically by `sync_designs.py`.
 
 ### Output types
 
@@ -381,10 +381,16 @@ The extracted sequence includes the **full chain** (fixed + diffused residues to
 See [CAMPAIGN_PLAN.md](CAMPAIGN_PLAN.md) for the full pipeline:
 
 1. **BoltzGen** — generate 150 binder candidates (3 strategies x 50) ← `/boltzgen-pgdh`
-2. **protein-qc** — filter to ~30 candidates
-3. **Boltz-2** — cross-validate with structure prediction
-4. **ipSAE** — rank by binding confidence ← `/pgdh_ipsae`
-5. **Submit** — top 10 designs
+2. **Sync** — collect + rank designs: `python pgdh_campaign/sync_designs.py`
+3. **Fast eval** — designability check: `python pgdh_campaign/evaluate_designs.py --fast`
+4. **Sync again** — pick up refolding results: `python pgdh_campaign/sync_designs.py`
+5. **Slow eval** — Boltz-2 cross-validation for promising designs: `python pgdh_campaign/evaluate_designs.py --slow --auto`
+6. **Sync again** — pick up validation results: `python pgdh_campaign/sync_designs.py`
+7. **Submit** — top 10 designs
+
+Two commands to remember:
+- `python pgdh_campaign/sync_designs.py` — Collect + rank (no GPU, fast). ONLY writer to `designs/`.
+- `python pgdh_campaign/evaluate_designs.py` — Submit GPU jobs (--fast/--slow/--score). Writes to `output/`.
 
 ## Files
 

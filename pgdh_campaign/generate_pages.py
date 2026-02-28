@@ -6,12 +6,10 @@ with Evaluated and Unevaluated tabs, 3Dmol.js viewers, and metrics panels.
 
 Falls back to pgdh_campaign/out/ (legacy local data) if docs/data/ doesn't exist.
 
-The original generate_viewer.py is preserved as a fallback. This script replaces
-docs/index.html (the landing page) with the full design viewer.
-
 Usage:
-    python pgdh_campaign/sync_to_pages.py   # sync from S3 first
-    python pgdh_campaign/generate_pages.py  # then regenerate HTML
+    python pgdh_campaign/sync_designs.py    # ensure designs/ source of truth is current
+    python pgdh_campaign/sync_to_pages.py   # S3 designs/ -> docs/data/
+    python pgdh_campaign/generate_pages.py  # docs/data/ -> docs/index.html
 """
 
 import csv
@@ -262,9 +260,9 @@ def design_card_html(d, idx):
             card += metric_row("pDockQ", scr["pdockq"], cls_high(scr["pdockq"], 0.50, 0.23))
 
     refold = d.get("refolding") or {}
-    if refold and refold.get("rmsd"):
+    if refold and refold.get("boltzgen_rmsd"):
         card += '<div class="section-label">Designability</div>'
-        card += metric_row("Refold RMSD", f"{refold['rmsd']} &Aring;", cls_low(refold["rmsd"], 2.0, 2.5))
+        card += metric_row("BoltzGen RMSD", f"{refold['boltzgen_rmsd']} &Aring;", cls_low(refold["boltzgen_rmsd"], 2.0, 2.5))
 
     if tool == "boltzgen":
         if dm.get("plip_hbonds"):
