@@ -6,7 +6,7 @@
     "round": 3,
     "status": "designed",
     "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:07.344708+00:00",
+    "created_at": "2026-02-28T17:12:46.952448+00:00",
     "sequence": "NALAAAIALAAAAIAAVAQGDLAAAIALVAAAVALAFNASADVAAAAVLALNLATNTIAAATALLIAQGQVDAAKAFLAAATIAVALAIAAALSALAAADPTLV",
     "num_residues": 104,
     "hotspots": "A161, A150, A206, A167, A172",
@@ -30,7 +30,7 @@
     "scoring": null,
     "composite_score": null,
     "refolding": null,
-    "rank": 77,
+    "rank": 79,
     "has_structure": true
   },
   {
@@ -40,7 +40,7 @@
     "round": 3,
     "status": "designed",
     "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:07.818524+00:00",
+    "created_at": "2026-02-28T17:12:47.424556+00:00",
     "sequence": "GAAAVVAALAALVAAIIALAALSADPAAIAALTTALTNLVTAIAVAAVAVSSDPAAALALATATLTAVANLAAAVAQSNVAAAAAAGAALLALAAALAALVAAA",
     "num_residues": 104,
     "hotspots": "A161, A150, A206, A167, A172",
@@ -64,7 +64,7 @@
     "scoring": null,
     "composite_score": null,
     "refolding": null,
-    "rank": 78,
+    "rank": 80,
     "has_structure": true
   },
   {
@@ -74,7 +74,7 @@
     "round": 3,
     "status": "designed",
     "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:08.294901+00:00",
+    "created_at": "2026-02-28T17:12:47.892664+00:00",
     "sequence": "LTAAAAALTGAAIAAAVALLAAAAAGIDAALVAVAIATAVATAVTALENSVAATGAITVAGLAAATVAALAALAAVLGCAGNAAAAAALLALAVATVAAVLAIA",
     "num_residues": 104,
     "hotspots": "A161, A150, A206, A167, A172",
@@ -98,7 +98,7 @@
     "scoring": null,
     "composite_score": null,
     "refolding": null,
-    "rank": 79,
+    "rank": 81,
     "has_structure": true
   },
   {
@@ -108,7 +108,7 @@
     "round": 3,
     "status": "designed",
     "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:08.774142+00:00",
+    "created_at": "2026-02-28T17:12:48.392930+00:00",
     "sequence": "AALAAAAAAAAVAAAAAAVAAAAAGDAKAALAAATTALALLALAGELAGAAAVAVAAVTAAAVLIGKAAGAAAAGDTATATALMALVAAVLAGAAAAILAAAAA",
     "num_residues": 104,
     "hotspots": "A161, A150, A206, A167, A172",
@@ -132,7 +132,7 @@
     "scoring": null,
     "composite_score": null,
     "refolding": null,
-    "rank": 80,
+    "rank": 82,
     "has_structure": true
   },
   {
@@ -142,7 +142,7 @@
     "round": 3,
     "status": "designed",
     "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:09.254399+00:00",
+    "created_at": "2026-02-28T17:12:48.861029+00:00",
     "sequence": "MAAFLAAVAALAAAAVAAALAGNATAASLALQALTLVIALALPALALLAANGSAAAAAAIAAAAAILAATAAACAAAGLAACAAVALTAAAVLGIAAAIAAAAA",
     "num_residues": 104,
     "hotspots": "A161, A150, A206, A167, A172",
@@ -166,7 +166,7 @@
     "scoring": null,
     "composite_score": null,
     "refolding": null,
-    "rank": 81,
+    "rank": 83,
     "has_structure": true
   },
   {
@@ -176,7 +176,7 @@
     "round": 3,
     "status": "designed",
     "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:09.731075+00:00",
+    "created_at": "2026-02-28T17:12:49.351173+00:00",
     "sequence": "MAALAAGLAAIVANAAAAIAAAAAGDTAAAAANALAALLLIAQTLAAAKAALAKLSTAAQAAVLAALAAITVKLAAAAGAALAGNLAKAAANQAALAAAAAALA",
     "num_residues": 104,
     "hotspots": "A161, A150, A206, A167, A172",
@@ -200,7 +200,7 @@
     "scoring": null,
     "composite_score": null,
     "refolding": null,
-    "rank": 82,
+    "rank": 84,
     "has_structure": true
   },
   {
@@ -210,7 +210,7 @@
     "round": 3,
     "status": "designed",
     "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:10.213756+00:00",
+    "created_at": "2026-02-28T17:12:49.814362+00:00",
     "sequence": "VAAAAAALLAAAAAALAAGDVAAAAAALTALAEGCIGLLAAGDLASALAIATAALPLALALAATGNPAAAGAAGQLIGLAAAALYALGQKDAALALVSAAAAAL",
     "num_residues": 104,
     "hotspots": "A161, A150, A206, A167, A172",
@@ -234,7 +234,7 @@
     "scoring": null,
     "composite_score": null,
     "refolding": null,
-    "rank": 83,
+    "rank": 85,
     "has_structure": true
   },
   {
@@ -244,7 +244,7 @@
     "round": 3,
     "status": "designed",
     "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:10.683518+00:00",
+    "created_at": "2026-02-28T17:12:50.281643+00:00",
     "sequence": "MAALKAAALATLTAIGAKLVAAAAADQQAAAAALVAALVAAAAAALDALAAGDFAAALAELAAAITAACDLLALASSNVAAASAALVTALDVIAASIAALGKLI",
     "num_residues": 104,
     "hotspots": "A161, A150, A206, A167, A172",
@@ -268,7 +268,7 @@
     "scoring": null,
     "composite_score": null,
     "refolding": null,
-    "rank": 84,
+    "rank": 86,
     "has_structure": true
   },
   {
@@ -278,7 +278,7 @@
     "round": 3,
     "status": "designed",
     "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:11.163045+00:00",
+    "created_at": "2026-02-28T17:12:50.739532+00:00",
     "sequence": "VAAATAAVTALTDAAAAAIDANDIAALEAQTLALLNLLVDLVHLAAAAFADDPAAVTAVLNLVVAAILATVAAVAAAAIGDTAAAKANLAAASAAAKAIIALAA",
     "num_residues": 104,
     "hotspots": "A161, A150, A206, A167, A172",
@@ -302,7 +302,7 @@
     "scoring": null,
     "composite_score": null,
     "refolding": null,
-    "rank": 85,
+    "rank": 87,
     "has_structure": true
   },
   {
@@ -312,7 +312,7 @@
     "round": 3,
     "status": "designed",
     "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:11.633226+00:00",
+    "created_at": "2026-02-28T17:12:51.219391+00:00",
     "sequence": "LAAAAAALLAAGLALAAAALNSTDLATAIALATAAAALLGAALGLAIAAQDTALANAAAAAAAAVIAAATKKLLELGASEATVKATIEALVLAFASAAAAVALA",
     "num_residues": 104,
     "hotspots": "A161, A150, A206, A167, A172",
@@ -336,7 +336,7 @@
     "scoring": null,
     "composite_score": null,
     "refolding": null,
-    "rank": 86,
+    "rank": 88,
     "has_structure": true
   },
   {
@@ -346,7 +346,7 @@
     "round": 3,
     "status": "designed",
     "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:12.118838+00:00",
+    "created_at": "2026-02-28T17:12:51.683813+00:00",
     "sequence": "AAALAALAAVVLAAAAAAAAALAAAGQALAALVTAIAGAQLAGAIAAGNAVLALAYGTALAALLAVAGLSAAAAAIAAATLAAAAINADAVAAAAAADVLAFVL",
     "num_residues": 104,
     "hotspots": "A161, A150, A206, A167, A172",
@@ -370,7 +370,7 @@
     "scoring": null,
     "composite_score": null,
     "refolding": null,
-    "rank": 87,
+    "rank": 89,
     "has_structure": true
   },
   {
@@ -380,7 +380,7 @@
     "round": 3,
     "status": "designed",
     "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:12.597391+00:00",
+    "created_at": "2026-02-28T17:12:52.161935+00:00",
     "sequence": "AAAVAAAVAAALADPSPVVALQGITEVNTTVLLLALAGAAAAAAAAVAAASAALAAAAASASAAVRTLAVAGLLAAAAAAALAGDAAAAAALLAAAQAAAATVA",
     "num_residues": 104,
     "hotspots": "A161, A150, A206, A167, A172",
@@ -404,7 +404,7 @@
     "scoring": null,
     "composite_score": null,
     "refolding": null,
-    "rank": 88,
+    "rank": 90,
     "has_structure": true
   },
   {
@@ -414,7 +414,7 @@
     "round": 3,
     "status": "designed",
     "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:13.080558+00:00",
+    "created_at": "2026-02-28T17:12:52.629336+00:00",
     "sequence": "AAAARDAVLAALAATAAAFAAALSAAALALIVAAIQAVADGAGADAAAGAACALAAAAVVAAALGDAAGAAAAAALAAAAAAAAAALGAADLAAAAAAAVAAIT",
     "num_residues": 104,
     "hotspots": "A161, A150, A206, A167, A172",
@@ -438,7 +438,7 @@
     "scoring": null,
     "composite_score": null,
     "refolding": null,
-    "rank": 89,
+    "rank": 91,
     "has_structure": true
   },
   {
@@ -448,7 +448,7 @@
     "round": 3,
     "status": "designed",
     "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:13.552933+00:00",
+    "created_at": "2026-02-28T17:12:53.099093+00:00",
     "sequence": "TAALAAAAVAAAVAGDVAGASDALVAVLAASSDSVLAKALLAVDIVTAATVAAVLAGSAAAIPAIALVLAAAVAVAVLSAIGDAALAAAVRDYCVAQAAAILAA",
     "num_residues": 104,
     "hotspots": "A161, A150, A206, A167, A172",
@@ -472,7 +472,7 @@
     "scoring": null,
     "composite_score": null,
     "refolding": null,
-    "rank": 90,
+    "rank": 92,
     "has_structure": true
   },
   {
@@ -482,7 +482,7 @@
     "round": 3,
     "status": "designed",
     "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:14.054468+00:00",
+    "created_at": "2026-02-28T17:12:53.558368+00:00",
     "sequence": "ALAALLTLLACALAAALVLAVGLGLADAAAALAATLIAVLAAAAALLTAAAGLAGVQALATAVTAALAAGAALALTLPTAAAQAVLAALSALAAVLAAAAAALA",
     "num_residues": 104,
     "hotspots": "A161, A150, A206, A167, A172",
@@ -506,7 +506,7 @@
     "scoring": null,
     "composite_score": null,
     "refolding": null,
-    "rank": 91,
+    "rank": 93,
     "has_structure": true
   },
   {
@@ -516,7 +516,7 @@
     "round": 3,
     "status": "designed",
     "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:14.533114+00:00",
+    "created_at": "2026-02-28T17:12:54.035709+00:00",
     "sequence": "NAAKLIAFGLVVAAALIAAALLSTINLVAGTIAASLVALIVALALPSILATAVDLGVSPASALAAATAIAVLTAVAAAAAALGKAAVAIAAAVALAATIIALAV",
     "num_residues": 104,
     "hotspots": "A161, A150, A206, A167, A172",
@@ -540,7 +540,7 @@
     "scoring": null,
     "composite_score": null,
     "refolding": null,
-    "rank": 92,
+    "rank": 94,
     "has_structure": true
   },
   {
@@ -550,7 +550,7 @@
     "round": 3,
     "status": "designed",
     "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:15.002433+00:00",
+    "created_at": "2026-02-28T17:12:54.513040+00:00",
     "sequence": "TAAAIAALQAALAAALAGDLATALALATAAVQTAAAAVGAAAAVLLVIEFGAHLTKAVVAASSDPVAALKAAAAVAAAAAAAAGALAAGASAATAAAIAATVYAAIA",
     "num_residues": 107,
     "hotspots": "A161, A150, A206, A167, A172",
@@ -574,7 +574,7 @@
     "scoring": null,
     "composite_score": null,
     "refolding": null,
-    "rank": 93,
+    "rank": 95,
     "has_structure": true
   },
   {
@@ -584,7 +584,7 @@
     "round": 3,
     "status": "designed",
     "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:15.466729+00:00",
+    "created_at": "2026-02-28T17:12:54.982286+00:00",
     "sequence": "SAAATLAAIAALLAAAIAAAAAGDLVTAAVTASAALLLTNSTLVALTAAAKSLSIASVLSVMNLIVATIIATAAAVGAVAQNDLASAAAAAAAALAATAAAIALVAA",
     "num_residues": 107,
     "hotspots": "A161, A150, A206, A167, A172",
@@ -608,7 +608,7 @@
     "scoring": null,
     "composite_score": null,
     "refolding": null,
-    "rank": 94,
+    "rank": 96,
     "has_structure": true
   },
   {
@@ -618,7 +618,7 @@
     "round": 3,
     "status": "designed",
     "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:15.946671+00:00",
+    "created_at": "2026-02-28T17:12:55.437503+00:00",
     "sequence": "LGAAFQAAVLSAVAAVANGNAAAAAAAANTALALVASISALSVAAALALTQTLLALAVALALAGETASAVALLNAAVALAAKAAAAAPDSALAKAVLLSANLLLAFV",
     "num_residues": 107,
     "hotspots": "A161, A150, A206, A167, A172",
@@ -642,7 +642,7 @@
     "scoring": null,
     "composite_score": null,
     "refolding": null,
-    "rank": 95,
+    "rank": 97,
     "has_structure": true
   },
   {
@@ -652,7 +652,7 @@
     "round": 3,
     "status": "designed",
     "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:16.425684+00:00",
+    "created_at": "2026-02-28T17:12:55.911315+00:00",
     "sequence": "TAAALVALAAAAVAAAALAAASTDPAVVAALLALIALLVAAILLLLAAAGLSPEATGTAIASIAALALLAAITAAIAAGQSLAAIAALVTATAIALALGIAVGLLAV",
     "num_residues": 107,
     "hotspots": "A161, A150, A206, A167, A172",
@@ -676,7 +676,7 @@
     "scoring": null,
     "composite_score": null,
     "refolding": null,
-    "rank": 96,
+    "rank": 98,
     "has_structure": true
   },
   {
@@ -686,7 +686,7 @@
     "round": 3,
     "status": "designed",
     "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:16.898691+00:00",
+    "created_at": "2026-02-28T17:12:56.386115+00:00",
     "sequence": "MAAAIAAATSAVLEASVAAILAAAAASDIVAAQAAALALLLILAEAIKAILQLLPQEPAVVAAALSLAVAAITATVAAAAAALLGQFAAANAAAAAAVACLDALAAL",
     "num_residues": 107,
     "hotspots": "A161, A150, A206, A167, A172",
@@ -710,7 +710,7 @@
     "scoring": null,
     "composite_score": null,
     "refolding": null,
-    "rank": 97,
+    "rank": 99,
     "has_structure": true
   },
   {
@@ -720,7 +720,7 @@
     "round": 3,
     "status": "designed",
     "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:19.158542+00:00",
+    "created_at": "2026-02-28T17:12:57.557993+00:00",
     "sequence": "AATAAAIAANDFATISLLTATAVGAAAVAFALAGSPDAAVATAILGAVAIATILSLIANDTLSAATTALLLAVVLAGLAALAALAAGNLDAAVAAAATVVALLASLL",
     "num_residues": 107,
     "hotspots": "A161, A150, A206, A167, A172",
@@ -744,7 +744,7 @@
     "scoring": null,
     "composite_score": null,
     "refolding": null,
-    "rank": 98,
+    "rank": 100,
     "has_structure": true
   },
   {
@@ -754,7 +754,7 @@
     "round": 3,
     "status": "designed",
     "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:19.631493+00:00",
+    "created_at": "2026-02-28T17:12:58.040040+00:00",
     "sequence": "ALAAIAAAASAIVAAALLALAKDDPLLLVNATAIALAHAACLAAAILVTAYVAQYNPAAVPAVAATLTAIAAAVLVSAAAALGNPTAAAIIAAVSTATAIAVVLVLS",
     "num_residues": 107,
     "hotspots": "A161, A150, A206, A167, A172",
@@ -778,7 +778,7 @@
     "scoring": null,
     "composite_score": null,
     "refolding": null,
-    "rank": 99,
+    "rank": 101,
     "has_structure": true
   },
   {
@@ -788,7 +788,7 @@
     "round": 3,
     "status": "designed",
     "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:20.109661+00:00",
+    "created_at": "2026-02-28T17:12:58.548230+00:00",
     "sequence": "AAAVALVLAICLLIGLAVGVQTALGLAGAALDQKLVIDSAALLAAAVTLAVALNVAEPALIGIIFGDAAAAAAPAALAVAKLPGGAAALTAIAKSLLAAAASLLAAL",
     "num_residues": 107,
     "hotspots": "A161, A150, A206, A167, A172",
@@ -812,7 +812,7 @@
     "scoring": null,
     "composite_score": null,
     "refolding": null,
-    "rank": 100,
+    "rank": 102,
     "has_structure": true
   },
   {
@@ -822,7 +822,7 @@
     "round": 3,
     "status": "designed",
     "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:20.581596+00:00",
+    "created_at": "2026-02-28T17:12:59.038938+00:00",
     "sequence": "TATVLSLVAIAVAIAAAIALASILSPAETAAAVVALAANLAFSLALAAVAAQLLSAAEAAALAAVAAAAASVVAAAVINAISYGISDCVPIGIAGAAIVLAAAAALA",
     "num_residues": 107,
     "hotspots": "A161, A150, A206, A167, A172",
@@ -846,7 +846,7 @@
     "scoring": null,
     "composite_score": null,
     "refolding": null,
-    "rank": 101,
+    "rank": 103,
     "has_structure": true
   },
   {
@@ -856,7 +856,7 @@
     "round": 3,
     "status": "designed",
     "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:21.054287+00:00",
+    "created_at": "2026-02-28T17:12:59.518043+00:00",
     "sequence": "AAAAVAAVLALVALADATGNPALTTAACTALVEAVAAFIKDKQFDSAIAVASAVLAACSAIVALNPTSTTAIAAAAVATANLAVALYAAGKKEAALAAVASGVAAIA",
     "num_residues": 107,
     "hotspots": "A161, A150, A206, A167, A172",
@@ -880,7 +880,7 @@
     "scoring": null,
     "composite_score": null,
     "refolding": null,
-    "rank": 102,
+    "rank": 104,
     "has_structure": true
   },
   {
@@ -890,7 +890,7 @@
     "round": 3,
     "status": "designed",
     "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:21.522886+00:00",
+    "created_at": "2026-02-28T17:12:59.997047+00:00",
     "sequence": "AAAAAAKALIAAAKAALAAGDAAAAVAACLALLAAANDLAVTVAALAASKGNAAAALTVVDLTAAAAAACGKAAAAAAAGDAAAAAAALDAAAAALDALTAIAAALA",
     "num_residues": 107,
     "hotspots": "A161, A150, A206, A167, A172",
@@ -914,7 +914,7 @@
     "scoring": null,
     "composite_score": null,
     "refolding": null,
-    "rank": 103,
+    "rank": 105,
     "has_structure": true
   },
   {
@@ -924,7 +924,7 @@
     "round": 3,
     "status": "designed",
     "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:22.006733+00:00",
+    "created_at": "2026-02-28T17:13:00.470176+00:00",
     "sequence": "MAAVAAACATAIAITAALAALIAASTNVAAAQLIALLANVVIPVNLVALIASYPSAAAAALVAAALAACAAILAAAAAASSNPVAKALLSAAALVLAASAALAAQIA",
     "num_residues": 107,
     "hotspots": "A161, A150, A206, A167, A172",
@@ -948,7 +948,7 @@
     "scoring": null,
     "composite_score": null,
     "refolding": null,
-    "rank": 104,
+    "rank": 106,
     "has_structure": true
   },
   {
@@ -958,7 +958,7 @@
     "round": 3,
     "status": "designed",
     "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:22.490470+00:00",
+    "created_at": "2026-02-28T17:13:00.962825+00:00",
     "sequence": "AFAAALPQLSAATAAAVATIAAAATAAIIAAALAGDAAGVLAAAVAGVKALAAIAATASDPVTVLALSAAAAAIAALGATTALLLAAGVDPVTAVAAAIILAAAAAA",
     "num_residues": 107,
     "hotspots": "A161, A150, A206, A167, A172",
@@ -982,7 +982,7 @@
     "scoring": null,
     "composite_score": null,
     "refolding": null,
-    "rank": 105,
+    "rank": 107,
     "has_structure": true
   },
   {
@@ -992,7 +992,7 @@
     "round": 3,
     "status": "designed",
     "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:22.969306+00:00",
+    "created_at": "2026-02-28T17:13:01.443474+00:00",
     "sequence": "LALAAALLAAAAALIAAAATLSGAAKAAALSAAVAVLTTLIDEATKTILNPNATAAQKAAAAATLAACAALAAAIAAIDPTGAGAGTAVLTTLAACLSLTAQALAAQ",
     "num_residues": 107,
     "hotspots": "A161, A150, A206, A167, A172",
@@ -1016,7 +1016,7 @@
     "scoring": null,
     "composite_score": null,
     "refolding": null,
-    "rank": 106,
+    "rank": 108,
     "has_structure": true
   },
   {
@@ -1026,7 +1026,7 @@
     "round": 3,
     "status": "designed",
     "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:23.443460+00:00",
+    "created_at": "2026-02-28T17:13:01.927198+00:00",
     "sequence": "LANVVATFTATVTTLTAVIIALVAAANATPAAAVPLLTAANATAGVLVEVIVEATSALLNLATSEAQVLQVMTAAILALLAVAYAVAGALDKAASALANAIATALNV",
     "num_residues": 107,
     "hotspots": "A161, A150, A206, A167, A172",
@@ -1050,7 +1050,7 @@
     "scoring": null,
     "composite_score": null,
     "refolding": null,
-    "rank": 107,
+    "rank": 109,
     "has_structure": true
   },
   {
@@ -1060,7 +1060,7 @@
     "round": 3,
     "status": "designed",
     "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:23.924698+00:00",
+    "created_at": "2026-02-28T17:13:02.424782+00:00",
     "sequence": "LAALAAIAAIDPAAGALLAAGVALLLAALASTDVATLIALAVLSALALGAAAGLASTAAAFAAAAALAAAAIATATIAAVLAGGAAAAKTLVAAATLAFAAGVVAGA",
     "num_residues": 107,
     "hotspots": "A161, A150, A206, A167, A172",
@@ -1084,74 +1084,6 @@
     "scoring": null,
     "composite_score": null,
     "refolding": null,
-    "rank": 108,
-    "has_structure": true
-  },
-  {
-    "design_id": "rfd3_r3_s2_rfd3_r3_partial_diffusion_partial_diff_r2s2_0_t12_0_model_1",
-    "tool": "rfdiffusion3",
-    "strategy": "dimer_interface",
-    "round": 3,
-    "status": "designed",
-    "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:24.908255+00:00",
-    "sequence": "NALKAAVLDLALASLGAAAAAIATLSAAAAAALLAAGAPLSAAVSTAATAVATASLILCGLSAASVAKAAALLANAAAQLPVITGPILPLPALPALPAVAVP",
-    "num_residues": 102,
-    "hotspots": "",
-    "source_files": {
-      "metadata_json": "output/rfdiffusion3/r3/rfd3_r3_partial_diffusion_partial_diff_r2s2_0_t12_0_model_1.json",
-      "structure": "output/rfdiffusion3/r3/rfd3_r3_partial_diffusion_partial_diff_r2s2_0_t12_0_model_1.cif.gz"
-    },
-    "design_metrics": {
-      "helix": 0.696078431372549,
-      "sheet": 0.0,
-      "loop": 0.30392156862745096,
-      "radius_of_gyration": 17.851442129679548,
-      "max_ca_deviation": 0.1213078498840332,
-      "n_chainbreaks": 0,
-      "num_ss_elements": 4,
-      "alanine_content": 0.18206521739130435,
-      "glycine_content": 0.07880434782608696,
-      "source": "rfdiffusion3"
-    },
-    "validation": null,
-    "scoring": null,
-    "composite_score": null,
-    "refolding": null,
-    "rank": 109,
-    "has_structure": true
-  },
-  {
-    "design_id": "rfd3_r3_s2_rfd3_r3_partial_diffusion_partial_diff_r2s2_0_t12_0_model_2",
-    "tool": "rfdiffusion3",
-    "strategy": "dimer_interface",
-    "round": 3,
-    "status": "designed",
-    "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:25.401049+00:00",
-    "sequence": "ASVYAANTSGACPVAGSSSSTIVLPAAQNATLTAAQKAALLAAAKAAVAAAAATYKATKNGTAAAAAALLALAAAFAALGLPAAAAAAANTAALILAADAAA",
-    "num_residues": 102,
-    "hotspots": "",
-    "source_files": {
-      "metadata_json": "output/rfdiffusion3/r3/rfd3_r3_partial_diffusion_partial_diff_r2s2_0_t12_0_model_2.json",
-      "structure": "output/rfdiffusion3/r3/rfd3_r3_partial_diffusion_partial_diff_r2s2_0_t12_0_model_2.cif.gz"
-    },
-    "design_metrics": {
-      "helix": 0.6274509803921569,
-      "sheet": 0.0392156862745098,
-      "loop": 0.3333333333333333,
-      "radius_of_gyration": 17.906620568626515,
-      "max_ca_deviation": 0.1213078498840332,
-      "n_chainbreaks": 0,
-      "num_ss_elements": 4,
-      "alanine_content": 0.20380434782608695,
-      "glycine_content": 0.07880434782608696,
-      "source": "rfdiffusion3"
-    },
-    "validation": null,
-    "scoring": null,
-    "composite_score": null,
-    "refolding": null,
     "rank": 110,
     "has_structure": true
   },
@@ -1162,7 +1094,7 @@
     "round": 3,
     "status": "designed",
     "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:25.905429+00:00",
+    "created_at": "2026-02-28T17:13:04.430251+00:00",
     "sequence": "NINPGGKVVAAAAASNGGAGTDEAALQAALTALLTAADLATVEAAVAAVSAKLPSLYDPLLAAAATEALAYALALLKSDLKAAELNLQNLLATISAYLASKA",
     "num_residues": 102,
     "hotspots": "",
@@ -1196,7 +1128,7 @@
     "round": 3,
     "status": "designed",
     "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:26.414592+00:00",
+    "created_at": "2026-02-28T17:13:04.956175+00:00",
     "sequence": "LVASSIAAPAVALNAANKALVDAILAAAAPLEAILLAIIDLLAPIGAAIFAAAVTALGQAKAKNVLVPIVKALATIAGKLCVEKGALLAGIALAVAAGALGA",
     "num_residues": 102,
     "hotspots": "",
@@ -1230,7 +1162,7 @@
     "round": 3,
     "status": "designed",
     "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:26.915696+00:00",
+    "created_at": "2026-02-28T17:13:05.448024+00:00",
     "sequence": "MALPASPLSGGSADDMAAAAVATVTDAAKEAALAAIPAVTATLSALAAAAAATSAVHAILAAAALIATLGGLASVATGNAAIALAAVEIAAEVVKAAVSALL",
     "num_residues": 102,
     "hotspots": "",
@@ -1264,7 +1196,7 @@
     "round": 3,
     "status": "designed",
     "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:27.422664+00:00",
+    "created_at": "2026-02-28T17:13:05.929143+00:00",
     "sequence": "ALSAAVNAATVAAVAAALPAIKAQAEAADAVAAGAVAVAAAAAALAARLAALGAAAAAAAVAAAGANTALAIPAIAAATLAELANAPAPIPASQIPIIAPAA",
     "num_residues": 102,
     "hotspots": "",
@@ -1298,7 +1230,7 @@
     "round": 3,
     "status": "designed",
     "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:27.898343+00:00",
+    "created_at": "2026-02-28T17:13:06.439377+00:00",
     "sequence": "EKSAAIAAAINAITAAMKPAIKAALDKADTAALAAAGAALGAAAAIALAALLGASAAQIAALALLSANTVAAILYAAQTTSIPACTPTAAQKANIAAYNEQL",
     "num_residues": 102,
     "hotspots": "",
@@ -1332,7 +1264,7 @@
     "round": 3,
     "status": "designed",
     "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:28.372419+00:00",
+    "created_at": "2026-02-28T17:13:06.922362+00:00",
     "sequence": "MLAALQAAADALVAALKAAIKAALATLSPAAAAVAAAALGAAFYAALKAAILAVAAAAGIPTPAVAAPPAKSYAVDAALAAALKPAVAAALAEAKAKLDAELAAL",
     "num_residues": 105,
     "hotspots": "",
@@ -1366,7 +1298,7 @@
     "round": 3,
     "status": "designed",
     "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:28.845816+00:00",
+    "created_at": "2026-02-28T17:13:07.413376+00:00",
     "sequence": "MGGGGGGGGGLGAAAPGMLGGVTSPLYATLNASLTIPASAPALPTTATSAAEFANAVAADLILAAALAAALLAATPAEGQAAAAAAAATLLANLAAIAADLLNAV",
     "num_residues": 105,
     "hotspots": "",
@@ -1400,7 +1332,7 @@
     "round": 3,
     "status": "designed",
     "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:29.328544+00:00",
+    "created_at": "2026-02-28T17:13:07.900612+00:00",
     "sequence": "MAAVIDAIIAAAKAAAAASQQKDAAALNTALGAVAALAALSVAIVLSEKGVAVDLNLLTKIAINSGLSTIDAANTVLAELNAITYDPNKLAKAAAAANAALAAAK",
     "num_residues": 105,
     "hotspots": "",
@@ -1434,7 +1366,7 @@
     "round": 3,
     "status": "designed",
     "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:29.792314+00:00",
+    "created_at": "2026-02-28T17:13:08.400898+00:00",
     "sequence": "IAGGGAGGGGGAPGLAGPIPAELKAAFLAAFAAASAAVAALLAQAAAAAAANGQAAKAAILAAAIAALAALTAALISGALDPVLAELNSPPLPNAELAAKANAAL",
     "num_residues": 105,
     "hotspots": "",
@@ -1468,7 +1400,7 @@
     "round": 3,
     "status": "designed",
     "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:30.281105+00:00",
+    "created_at": "2026-02-28T17:13:08.930307+00:00",
     "sequence": "VAAAAATLAAAAAALVAVLTAVAAAAAATGAPLAADLAVLAAVQLLTVATAAALAAAAGAAVPAASNVVTAPTLLPAAELAALNAATKAFIAAHGDATLAAIAAL",
     "num_residues": 105,
     "hotspots": "",
@@ -1502,7 +1434,7 @@
     "round": 3,
     "status": "designed",
     "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:30.775606+00:00",
+    "created_at": "2026-02-28T17:13:09.457346+00:00",
     "sequence": "LPAVKATALAAAPAPPPTPIPIPPIQPPVLLADDSVIQDINAILKNSPFYATSVAAGAIAQNGAAAIAAASAAAIVLLGMSIAEALDLTLALVAALAAAIKAVLD",
     "num_residues": 105,
     "hotspots": "",
@@ -1536,7 +1468,7 @@
     "round": 3,
     "status": "designed",
     "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:31.264056+00:00",
+    "created_at": "2026-02-28T17:13:09.966045+00:00",
     "sequence": "AAKAGAGAILNAGGGPAGTDPVASAALMGIPLSIVAASLALISIAATLATFAQSLAAVAALAAAAAAAVALLIGAAIGNPAFGAKAAAAILAASAALIADLLAAA",
     "num_residues": 105,
     "hotspots": "",
@@ -1570,7 +1502,7 @@
     "round": 3,
     "status": "designed",
     "evaluation_stage": "collected",
-    "created_at": "2026-02-28T17:02:31.726621+00:00",
+    "created_at": "2026-02-28T17:13:10.451892+00:00",
     "sequence": "AFTAAEAEAFGGVNGPADAELLLPASLVAATAAAIALAAALLTPAVAVITLSNNAALKAAAIAAAAAAAIAAVAPYINDPSAVGALAAACAAVLATAAGLLAAAI",
     "num_residues": 105,
     "hotspots": "",

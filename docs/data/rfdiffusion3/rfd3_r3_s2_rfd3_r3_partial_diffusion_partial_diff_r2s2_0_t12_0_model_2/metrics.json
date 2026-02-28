@@ -3,9 +3,9 @@
   "tool": "rfdiffusion3",
   "strategy": "dimer_interface",
   "round": 3,
-  "status": "designed",
-  "evaluation_stage": "collected",
-  "created_at": "2026-02-28T17:02:25.401049+00:00",
+  "status": "validated",
+  "evaluation_stage": "validated",
+  "created_at": "2026-02-28T17:13:03.939534+00:00",
   "sequence": "ASVYAANTSGACPVAGSSSSTIVLPAAQNATLTAAQKAALLAAAKAAVAAAAATYKATKNGTAAAAAALLALAAAFAALGLPAAAAAAANTAALILAADAAA",
   "num_residues": 102,
   "hotspots": "",
@@ -25,9 +25,15 @@
     "glycine_content": 0.07880434782608696,
     "source": "rfdiffusion3"
   },
-  "validation": null,
+  "validation": {
+    "source": "boltz2",
+    "validated_at": "2026-02-28T17:14:02.328315+00:00",
+    "iptm": 0.7884624600410461,
+    "ptm": 0.8301012516021729,
+    "plddt": 0.85178142786026
+  },
   "scoring": null,
-  "composite_score": null,
+  "composite_score": 0.5285,
   "refolding": null,
-  "rank": 110
+  "rank": 42
 }

@@ -4,8 +4,8 @@
   "strategy": "dimer_interface",
   "round": 3,
   "status": "validated",
-  "evaluation_stage": "validated",
-  "created_at": "2026-02-28T17:02:24.417818+00:00",
+  "evaluation_stage": "collected",
+  "created_at": "2026-02-28T17:13:02.926323+00:00",
   "sequence": "MKTLSAAAEALLNAAAAAAIDAGKAMIAGDFAAAIAALAAAAAAATAALAVTLGKPALAAALAAAGAATAANTLLAGLAAFANLIDNADAETKSILLNAAGL",
   "num_residues": 102,
   "hotspots": "",
@@ -35,5 +35,5 @@
   "scoring": null,
   "composite_score": 0.1635,
   "refolding": null,
-  "rank": 61
+  "rank": 63
 }
