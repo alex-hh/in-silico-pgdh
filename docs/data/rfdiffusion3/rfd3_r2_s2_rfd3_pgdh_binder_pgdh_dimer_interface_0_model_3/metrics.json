@@ -5,7 +5,7 @@
   "round": 2,
   "status": "validated",
   "evaluation_stage": "validated",
-  "created_at": "2026-02-28T16:28:40.313484+00:00",
+  "created_at": "2026-02-28T17:02:06.865635+00:00",
   "sequence": "TAAAIAAIKAAIDAGAAEAAVNAAAQAVISLGLAGLLDAAVAVANAVVAYAIASVTSAASAAIALGAIAATCAALPACALALGASVAAAIALASAQVAILCAAAKAILEKI",
   "num_residues": 111,
   "hotspots": "A161, A150, A206, A167, A172",
@@ -31,11 +31,11 @@
   "composite_score": null,
   "refolding": {
     "source": "boltzgen_folding",
-    "refolded_at": "2026-02-28T16:29:53.413818+00:00",
+    "refolded_at": "2026-02-28T17:03:24.425109+00:00",
     "boltzgen_rmsd": null,
     "boltzgen_plddt": null,
     "boltzgen_iptm": null,
     "min_interaction_pae": null
   },
-  "rank": 75
+  "rank": 76
 }

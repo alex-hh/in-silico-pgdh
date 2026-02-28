@@ -5,7 +5,7 @@
   "round": 3,
   "status": "designed",
   "evaluation_stage": "collected",
-  "created_at": "2026-02-28T16:28:55.889625+00:00",
+  "created_at": "2026-02-28T17:02:23.924698+00:00",
   "sequence": "LAALAAIAAIDPAAGALLAAGVALLLAALASTDVATLIALAVLSALALGAAAGLASTAAAFAAAAALAAAAIATATIAAVLAGGAAAAKTLVAAATLAFAAGVVAGA",
   "num_residues": 107,
   "hotspots": "A161, A150, A206, A167, A172",
@@ -29,5 +29,5 @@
   "scoring": null,
   "composite_score": null,
   "refolding": null,
-  "rank": 107
+  "rank": 108
 }
