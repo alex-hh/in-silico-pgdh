@@ -846,7 +846,7 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
 
     if target_cif_text:
         html += f"""<div class="tab-panel" id="panel_target">
-<div class="tab-quote">&ldquo;The pattern which connects is a metapattern. It is a pattern of patterns.&rdquo;<span class="tq-attr">&mdash; Gregory Bateson, <em>Mind and Nature</em></span></div>
+<div class="tab-quote">&ldquo;Every living being is also a cognitive system, and living as a process is a process of cognition.&rdquo;<span class="tq-attr">&mdash; Humberto Maturana &amp; Francisco Varela, <em>Autopoiesis and Cognition</em></span></div>
 <div class="design-card">
   <div class="card-header"><h2>15-PGDH Target (2GDZ)</h2><span class="rank-badge" style="background:#4361ee">Reference</span></div>
   <div class="card-body">
