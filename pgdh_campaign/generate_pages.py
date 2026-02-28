@@ -727,7 +727,7 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
 {uneval_cards if uneval_cards else '<div class="empty">No unevaluated designs.</div>'}
 </div>
 <div class="tab-panel" id="panel_all">
-<div class="tab-quote">&ldquo;The point is not to judge but to understand what molecules are capable of when they are not defined by what we already know.&rdquo;<span class="tq-attr">&mdash; Isabelle Stengers / Claude, after <em>Cosmopolitics</em></span></div>
+<div class="tab-quote">&ldquo;Scientists no longer address a system as explained by what they know about it, even if they know it perfectly well, because it is a model. Their questions imply an open situation: &lsquo;what will it be able to produce?&rsquo; &lsquo;What kind of behavior will emerge?&rsquo; And the question must be asked each time, with each new situation.&rdquo;<span class="tq-attr">&mdash; Isabelle Stengers</span></div>
 {all_cards}
 </div>
 <div class="tab-panel" id="panel_table">
