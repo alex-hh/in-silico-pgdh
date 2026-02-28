@@ -14,125 +14,98 @@ Three binding strategies:
 
 | # | Strategy | Hotspots | Binder Size |
 |---|----------|----------|-------------|
-| 1 | Active site blocker | Ser138, Tyr151, Lys155, Gln148, Phe185, Tyr217 | 80-120 AA |
+| 1 | Active site blocker | Ser138, Tyr151, Lys155, Gln148, Phe185, Tyr217 | 40-80 AA |
 | 2 | Dimer disruptor | Phe161, Val150, Ala153, Leu167, Tyr206 | 80-140 AA |
 | 3 | Surface (model-free) | Auto-detected | 60-140 AA |
 
 ## Architecture
 
 ```
-                    ┌─────────────────────┐    ┌──────────────────────────┐
-                    │  Streamlit Web App   │    │  Claude Code + Skills    │
-                    │  (team members)      │    │  (developers)            │
-                    │                      │    │                          │
-                    │  Fixed pipelines:    │    │  Flexible orchestration: │
-                    │  BoltzGen, RFD3,     │    │  /boltzgen-pgdh          │
-                    │  Boltz-2, ipSAE      │    │  /pgdh_rfdiffusion3      │
-                    └──────────┬───────────┘    └───────────┬──────────────┘
-                               │                            │
-                               │  Both write to output/     │
-                               ▼                            ▼
-┌──────────────────────────────────────────────────────────────────────────────┐
-│  Lyceum S3 Storage                                                          │
-│                                                                             │
-│  output/boltzgen/s1_active_site/     ← raw tool outputs                    │
-│  output/rfdiffusion3/active_site/                                           │
-│  output/boltz2/                                                             │
-│  output/ipsae/                                                              │
-└──────────────────────────┬───────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────┐
+│  Claude Code + Skills (/design-round orchestrates full rounds)         │
+│                                                                         │
+│  /boltzgen-pgdh  /pgdh_rfdiffusion3  /pgdh-evaluate  /design-round    │
+└──────────┬──────────────────────────────────┬───────────────────────────┘
+           │  submit Docker jobs              │  submit eval jobs
+           ▼                                  ▼
+┌──────────────────────────────────────────────────────────────────────────┐
+│  Lyceum GPU/CPU                                                          │
+│  ├── BoltzGen design (A100)        → output/boltzgen/r{N}/{strategy}/   │
+│  ├── RFdiffusion3 design (A100)    → output/rfdiffusion3/r{N}/{strat}/  │
+│  ├── Boltz-2 cross-validation      → output/boltz2/                     │
+│  └── PyRosetta interface scoring   → output/pyrosetta/                  │
+└──────────────────────────┬───────────────────────────────────────────────┘
                            │
                            ▼  sync_designs.py (ONLY writer to designs/)
-┌──────────────────────────────────────────────────────────────────────────────┐
-│  designs/                        ← SOURCE OF TRUTH (read-only)              │
-│  ├── index.json                  Master ranked index                        │
-│  └── <tool>/<design_id>/         Per-design: structure.cif + metrics.json   │
-│                                                                             │
-│  tracker/state.json              ← Campaign state (synced by sync_designs)  │
-└──────────────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────┐
+│  designs/                        ← SOURCE OF TRUTH (read-only)           │
+│  ├── index.json                  Master ranked index (all rounds)        │
+│  └── <tool>/<design_id>/         Per-design: designed.cif + metrics.json │
+│                                                                          │
+│  Metrics: ipTM, pTM, RMSD, min_interaction_pae, composite score         │
+└──────────────────────────┬───────────────────────────────────────────────┘
                            │
-                           ▼
-              ┌────────────────────────┐
-              │  Dashboard / Skills    │
-              │  read designs/ and     │
-              │  tracker/state.json    │
-              └────────────────────────┘
+                           ▼  generate_pages.py
+              ┌─────────────────────────────┐
+              │  GitHub Pages (docs/)        │
+              │  3D viewer, metrics table,   │
+              │  round badges + filtering    │
+              └─────────────────────────────┘
 ```
 
 ## Workflow
 
+Designs are organised into **rounds** (r0, r1, r2...). Each round follows the
+`/design-round` skill lifecycle: design → sync → eval → publish → advance.
+
 ### 1. Design Generation
 
-Two equivalent paths — both write raw outputs to `output/<tool>/` on Lyceum S3:
+Claude Code skills submit Docker jobs to Lyceum. Raw outputs go to
+`output/{tool}/r{N}/{strategy}/` on S3:
 
-**Via the Streamlit web app** (for team members):
-- Open the dashboard, go to "New Run" page
-- Pick a tool (BoltzGen, RFdiffusion3), strategy, and parameters
-- Click submit — the app sends a Docker job to Lyceum
-
-**Via Claude Code skills** (for developers with a local repo):
 ```bash
-# Use skills interactively through Claude Code
-/boltzgen-pgdh    # BoltzGen design generation
-/pgdh_rfdiffusion3  # RFdiffusion3 design generation
-/pgdh-design      # Full orchestration (design → evaluate → rank)
+/boltzgen-pgdh       # BoltzGen binder design
+/pgdh_rfdiffusion3   # RFdiffusion3 binder design
+/design-round        # Full round lifecycle (all phases)
 ```
 
-### 2. Sync + Evaluate (Two Scripts)
-
-After any design run, two scripts handle the pipeline:
+### 2. Sync + Evaluate
 
 **`sync_designs.py`** — Collect, standardise, rank (no GPU, fast):
 ```bash
 source .venv/bin/activate
-python pgdh_campaign/sync_designs.py
+python pgdh_campaign/sync_designs.py          # normal sync
+python pgdh_campaign/sync_designs.py --force  # force re-promote refolding data
 ```
 
 This is the **ONLY writer to `designs/`** (the source of truth on S3). It:
-1. **Collects** — scans `output/boltzgen/`, `output/rfdiffusion3/`, etc. on S3
-2. **Attaches** — picks up existing Boltz-2 and ipSAE results from `output/`
-3. **Ranks** — computes composite score (ipTM, pTM, RMSD, validation, ipSAE)
-4. **Writes** — updates `designs/index.json`, per-design `metrics.json`, and `tracker/state.json`
+1. **Collects** — scans `output/boltzgen/`, `output/rfdiffusion3/` on S3
+2. **Attaches** — picks up Boltz-2, PyRosetta, and refolding results
+3. **Ranks** — composite score from ipTM, pTM, RMSD, min_interaction_pae
+4. **Writes** — updates `designs/index.json`, per-design `metrics.json`
 
-**`evaluate_designs.py`** — Submit GPU jobs (optional):
+**`evaluate_designs.py`** — Submit evaluation jobs:
 ```bash
-python pgdh_campaign/evaluate_designs.py --refold     # BoltzGen refolding
-python pgdh_campaign/evaluate_designs.py --validate   # Boltz-2 cross-validation
-python pgdh_campaign/evaluate_designs.py --score      # ipSAE scoring
+python pgdh_campaign/evaluate_designs.py --fast --round 1         # promote BoltzGen self-consistency
+python pgdh_campaign/evaluate_designs.py --fast --interface --round 1  # + PyRosetta scoring (CPU)
+python pgdh_campaign/evaluate_designs.py --slow --auto --round 1  # Boltz-2 cross-validation (GPU)
+python pgdh_campaign/evaluate_designs.py --fast --force            # force re-promote all
 ```
 
-This calls `sync_designs.sync_all()` first, then submits GPU jobs to `output/`. After jobs complete, run `sync_designs.py` again to pick up results.
+After eval jobs complete, run `sync_designs.py` again to pick up results.
 
 ### 3. Viewing Designs
 
-There are two ways to view designs, both reading from the same S3 source of truth:
-
-#### GitHub Pages (static, instant)
-
-The viewer at **https://alex-hh.github.io/in-silico-pgdh/** is a static HTML page
-committed to the repo under `docs/`. It loads instantly (no S3 calls at page load)
-but must be manually synced and pushed after running `sync_designs.py`:
+The viewer at **https://alex-hh.github.io/in-silico-pgdh/** shows all designs
+with 3D structures, metrics, and round filtering:
 
 ```bash
-source .venv/bin/activate
-
-# 1. Sync designs from S3 (if not already done)
-python pgdh_campaign/sync_designs.py
-
-# 2. Sync from S3 + generate HTML
-python pgdh_campaign/generate_pages.py
-
-# 3. Commit and push to update the live site
-git add docs/
-git commit -m "Update GitHub Pages with latest designs"
-git push
+python pgdh_campaign/generate_pages.py    # sync from S3 + generate docs/index.html
+git add docs/ && git commit && git push   # publish
 ```
 
-- **Tabs**: Evaluated / Unevaluated / All / Target Info
-- **Per-design**: 3Dmol.js 3D viewer, metrics panel, sequence
-- **Data lives at**: `docs/data/index.json`, `docs/data/evaluated.json`,
-  `docs/data/unevaluated.json`, `docs/data/<tool>/<design_id>/designed.cif`
-- **Legacy viewers**: `docs/production_runs.html`, `docs/designs_viewer.html`
-  (generated by `generate_viewer.py`, reads from `pgdh_campaign/out/`)
+- **Features**: 3Dmol.js 3D viewer, sortable metrics table, round badges/filter
+- **Metrics**: ipTM, pTM, RMSD, min interaction PAE, composite score
 
 ## S3 Source of Truth
 
@@ -140,13 +113,12 @@ All design data flows through Lyceum S3 storage. The key directories:
 
 | S3 Path | What | Writer | Readers |
 |---------|------|--------|---------|
-| `output/boltzgen/` | Raw BoltzGen outputs (CSVs, CIFs) | Lyceum jobs | `sync_designs.py` |
-| `output/rfdiffusion3/` | Raw RFD3 outputs (JSONs, CIFs) | Lyceum jobs | `sync_designs.py` |
-| `output/boltz2/` | Boltz-2 validation predictions | Lyceum jobs (via `evaluate_designs.py`) | `sync_designs.py` |
-| `output/ipsae/` | ipSAE binding scores | Lyceum jobs (via `evaluate_designs.py`) | `sync_designs.py` |
-| `output/refolding/` | BoltzGen refolding results | Lyceum jobs (via `evaluate_designs.py`) | `sync_designs.py` |
-| **`designs/index.json`** | **Master ranked index of all designs** | **`sync_designs.py` only** | GitHub Pages, skills |
-| **`designs/<tool>/<id>/`** | **Per-design: metrics.json + CIFs** | **`sync_designs.py` only** | GitHub Pages, skills |
+| `output/boltzgen/r{N}/{strat}/` | Raw BoltzGen outputs (CSVs, CIFs) | Lyceum GPU jobs | `sync_designs.py` |
+| `output/rfdiffusion3/r{N}/{strat}/` | Raw RFD3 outputs (JSONs, CIFs) | Lyceum GPU jobs | `sync_designs.py` |
+| `output/boltz2/` | Boltz-2 cross-validation | `evaluate_designs.py --slow` | `sync_designs.py` |
+| `output/pyrosetta/` | Interface scoring (dG, SC, dSASA) | `evaluate_designs.py --interface` | `sync_designs.py` |
+| **`designs/index.json`** | **Master ranked index (all rounds)** | **`sync_designs.py` only** | GitHub Pages |
+| **`designs/<tool>/<id>/`** | **Per-design: metrics.json + CIFs** | **`sync_designs.py` only** | GitHub Pages |
 
 The `designs/` directory is **read-only** — only `sync_designs.py` writes to it.
 The `output/` directories contain raw tool outputs that get standardised into `designs/`.
@@ -158,9 +130,9 @@ biohack/
 ├── pgdh_campaign/                 # Campaign files
 │   ├── CAMPAIGN_PLAN.md           # Full campaign strategy
 │   ├── sync_designs.py            # Collect + rank designs → writes designs/ on S3
-│   ├── evaluate_designs.py        # Submit GPU evaluation jobs (--refold/--validate/--score)
+│   ├── evaluate_designs.py        # Submit eval jobs (--fast/--slow/--interface/--round)
 │   ├── generate_pages.py          # Sync from S3 + generate docs/index.html
-│   ├── generate_viewer.py         # Legacy viewer (reads from pgdh_campaign/out/)
+│   ├── rounds/                    # Per-round summary docs (r0_summary.md, ...)
 │   ├── configs/                   # Tool configs (YAML/JSON)
 │   ├── structures/                # Target PDB/CIF files
 │   └── out/                       # Local design outputs
@@ -172,8 +144,7 @@ biohack/
 │   │   ├── evaluated.json
 │   │   ├── unevaluated.json
 │   │   └── <tool>/<id>/designed.cif
-│   ├── production_runs.html       # Legacy viewer
-│   └── designs_viewer.html        # Legacy viewer
+│   └── historic/                  # Archived old viewers
 │
 ├── projects/biolyceum/            # Lyceum platform integration
 │   ├── src/
@@ -187,9 +158,9 @@ biohack/
 ├── .claude/skills/                # Claude Code skills
 │   ├── boltzgen-pgdh/             # BoltzGen PGDH design
 │   ├── pgdh_rfdiffusion3/         # RFdiffusion3 PGDH design
-│   ├── pgdh-design/               # Orchestrator skill
-│   ├── propose-new-designs/       # Campaign analysis + suggestions
-│   ├── pgdh_ipsae/                # ipSAE scoring for PGDH
+│   ├── design-round/              # Full round lifecycle orchestrator
+│   ├── pgdh-evaluate/             # Evaluation pipeline skill
+│   ├── pgdh-design/               # Design orchestration
 │   └── ...                        # Generic tools (boltzgen, boltz, etc.)
 │
 ├── plans/                         # Implementation plans
@@ -249,13 +220,13 @@ TOOL_ADAPTERS = {
 }
 ```
 
-#### 3. Streamlit form in app.py
+#### 3. Claude Code skill (optional)
 
-Add a submission form in the "New Run" page of `dashboard/app.py` so team
-members can launch jobs from the web app.
+Create a skill in `.claude/skills/<tool-name>/SKILL.md` documenting
+how to run the tool, its parameters, and output format.
 
-**Without all three steps, designs from the new tool will not appear in the
-dashboard or be ranked by the evaluation pipeline.**
+**Without steps 1-2, designs from the new tool will not appear in the
+pages viewer or be ranked by the evaluation pipeline.**
 
 ### Adding a New Evaluation Model
 
