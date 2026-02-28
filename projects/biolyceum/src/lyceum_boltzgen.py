@@ -83,7 +83,21 @@ def boltzgen_run(yaml_path, output_dir, protocol="protein-anything",
 
     output_files = list(output_dir.rglob("*"))
     output_files = [f for f in output_files if f.is_file()]
-    print(f"Output files: {[str(f) for f in output_files]}")
+    print(f"Output files ({len(output_files)}):")
+    for f in output_files:
+        print(f"  {f}")
+
+    # Ensure NPZ confidence files (containing ipSAE, PAE, pLDDT) are in the
+    # top-level output dir alongside CIF files. BoltzGen's FoldingWriter puts
+    # them in intermediate subdirs; copy them up so sync_designs.py can find them.
+    import shutil
+    npz_files = list(output_dir.rglob("*.npz"))
+    for npz in npz_files:
+        dest = output_dir / npz.name
+        if dest != npz and not dest.exists():
+            shutil.copy2(npz, dest)
+            print(f"  Copied {npz.name} -> {dest}")
+
     return output_files
 
 

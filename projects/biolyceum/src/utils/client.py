@@ -46,7 +46,7 @@ class LyceumClient:
         resp = httpx.post(
             f"{self.base_url}/api/v2/external/storage/credentials",
             headers=self._headers,
-            timeout=30.0,
+            timeout=120.0,
         )
         resp.raise_for_status()
         creds = resp.json()
@@ -163,7 +163,7 @@ class LyceumClient:
             f"{self.base_url}/api/v2/external/execution/streaming/start",
             headers={**self._headers, "Content-Type": "application/json"},
             json=payload,
-            timeout=30.0,
+            timeout=120.0,
         )
         resp.raise_for_status()
         data = resp.json()
@@ -199,7 +199,7 @@ class LyceumClient:
             f"{self.base_url}/api/v2/external/execution/image/start",
             headers={**self._headers, "Content-Type": "application/json"},
             json=payload,
-            timeout=30.0,
+            timeout=120.0,
         )
         resp.raise_for_status()
         data = resp.json()
@@ -218,7 +218,7 @@ class LyceumClient:
         resp = httpx.get(
             f"{self.base_url}/api/v2/external/execution/streaming/{execution_id}/status",
             headers=self._headers,
-            timeout=120.0,
+            timeout=300.0,
         )
         resp.raise_for_status()
         return resp.json()
@@ -234,7 +234,7 @@ class LyceumClient:
         success = False
 
         try:
-            with httpx.stream("POST", url, headers=self._headers, timeout=600.0) as resp:
+            with httpx.stream("POST", url, headers=self._headers, timeout=1200.0) as resp:
                 for line in resp.iter_lines():
                     if not line.startswith("data: "):
                         continue

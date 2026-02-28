@@ -40,6 +40,11 @@ lyceum docker run pytorch/pytorch:2.4.1-cuda12.4-cudnn9-runtime \
 
 Max timeout: 600 seconds per execution.
 
+**API Stability Warning (Feb 2026)**: The Lyceum API is experiencing high latency
+(30-120s for API calls that normally take <1s). The client uses long timeouts (120s
+for submissions, 300s for status, 1200s for streaming) to handle this. **Schedule at
+most 1 job at a time** — submitting multiple concurrent jobs increases failure risk.
+
 ### Persistent Storage
 
 Lyceum provides an **S3-backed persistent storage bucket** per user account. Files persist across executions.

@@ -11,20 +11,23 @@ a local directory, etc.). This script:
 2. Copies the designer's predicted structures into designs/<tool>/<id>/
 3. Attaches any existing refolding, validation, and scoring results
 4. Ranks by composite score
-5. Writes designs/index.json and syncs tracker/state.json
+5. Writes designs/index.json (the source of truth)
 
 Usage:
     source .venv/bin/activate
     python pgdh_campaign/sync_designs.py
 
-This script is also importable — the Streamlit dashboard and
-evaluate_designs.py both call `sync_all()` directly.
+This script is also importable — evaluate_designs.py calls `sync_all()` directly.
 
 S3 Data Architecture:
 
 1. output/           Raw tool outputs (written by Lyceum GPU jobs)
 2. designs/          ALL designs — source of truth (written ONLY by sync_designs.py)
-3. tracker/state.json  Jobs + notes (synced by sync_designs.py, written by dashboard)
+
+Display pipeline (GitHub Pages):
+    sync_designs.py   →  designs/index.json on S3  (this script)
+    generate_pages.py →  S3 → docs/data/ → docs/index.html
+    git push          →  live site
 
 Two commands:
   python pgdh_campaign/sync_designs.py          # Collect + rank (no GPU, fast)
@@ -687,12 +690,48 @@ def attach_refolding_results(client: LyceumClient, designs: list[dict]) -> int:
             except Exception:
                 pass
 
+        # Check for NPZ confidence files (BoltzGen FoldingWriter output).
+        # These contain ipSAE, PAE, pLDDT, iptm and other prediction metrics.
+        ipsae = None
+        ipsae_d2t = None
+        ipsae_t2d = None
+        interaction_pae = None
+        npz_files = [f for f in files if f.endswith(".npz")]
+        for npz_key in npz_files:
+            try:
+                npz_data = client.download_bytes(npz_key)
+                import io as _io
+                import numpy as _np
+                data = _np.load(_io.BytesIO(npz_data))
+                # Extract key metrics from BoltzGen's eval_keys
+                if "design_ipsae_min" in data:
+                    ipsae = float(data["design_ipsae_min"])
+                if "design_to_target_ipsae" in data:
+                    ipsae_d2t = float(data["design_to_target_ipsae"])
+                if "target_to_design_ipsae" in data:
+                    ipsae_t2d = float(data["target_to_design_ipsae"])
+                if "min_interaction_pae" in data:
+                    interaction_pae = float(data["min_interaction_pae"])
+                if "iptm" in data and iptm is None:
+                    iptm = float(data["iptm"])
+                if "complex_plddt" in data and plddt is None:
+                    plddt = float(data["complex_plddt"])
+                if "design_to_target_iptm" in data and iptm is None:
+                    iptm = float(data["design_to_target_iptm"])
+                break  # Only need first NPZ
+            except Exception as e:
+                print(f"    Warning: could not parse NPZ for {did}: {e}")
+
         d["refolding"] = {
             "source": "boltzgen_folding",
             "refolded_at": _now(),
             "boltzgen_rmsd": rmsd,
             "boltzgen_plddt": plddt,
             "boltzgen_iptm": iptm,
+            "ipsae": ipsae,
+            "ipsae_design_to_target": ipsae_d2t,
+            "ipsae_target_to_design": ipsae_t2d,
+            "interaction_pae": interaction_pae,
         }
         d["source_files"] = d.get("source_files") or {}
         d["source_files"]["refolded_structure"] = refolded_cif
@@ -703,7 +742,8 @@ def attach_refolding_results(client: LyceumClient, designs: list[dict]) -> int:
         if d.get("status") == "designed":
             d["status"] = "validated"
         updated += 1
-        print(f"    Attached refolding for {did}: boltzgen_rmsd={rmsd}, boltzgen_plddt={plddt}")
+        ipsae_str = f", ipsae={ipsae:.4f}" if ipsae is not None else ""
+        print(f"    Attached refolding for {did}: boltzgen_rmsd={rmsd}, boltzgen_plddt={plddt}{ipsae_str}")
 
     return updated + n_promoted
 
@@ -775,8 +815,11 @@ def compute_composite_scores(designs: list[dict]) -> list[dict]:
             except (ValueError, TypeError):
                 pass
 
-        # Scoring metrics
+        # Scoring metrics — ipSAE from standalone scoring or from refolding NPZ
         ipsae = scr.get("ipsae")
+        if ipsae is None:
+            # Fall back to ipSAE from BoltzGen refolding NPZ
+            ipsae = refold.get("ipsae")
         if ipsae is not None:
             try:
                 score += 0.25 * float(ipsae)
@@ -883,7 +926,7 @@ def write_index(client: LyceumClient, designs: list[dict]):
             "ptm": dm.get("ptm"),
             "filter_rmsd": dm.get("filter_rmsd"),
             "refold_rmsd": refold.get("boltzgen_rmsd"),
-            "ipsae": scr.get("ipsae"),
+            "ipsae": scr.get("ipsae") or refold.get("ipsae"),
             "interface_dG": (d.get("interface_metrics") or {}).get("interface_dG"),
             "interface_sc": (d.get("interface_metrics") or {}).get("interface_sc"),
         })

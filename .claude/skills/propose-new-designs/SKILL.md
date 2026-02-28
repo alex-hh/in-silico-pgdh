@@ -34,9 +34,9 @@ print(c.download_bytes('designs/index.json').decode())
 " > /tmp/pgdh_index.json
 ```
 
-Or if `designs/index.json` doesn't exist yet, run the evaluation pipeline first:
+Or if `designs/index.json` doesn't exist yet, run the sync pipeline first:
 ```bash
-python pgdh_campaign/evaluate_designs.py
+python pgdh_campaign/sync_designs.py
 ```
 
 ### Step 2: Analyse coverage
@@ -89,13 +89,13 @@ Format recommendations as an actionable list:
    Command: invoke /pgdh_rfdiffusion3 or use Streamlit "New Run" page
 
 2. **[MED] Validate BoltzGen S3 designs** — 12 designs at "designed" status.
-   Run: python pgdh_campaign/evaluate_designs.py --validate
+   Run: python pgdh_campaign/evaluate_designs.py --validate, then sync_designs.py
 
 3. **[MED] Increase BoltzGen S1 count** — only 3 passed QC out of 10.
    Suggested: 20 more designs with num_designs=20
 
 4. **[LOW] Score validated designs** — 5 validated but not scored.
-   Run: python pgdh_campaign/evaluate_designs.py --score
+   Run: python pgdh_campaign/evaluate_designs.py --score, then sync_designs.py
 ```
 
 Priority levels:
@@ -149,5 +149,6 @@ For each recommendation, estimate:
 
 - **Campaign index**: `designs/index.json` on S3
 - **Campaign state**: `tracker/state.json` on S3
-- **Evaluation pipeline**: `pgdh_campaign/evaluate_designs.py`
+- **Sync pipeline**: `pgdh_campaign/sync_designs.py`
+- **GPU evaluation**: `pgdh_campaign/evaluate_designs.py`
 - **Campaign plan**: `pgdh_campaign/CAMPAIGN_PLAN.md`

@@ -4,8 +4,16 @@ Design protein binders targeting 15-PGDH (PDB: 2GDZ) for the Berlin Bio Hackatho
 
 ## TODO
 
-- [ ] Regenerate `docs/index.html` with table view once Lyceum S3 is accessible (`python pgdh_campaign/sync_to_pages.py && python pgdh_campaign/generate_pages.py`)
+- [ ] Regenerate `docs/index.html` with table view once Lyceum S3 is accessible (`python pgdh_campaign/generate_pages.py`)
 - [ ] Test `evaluate_designs.py --fast` and `--slow` with actual Lyceum job submissions
+
+## Lyceum API Stability (Feb 2026)
+
+The Lyceum API is experiencing high latency (30-120s per API call). Mitigations:
+
+- **Client timeouts**: Increased to 120s (API calls), 300s (status), 1200s (streaming) in `client.py`
+- **Schedule 1 job at a time**: Submitting multiple concurrent jobs increases failure risk
+- **Standalone fallback**: If Lyceum is fully down, use `server/` scripts on a standalone A100 VM (SCP-based workflow, no Lyceum dependency)
 
 ## Evaluation Pipeline
 
@@ -59,11 +67,10 @@ The static site at `docs/index.html` has two views:
 
 Regenerate with:
 ```bash
-python pgdh_campaign/sync_to_pages.py   # S3 designs/ -> docs/data/
-python pgdh_campaign/generate_pages.py  # docs/data/ -> docs/index.html
+python pgdh_campaign/generate_pages.py  # sync from S3 + generate docs/index.html
 ```
 
-`sync_to_pages.py` won't clobber local `docs/data/` if S3 times out — it falls back to existing local data.
+Use `--no-sync` to skip S3 download and use cached local data.
 
 ## Quick Start: Score a binder with ipSAE
 

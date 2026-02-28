@@ -1,10 +1,11 @@
-"""PyRosetta Interface Scoring — Lyceum version.
+"""PyRosetta Interface Scoring + Sequence QC — Lyceum version.
 
-Scores binder–target protein complexes using PyRosetta interface analysis.
-Computes binding energy, shape complementarity, buried SASA, H-bonds, packing,
-secondary structure, and clashes — all CPU-only, no GPU needed.
+Comprehensive protein design QC in a single script:
+  1. PyRosetta interface metrics (dG, SC, dSASA, hbonds, packstat, clashes, SS)
+  2. Sequence biophysics (instability index, GRAVY, pI, molecular weight)
+  3. Sequence liability detection (cysteines, deamidation, polybasic, etc.)
 
-Scoring functions extracted from BindCraft (bindcraft.functions).
+All CPU-only, no GPU needed.
 
 Input:  /mnt/s3/input/pyrosetta/<design_id>.cif (or .pdb) — binder+target complex
 Output: /mnt/s3/output/pyrosetta/<design_id>/interface_metrics.json
@@ -16,6 +17,7 @@ Usage on Lyceum (via Docker execution):
 import argparse
 import json
 import os
+import re
 import sys
 import traceback
 from pathlib import Path
@@ -442,6 +444,108 @@ def calculate_clash_score(pr, pose):
     return clash_count
 
 
+def get_binder_sequence(pose, binder_chain):
+    """Extract the amino acid sequence of the binder chain from the pose."""
+    seq = []
+    for i in range(1, pose.size() + 1):
+        if pose.pdb_info().chain(i) == binder_chain:
+            seq.append(pose.residue(i).name1())
+    return "".join(seq)
+
+
+def calc_sequence_metrics(sequence):
+    """Compute biophysical properties using BioPython ProtParam.
+
+    Returns dict with instability_index, GRAVY, pI, molecular_weight.
+    """
+    from Bio.SeqUtils.ProtParam import ProteinAnalysis
+
+    # Filter to standard amino acids only
+    clean_seq = "".join(c for c in sequence if c in "ACDEFGHIKLMNPQRSTVWY")
+    if not clean_seq:
+        return {}
+
+    pa = ProteinAnalysis(clean_seq)
+    return {
+        "instability_index": round(pa.instability_index(), 2),
+        "gravy": round(pa.gravy(), 4),
+        "isoelectric_point": round(pa.isoelectric_point(), 2),
+        "molecular_weight": round(pa.molecular_weight(), 1),
+        "sequence_length": len(clean_seq),
+    }
+
+
+def detect_sequence_liabilities(sequence):
+    """Scan binder sequence for manufacturability liabilities.
+
+    Returns dict with liability counts and a composite severity score.
+    Liabilities based on BindCraft/protein-qc best practices.
+    """
+    seq = sequence.upper()
+    liabilities = {}
+
+    # Cysteines (odd count = unpaired, risk of aggregation)
+    cys_count = seq.count("C")
+    liabilities["cysteine_count"] = cys_count
+    liabilities["unpaired_cysteine"] = cys_count % 2 != 0
+
+    # Deamidation motifs: NG, NS, NT, NN, NH
+    deamidation_motifs = ["NG", "NS", "NT", "NN", "NH"]
+    deamid_count = sum(len(re.findall(m, seq)) for m in deamidation_motifs)
+    liabilities["deamidation_motifs"] = deamid_count
+
+    # Isomerization motifs: DG, DS, DT
+    isom_motifs = ["DG", "DS", "DT"]
+    isom_count = sum(len(re.findall(m, seq)) for m in isom_motifs)
+    liabilities["isomerization_motifs"] = isom_count
+
+    # Oxidation-prone: M (methionine), W (tryptophan) — count exposed
+    liabilities["methionine_count"] = seq.count("M")
+    liabilities["tryptophan_count"] = seq.count("W")
+
+    # Polybasic clusters: >=3 consecutive K/R
+    polybasic = re.findall(r"[KR]{3,}", seq)
+    liabilities["polybasic_clusters"] = len(polybasic)
+
+    # Hydrophobic runs: >=6 consecutive VILMFYW
+    hydro_runs = re.findall(r"[VILMFYW]{6,}", seq)
+    liabilities["hydrophobic_runs"] = len(hydro_runs)
+
+    # Aromatic clusters: >=3 consecutive F/W/Y
+    aromatic_clusters = re.findall(r"[FWY]{3,}", seq)
+    liabilities["aromatic_clusters"] = len(aromatic_clusters)
+
+    # N-terminal glutamine (pyroglutamate risk)
+    liabilities["n_terminal_Q"] = seq.startswith("Q")
+
+    # DP fragmentation sites
+    liabilities["dp_sites"] = len(re.findall(r"DP", seq))
+
+    # Composite severity score
+    severity = 0
+    severity += cys_count * 5
+    severity += 10 if liabilities["unpaired_cysteine"] else 0
+    severity += deamid_count * 3
+    severity += isom_count * 3
+    severity += len(polybasic) * 8
+    severity += len(hydro_runs) * 5
+    severity += len(aromatic_clusters) * 3
+    severity += 5 if liabilities["n_terminal_Q"] else 0
+    severity += liabilities["dp_sites"] * 2
+
+    liabilities["severity_score"] = severity
+    if severity <= 15:
+        liabilities["severity_class"] = "LOW"
+    elif severity <= 35:
+        liabilities["severity_class"] = "MODERATE"
+    elif severity <= 60:
+        liabilities["severity_class"] = "HIGH"
+    else:
+        liabilities["severity_class"] = "CRITICAL"
+
+    return liabilities
+
+
 def score_single(pr, input_path, output_dir, binder_chain=None, do_relax=True):
     """Score a single complex structure.
 
@@ -493,6 +597,17 @@ def score_single(pr, input_path, output_dir, binder_chain=None, do_relax=True):
         print("  Computing clashes...")
         metrics["clashes"] = calculate_clash_score(pr, pose)
 
+        # Sequence-level metrics (binder only)
+        print("  Computing sequence metrics...")
+        binder_seq = get_binder_sequence(pose, binder_chain_id)
+        metrics["binder_sequence"] = binder_seq
+
+        seq_metrics = calc_sequence_metrics(binder_seq)
+        metrics.update(seq_metrics)
+
+        liabilities = detect_sequence_liabilities(binder_seq)
+        metrics["liabilities"] = liabilities
+
         # Metadata
         metrics["design_id"] = design_id
         metrics["binder_chain"] = binder_chain_id
@@ -509,6 +624,12 @@ def score_single(pr, input_path, output_dir, binder_chain=None, do_relax=True):
         print(f"  dG={metrics['interface_dG']:.1f}  sc={metrics['interface_sc']:.3f}"
               f"  dSASA={metrics['interface_dSASA']:.0f}  hbonds={metrics['interface_hbonds']}"
               f"  clashes={metrics['clashes']}")
+        if seq_metrics:
+            print(f"  instability={seq_metrics.get('instability_index', '?')}"
+                  f"  GRAVY={seq_metrics.get('gravy', '?')}"
+                  f"  pI={seq_metrics.get('isoelectric_point', '?')}")
+        print(f"  liabilities: severity={liabilities['severity_score']}"
+              f" ({liabilities['severity_class']})")
 
         return metrics
 

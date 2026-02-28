@@ -41,7 +41,6 @@ S3 Data Architecture:
 
 1. output/           Raw tool outputs (written by Lyceum GPU jobs)
 2. designs/          ALL designs — source of truth (written ONLY by sync_designs.py)
-3. tracker/state.json  Jobs + notes (synced by sync_designs.py, written by dashboard)
 
 Two commands:
   python pgdh_campaign/sync_designs.py          # Collect + rank (no GPU, fast)
@@ -147,6 +146,9 @@ def submit_refold_jobs(client: LyceumClient, designs: list[dict]) -> list[tuple[
 
     Uploads all refolding YAMLs, generates a batch script that processes each
     sequentially, and submits one Docker job.
+
+    Passes --write_full_pae via --extra-args so PAE files are saved for
+    downstream ipSAE scoring.
 
     Skips BoltzGen designs (they get free promotion via promote_boltzgen_refolding).
 
@@ -276,6 +278,7 @@ def submit_boltz2_validation_jobs(client: LyceumClient, designs: list[dict]) -> 
             f" --diffusion-samples 5"
             f" --cache /mnt/s3/models/boltz2"
             f" --use-msa-server"
+            f" --write-full-pae"
         )
         batch_lines.append("")
     batch_lines.append('echo "=== Batch validation complete ==="')

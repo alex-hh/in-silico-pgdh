@@ -8,6 +8,9 @@ The workflow is **agentic**: Claude Code orchestrates the campaign by invoking s
 
 **Platform**: Lyceum (via biolyceum client at `projects/biolyceum/src/utils/client.py`)
 
+**API Stability (Feb 2026)**: Lyceum API has high latency. Schedule at most 1 job at a time.
+Client timeouts increased to 120s. Standalone A100 server scripts in `server/` available as fallback.
+
 ## Target: 15-PGDH
 
 - 1.65 Å crystal structure, homodimer, NAD+ bound

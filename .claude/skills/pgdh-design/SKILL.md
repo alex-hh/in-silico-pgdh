@@ -31,7 +31,7 @@ standardised into a single source-of-truth directory structure on S3.
 ## S3 Directory Structure — Source of Truth
 
 Design tools can write their raw outputs in any format to any location.
-The evaluation pipeline (`evaluate_designs.py`) is the ONLY thing that
+The evaluation pipeline (`sync_designs.py`) is the ONLY thing that
 writes to the `designs/` source of truth.
 
 ```
@@ -43,7 +43,7 @@ Lyceum S3 Storage
 │   └── ipsae/                      #   Scoring results
 │
 ├── designs/                        # ← SOURCE OF TRUTH (read-only)
-│   │                               #   ONLY evaluate_designs.py writes here
+│   │                               #   ONLY sync_designs.py writes here
 │   ├── index.json                  # Master ranked index
 │   └── <tool>/<design_id>/         # Per-design directory:
 │       ├── metrics.json            #   All metadata + metrics + scores
@@ -75,46 +75,35 @@ Use the individual skills for generation:
 
 ### Step 2: Standardise outputs
 
-After any design run completes and results are on S3, run the standardisation script:
+After any design run completes and results are on S3, run the evaluation pipeline:
 
 ```bash
 source .venv/bin/activate
-python pgdh_campaign/standardise_outputs.py
+python pgdh_campaign/sync_designs.py
 ```
 
-This script:
-1. Scans `output/boltzgen/` and `output/rfdiffusion3/` on S3
-2. Parses metrics from CSVs (BoltzGen) and JSONs (RFD3)
-3. Copies structures and creates standardised `metrics.json` per design
-4. Writes `designs/index.json` — the master design index
-5. Syncs `tracker/state.json` with new designs
+This collects raw outputs, copies structures, and writes to `designs/` source of truth.
 
-### Step 3: Validate top designs with Boltz-2
+### Step 3: Submit GPU evaluation jobs (Boltz-2 + ipSAE)
 
-Select promising designs from the tracker, then validate:
+Use the `pgdh-evaluate` skill for cross-validation and scoring:
 
 ```bash
-# Use pgdh_ipsae or lyceum_ipsae skill for scoring
-# Or submit Boltz-2 validation via the dashboard
+# Submit GPU jobs: Boltz-2 cross-validation + ipSAE scoring
+python pgdh_campaign/evaluate_designs.py --validate --score
 ```
 
-### Step 4: Score with ipSAE
+### Step 4: Sync again after jobs complete
+
+After Boltz-2 and ipSAE jobs complete, re-run sync to pick up results:
 
 ```bash
-# Invoke pgdh_ipsae skill
-# Results written to output/ipsae/, then standardised into designs/<id>/validation.json
-```
-
-### Step 5: Re-standardise after validation/scoring
-
-```bash
-python pgdh_campaign/standardise_outputs.py
-# This picks up new validation.json and scoring data
+python pgdh_campaign/sync_designs.py
 ```
 
 ## Database Schema
 
-The evaluation pipeline (`evaluate_designs.py`) writes three types of files to S3.
+The evaluation pipeline (`sync_designs.py`) writes three types of files to S3.
 All live under `designs/` and are **read-only** — no other code writes here.
 
 ### Per-design directory: `designs/<tool>/<design_id>/`
@@ -237,7 +226,7 @@ Weights:
 
 ### `designs/index.json` — Master ranked index
 
-A summary of all designs for fast loading by the dashboard. Written by `evaluate_designs.py`.
+A summary of all designs for fast loading by the dashboard. Written by `sync_designs.py`.
 
 ```json
 {
@@ -320,12 +309,13 @@ Examples:
 ## Key Rules
 
 1. **Always download results immediately** after a Lyceum job completes — storage is not persistent.
-2. **Always run `evaluate_designs.py`** after any new design run to keep `designs/` in sync.
+2. **Always run `sync_designs.py`** after any new design run to keep `designs/` in sync.
 3. **Use informative submission names** for Lyceum jobs.
 4. **Never overwrite between strategies** — use strategy-specific output subdirs.
 5. **The dashboard and Claude Code both read from `tracker/state.json`** — keep it in sync.
 6. **NEVER delete design results** — flag as "failed" instead.
-7. **The `designs/` directory on S3 is READ-ONLY** — only `evaluate_designs.py` writes to it. All other code (dashboard, Claude Code, skills) reads from it.
+7. **The `designs/` directory on S3 is READ-ONLY** — only `sync_designs.py` writes to it. All other code (dashboard, Claude Code, skills) reads from it.
+8. **Schedule at most 1 Lyceum job at a time** — the API has high latency (Feb 2026). Wait for each job to complete before submitting the next. For parallel work, use the standalone A100 server scripts in `server/`.
 
 ## Adding a New Design Tool
 
@@ -336,9 +326,9 @@ To integrate a new design tool (e.g. BindCraft), you must do three things:
 Write raw outputs to `output/<tool_name>/` on Lyceum S3. Use strategy-specific
 subdirs if applicable (e.g. `output/bindcraft/active_site/`).
 
-### 2. Parser adapter in evaluate_designs.py
+### 2. Parser adapter in sync_designs.py
 
-Add a function in `pgdh_campaign/evaluate_designs.py`:
+Add a function in `pgdh_campaign/sync_designs.py`:
 
 ```python
 def parse_bindcraft_outputs(client: LyceumClient, prefix: str = "output/bindcraft/") -> list[dict]:
@@ -376,11 +366,12 @@ will not appear in the dashboard or be ranked by the evaluation pipeline.
    parameters and workflow.
 
 Both paths write to the same `output/<tool>/` directories on S3. Both require
-running `evaluate_designs.py` afterwards to populate the `designs/` source of truth.
+running `sync_designs.py` afterwards to populate the `designs/` source of truth.
 
 ## Files
 
-- **Evaluation pipeline**: `pgdh_campaign/evaluate_designs.py` (THE ONLY writer to `designs/`)
+- **Sync pipeline**: `pgdh_campaign/sync_designs.py` (THE ONLY writer to `designs/`)
+- **GPU evaluation**: `pgdh_campaign/evaluate_designs.py` (submits refolding/validation/scoring jobs to `output/`)
 - **Campaign tracker**: `dashboard/tracker.py` (Python class) / `tracker/state.json` (S3)
 - **Dashboard app**: `dashboard/app.py`
 - **Campaign plan**: `pgdh_campaign/CAMPAIGN_PLAN.md`

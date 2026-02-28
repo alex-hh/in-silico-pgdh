@@ -213,6 +213,10 @@ rfd3_pgdh_binder_pgdh_active_site_0_model_3.cif.gz  + .json
 
 Container pull is cached after first run.
 
+**API Stability (Feb 2026)**: Lyceum API has high latency. **Schedule at most 1 job
+at a time** and wait for completion before submitting the next. The Python client
+uses 120s API timeouts to handle this.
+
 ## Common errors
 
 | Error | Cause | Fix |

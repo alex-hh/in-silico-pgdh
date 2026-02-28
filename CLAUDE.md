@@ -9,11 +9,11 @@ Document generic biolyceum features in biolyceum/README.md
 - Never run `lyceum storage rmdir` on output directories without downloading first.
 - Use strategy-specific output subdirs (e.g. `output/boltzgen/s1_active_site/`) to avoid overwriting between runs.
 - **NEVER delete design results** — not from S3 (`output/`, `designs/`), not from local (`pgdh_campaign/out/`), not from `tracker/state.json`. Results are irreplaceable and cost GPU time to regenerate. If results seem wrong, flag them with status "failed" rather than deleting.
-- **The `designs/` directory on S3 is the source of truth and is READ-ONLY.** It must NEVER be edited directly — not by Claude Code, not by manual commands, not by the dashboard. The ONLY thing that writes to `designs/` is `pgdh_campaign/sync_designs.py`. All other code reads from it.
+- **The `designs/` directory on S3 is the source of truth and is READ-ONLY.** It must NEVER be edited directly — not by Claude Code, not by manual commands. The ONLY thing that writes to `designs/` is `pgdh_campaign/sync_designs.py`. All other code reads from it.
 
 ## S3 Data Architecture
 
-Three S3 locations, with strict ownership rules:
+Two S3 locations, with strict ownership rules:
 
 ### 1. `output/` — raw tool outputs (written by Lyceum GPU jobs)
 Unprocessed files from design tools: CSVs, JSONs, CIFs in tool-native formats.
@@ -27,12 +27,9 @@ The **single source of truth for all design data** — both evaluated and uneval
 - `designs/<tool>/<id>/designed.cif` — designer's predicted structure
 - `designs/<tool>/<id>/refolded.cif` — refolded structure (if available)
 
-**READ-ONLY.** Never written by the dashboard, Claude Code, or any other code. The ONLY writer is `pgdh_campaign/sync_designs.py`.
+**READ-ONLY.** Never written by Claude Code or any other code. The ONLY writer is `pgdh_campaign/sync_designs.py`.
 
-### 3. `tracker/state.json` — mutable campaign state (synced by sync_designs.py, written by dashboard)
-Stores: job log, notes, status overrides. Also contains a copy of design data synced from the pipeline (for the dashboard to display). **Not authoritative for metrics/scores** — `designs/index.json` is.
-
-### Two commands
+### Commands
 ```bash
 source .venv/bin/activate
 
@@ -49,23 +46,19 @@ python pgdh_campaign/evaluate_designs.py --slow --auto
 After design jobs:   run `sync_designs.py`
 After eval jobs:     run `sync_designs.py` again (picks up new results)
 
-## Two Display Paths
-Both ultimately read from `designs/` on S3:
+## Display: GitHub Pages
+Syncs from `designs/` on S3, caches in `docs/data/`, generates HTML:
 
-1. **GitHub Pages** (`docs/`): Static HTML, loads instantly. Must be manually synced after running sync_designs.py:
-   ```
-   python pgdh_campaign/sync_to_pages.py   # S3 designs/ → docs/data/
-   python pgdh_campaign/generate_pages.py  # docs/data/ → docs/index.html
-   git add docs/ && git commit && git push # publish
-   ```
-2. **Streamlit Dashboard** (`dashboard/app.py`): Reads `tracker/state.json` from S3 live. Read-only pages are public; write actions need Google OAuth. Data refreshes every 5 min (disk-cached).
+```
+python pgdh_campaign/generate_pages.py  # sync from S3 + generate docs/index.html
+git add docs/ && git commit && git push # publish
+```
 
-After running `sync_designs.py`, Streamlit sees changes on next page load (or click "Refresh from S3"). GitHub Pages requires the sync/generate/push steps above.
+Use `--no-sync` to skip the S3 download and use cached local data.
 
 ## Design Tool Integration Rules
 - **Design tools can write outputs in any format to any location.** There are no constraints on how a design tool stores its raw outputs. The sync pipeline handles all standardisation.
 - **`pgdh_campaign/sync_designs.py` is the ONLY writer to `designs/` on S3.** It collects raw outputs from wherever design tools put them, copies the designer's predicted structures, attaches any existing validation/scoring/refolding results, and writes everything to the standardised `designs/` source of truth.
 - **`pgdh_campaign/evaluate_designs.py` submits GPU jobs** (refolding, validation, scoring). It calls `sync_designs.sync_all()` first, then submits jobs. After jobs complete, run `sync_designs.py` again to pick up results.
-- **Any new design model skill MUST have a parser adapter** in `pgdh_campaign/sync_designs.py` (registered in `TOOL_ADAPTERS`) so the sync pipeline can find and process its outputs. Also add a Streamlit form in `dashboard/app.py` for team access. Without these, designs will not appear in the dashboard or be ranked.
-- **Two ways to generate designs**: (1) Fixed pipelines via the Streamlit web app at `dashboard/app.py` (for team members), (2) Claude Code skills for developers with a local repo clone.
-- **Always run `sync_designs.py`** after generating designs to keep `designs/index.json` and `tracker/state.json` in sync.
+- **Any new design model skill MUST have a parser adapter** in `pgdh_campaign/sync_designs.py` (registered in `TOOL_ADAPTERS`) so the sync pipeline can find and process its outputs. Without these, designs will not appear in the rankings.
+- **Always run `sync_designs.py`** after generating designs to update `designs/index.json`.

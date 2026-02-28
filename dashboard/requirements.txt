@@ -1,8 +1,0 @@
-streamlit
-streamlit-google-auth
-stmol
-py3Dmol
-pandas
-plotly
-httpx
-boto3

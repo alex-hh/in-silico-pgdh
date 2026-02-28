@@ -1,21 +1,27 @@
 #!/usr/bin/env python3
-"""Generate the GitHub Pages site from S3-synced data.
+"""Generate the GitHub Pages site from S3 design data.
 
-Reads from docs/data/ (written by sync_to_pages.py) and generates docs/index.html
+Downloads designs/index.json and per-design structures from S3 (written by
+sync_designs.py), caches them in docs/data/, and generates docs/index.html
 with Evaluated and Unevaluated tabs, 3Dmol.js viewers, and metrics panels.
 
-Falls back to pgdh_campaign/out/ (legacy local data) if docs/data/ doesn't exist.
+Falls back to cached docs/data/ if S3 is unreachable, or pgdh_campaign/out/
+(legacy local data) if docs/data/ doesn't exist.
 
 Usage:
     python pgdh_campaign/sync_designs.py    # ensure designs/ source of truth is current
-    python pgdh_campaign/sync_to_pages.py   # S3 designs/ -> docs/data/
-    python pgdh_campaign/generate_pages.py  # docs/data/ -> docs/index.html
+    python pgdh_campaign/generate_pages.py  # sync from S3 + generate HTML
+
+After running, commit and push docs/ to update the GitHub Pages site.
 """
 
 import csv
 import gzip
 import json
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "projects" / "biolyceum" / "src" / "utils"))
 
 BASE = Path(__file__).parent
 DOCS_DATA = BASE.parent / "docs" / "data"
@@ -93,6 +99,93 @@ def extract_sequence(cif_path, chain_id="B"):
     if not residues:
         return ""
     return "".join(residues[k] for k in sorted(residues))
+
+
+# ── S3 sync ───────────────────────────────────────────────────────────────
+
+def sync_from_s3():
+    """Download designs from S3 to docs/data/. Returns True if sync succeeded."""
+    from client import LyceumClient
+
+    DOCS_DATA.mkdir(parents=True, exist_ok=True)
+
+    try:
+        client = LyceumClient()
+    except Exception as e:
+        print(f"  Could not connect to Lyceum ({e})")
+        return False
+
+    # 1. Download index.json
+    print("Syncing from S3...")
+    try:
+        index_data = client.download_bytes("designs/index.json")
+        index = json.loads(index_data)
+    except Exception as e:
+        print(f"  Could not download index ({e})")
+        return False
+
+    (DOCS_DATA / "index.json").write_text(json.dumps(index, indent=2))
+    print(f"  {len(index.get('designs', []))} designs in index")
+
+    # 2. Download per-design metrics.json and CIF structures
+    evaluated, unevaluated = [], []
+
+    for entry in index.get("designs", []):
+        did = entry["design_id"]
+        tool = entry.get("tool", "unknown")
+        prefix = f"designs/{tool}/{did}/"
+
+        design_dir = DOCS_DATA / tool / did
+        design_dir.mkdir(parents=True, exist_ok=True)
+
+        # Download metrics.json
+        try:
+            metrics_data = client.download_bytes(f"{prefix}metrics.json")
+            metrics = json.loads(metrics_data)
+            (design_dir / "metrics.json").write_text(json.dumps(metrics, indent=2))
+        except Exception:
+            metrics = entry
+
+        # Download designed.cif (try both plain and gzipped)
+        cif_text = None
+        for cif_name in ["designed.cif", "designed.cif.gz"]:
+            try:
+                cif_bytes = client.download_bytes(f"{prefix}{cif_name}")
+                if cif_name.endswith(".gz"):
+                    cif_bytes = gzip.decompress(cif_bytes)
+                cif_text = cif_bytes.decode()
+                (design_dir / "designed.cif").write_text(cif_text)
+                break
+            except Exception:
+                continue
+
+        # Download refolded.cif if it exists
+        try:
+            refolded = client.download_bytes(f"{prefix}refolded.cif")
+            (design_dir / "refolded.cif").write_text(refolded.decode())
+        except Exception:
+            pass
+
+        # Classify: evaluated = has validation or scoring or refolding
+        has_eval = (
+            metrics.get("validation") is not None
+            or metrics.get("scoring") is not None
+            or metrics.get("refolding") is not None
+            or (entry.get("composite_score") is not None and entry.get("has_validation"))
+        )
+        record = {**metrics, "design_id": did, "has_structure": cif_text is not None}
+        (evaluated if has_eval else unevaluated).append(record)
+
+        status = "evaluated" if has_eval else "unevaluated"
+        struct = "+" if cif_text else "-"
+        print(f"  [{struct}] {did} ({status})")
+
+    # 3. Write summary JSONs
+    (DOCS_DATA / "evaluated.json").write_text(json.dumps(evaluated, indent=2))
+    (DOCS_DATA / "unevaluated.json").write_text(json.dumps(unevaluated, indent=2))
+
+    print(f"  Synced: {len(evaluated)} evaluated, {len(unevaluated)} unevaluated")
+    return True
 
 
 # ── Data loading ──────────────────────────────────────────────────────────
@@ -262,9 +355,14 @@ def design_card_html(d, idx):
             card += metric_row("pDockQ", scr["pdockq"], cls_high(scr["pdockq"], 0.50, 0.23))
 
     refold = d.get("refolding") or {}
-    if refold and refold.get("boltzgen_rmsd"):
+    if refold and (refold.get("boltzgen_rmsd") or refold.get("ipsae")):
         card += '<div class="section-label">Designability</div>'
-        card += metric_row("BoltzGen RMSD", f"{refold['boltzgen_rmsd']} &Aring;", cls_low(refold["boltzgen_rmsd"], 2.0, 2.5))
+        if refold.get("boltzgen_rmsd"):
+            card += metric_row("BoltzGen RMSD", f"{refold['boltzgen_rmsd']} &Aring;", cls_low(refold["boltzgen_rmsd"], 2.0, 2.5))
+        if refold.get("ipsae") and not scr.get("ipsae"):
+            card += metric_row("ipSAE (refold)", refold["ipsae"], cls_high(refold["ipsae"], 0.70, 0.61))
+        if refold.get("interaction_pae"):
+            card += metric_row("PAE (inter.)", refold["interaction_pae"], cls_low(refold["interaction_pae"], 5.0, 10.0))
 
     if tool == "boltzgen":
         if dm.get("plip_hbonds"):
@@ -320,8 +418,10 @@ def build_table_data(all_designs):
             "bg_iptm": refold.get("boltzgen_iptm", ""),
             "val_iptm": val.get("iptm", ""),
             "val_plddt": val.get("plddt", ""),
-            "ipsae": scr.get("ipsae", ""),
+            "ipsae": scr.get("ipsae", "") or refold.get("ipsae", ""),
             "pdockq": scr.get("pdockq", ""),
+            "refold_ipsae": refold.get("ipsae", ""),
+            "refold_pae": refold.get("interaction_pae", ""),
             "length": d.get("length", ""),
             "status": d.get("status", ""),
         })
@@ -350,9 +450,14 @@ TABLE_COLUMNS = [
 ]
 
 
-def build_html():
+def build_html(skip_sync=False):
+    # Step 1: Sync from S3 (downloads to docs/data/)
+    if not skip_sync:
+        sync_from_s3()
+
+    # Step 2: Load data
     if (DOCS_DATA / "index.json").exists():
-        print("Loading from docs/data/ (synced from S3)...")
+        print("Loading from docs/data/...")
         evaluated, unevaluated = load_from_docs_data()
     else:
         print("No docs/data/. Loading from pgdh_campaign/out/ (local)...")
@@ -362,7 +467,7 @@ def build_html():
     print(f"  {len(evaluated)} evaluated, {len(unevaluated)} unevaluated")
 
     if not all_designs:
-        print("No designs found. Run sync_to_pages.py first.")
+        print("No designs found. Run sync_designs.py first.")
         return
 
     # Load CIF text only for top-ranked designs to keep HTML size manageable
@@ -513,7 +618,7 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
   <div class="tab" onclick="switchTab('target')">Target (2GDZ)</div>
 </div>
 <div class="tab-panel active" id="panel_evaluated">
-{eval_cards if eval_cards else '<div class="empty">No evaluated designs yet. Run evaluate_designs.py then sync_to_pages.py.</div>'}
+{eval_cards if eval_cards else '<div class="empty">No evaluated designs yet. Run evaluate_designs.py then generate_pages.py.</div>'}
 </div>
 <div class="tab-panel" id="panel_unevaluated">
 {uneval_cards if uneval_cards else '<div class="empty">No unevaluated designs.</div>'}
@@ -596,4 +701,5 @@ document.addEventListener('DOMContentLoaded',ivv);
 
 
 if __name__ == "__main__":
-    build_html()
+    skip_sync = "--no-sync" in sys.argv
+    build_html(skip_sync=skip_sync)
