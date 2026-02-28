@@ -70,6 +70,23 @@ for page in paginator.paginate(Bucket=bucket, Prefix='output/boltzgen/'):
 | Write to S3 | ~10s | ~3s |
 | **Total** | **~55s** | **~8s** |
 
+## Lyceum Job Batching
+
+Lyceum enforces a **max timeout of 600s** in the API (`timeout` field). However,
+jobs run to completion regardless — the timeout is not enforced at runtime. So
+always set `timeout=600` and let the job finish naturally.
+
+For long-running eval jobs (e.g. Boltz-2 cross-validation at ~120s per design),
+split into **2-3 batch jobs** rather than one huge batch. Benefits:
+- Jobs can run in parallel on separate GPUs if available
+- If one batch fails, the others' results are preserved
+- Avoids overwhelming the queue
+
+Current batch strategy in `evaluate_designs.py`:
+- `MAX_JOBS = 3` — splits candidates into at most 3 equal chunks
+- Each chunk gets its own bash script uploaded to S3
+- Each submitted as a separate Docker job with `timeout=600`
+
 ## Implementation Plan
 
 1. Add `_list_all(prefix)` method to LyceumClient that does a single

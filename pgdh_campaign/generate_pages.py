@@ -296,7 +296,10 @@ def design_card_html(d, idx):
     rank = d.get("rank", "")
     composite = d.get("composite_score")
     rank_html = f'<span class="rank-badge">#{rank}</span>' if rank else ""
-    score_html = f'<span class="score-badge">Score: {composite:.3f} <span class="score-help" onclick="event.stopPropagation();document.getElementById(\'score-tooltip\').classList.toggle(\'visible\')">?</span></span>' if composite else ""
+    has_validation = bool(d.get("validation"))
+    score_cls = "score-badge" if has_validation else "score-badge score-partial"
+    score_label = f"Score: {composite:.3f}" if composite else ""
+    score_html = f'<span class="{score_cls}">{score_label} <span class="score-help" onclick="event.stopPropagation();document.getElementById(\'score-tooltip\').classList.toggle(\'visible\')">?</span></span>' if composite else ""
     rnd = d.get("round")
     round_html = f'<span class="tool-badge" style="background:#2ECC71">R{rnd}</span>' if rnd is not None else ""
 
@@ -412,6 +415,7 @@ def build_table_data(all_designs):
             "strategy": d.get("strategy", ""),
             "round": d.get("round") if d.get("round") is not None else "",
             "composite": d.get("composite_score") or "",
+            "score_partial": not bool(val),
             "iptm": dm.get("iptm", dm.get("design_to_target_iptm", "")),
             "ptm": dm.get("ptm", dm.get("design_ptm", "")),
             "filter_rmsd": dm.get("filter_rmsd", ""),
@@ -553,6 +557,7 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
 .card-header h2{{font-size:16px;font-weight:600}}
 .rank-badge{{background:#e94560;color:white;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600}}
 .score-badge{{background:#4361ee;color:white;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600}}
+.score-partial{{background:#e67e22;border:2px dashed rgba(255,255,255,0.5)}}
 .score-help{{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:rgba(255,255,255,0.3);font-size:10px;font-weight:700;cursor:pointer;margin-left:4px;vertical-align:middle}}
 .score-help:hover{{background:rgba(255,255,255,0.5)}}
 #score-tooltip{{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#1a1a2e;color:#e0e0e0;padding:24px;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.4);z-index:10000;max-width:480px;font-size:13px;line-height:1.6}}
@@ -606,6 +611,7 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
 .design-table td.good{{color:#27ae60;font-weight:600}}
 .design-table td.warn{{color:#f39c12;font-weight:600}}
 .design-table td.bad{{color:#e74c3c;font-weight:600}}
+.design-table td.partial{{background:#fef3e2;border-left:3px solid #e67e22}}
 .table-filter{{margin-bottom:12px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}}
 .table-filter input{{padding:8px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px;width:240px}}
 .table-filter select{{padding:8px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px}}
@@ -628,6 +634,7 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
     <tr><td>Design RMSD</td><td class="formula">0.05</td><td>1 &minus; RMSD/5 (lower better)</td></tr>
   </table>
   <p class="note">Weights sum to 1.10 when all metrics are available. The score is normalised by the sum of weights of metrics actually present for each design.</p>
+  <p class="note"><span style="display:inline-block;background:#e67e22;color:white;padding:2px 8px;border-radius:10px;border:2px dashed rgba(255,255,255,0.5);font-size:11px;margin-right:4px">orange</span> = partial score (no Boltz-2 cross-validation). Not directly comparable to fully evaluated designs.</p>
 </div>
 <div class="header">
   <h1>In Silico PGDH</h1>
@@ -722,7 +729,7 @@ function ivv(){{for(var i=0;i<vd.length;i++){{var e=document.getElementById('vie
 function switchTab(t){{var ts=['evaluated','unevaluated','all','table','target'];document.querySelectorAll('.tab').forEach(function(e,i){{e.classList.toggle('active',ts[i]===t);}});document.querySelectorAll('.tab-panel').forEach(function(p){{p.classList.remove('active');}});var p=document.getElementById('panel_'+t);if(p)p.classList.add('active');if(t==='table'&&!tableInit){{renderTable();tableInit=true;}}setTimeout(ivv,100);}}
 function clsCell(val,dir){{if(val===''||val===null||val===undefined)return'';var v=parseFloat(val);if(isNaN(v))return'';if(dir==='high')return v>=0.7?'good':v>=0.5?'warn':'bad';if(dir==='low')return v<=2.0?'good':v<=3.0?'warn':'bad';return'';}}
 var colDirs={{{",".join(f'"{c[0]}":"{c[2] or ""}"' for c in TABLE_COLUMNS)}}};
-function renderTable(){{var tb=document.getElementById('table-body');if(!tb)return;var q=(document.getElementById('table-search')||{{}}).value||'';q=q.toLowerCase();var tf=(document.getElementById('table-tool-filter')||{{}}).value||'';var sf=(document.getElementById('table-strategy-filter')||{{}}).value||'';var rf=(document.getElementById('table-round-filter')||{{}}).value||'';var rows=tableData.filter(function(r){{if(q&&r.design_id.toLowerCase().indexOf(q)<0)return false;if(tf&&r.tool!==tf)return false;if(sf&&r.strategy!==sf)return false;if(rf&&String(r.round||'')!==rf)return false;return true;}});if(curSort){{rows.sort(function(a,b){{var av=a[curSort],bv=b[curSort];var an=parseFloat(av),bn=parseFloat(bv);if(!isNaN(an)&&!isNaN(bn))return(an-bn)*curDir;av=String(av||'');bv=String(bv||'');return av.localeCompare(bv)*curDir;}});}}var h='';rows.forEach(function(r){{h+='<tr>';tableCols.forEach(function(c){{var v=r[c];if(v===''||v===null||v===undefined)v='—';else if(typeof v==='number')v=Number.isInteger(v)?v:parseFloat(v).toFixed(3);var cls=clsCell(r[c],colDirs[c]);h+='<td'+(cls?' class="'+cls+'"':'')+'>'+(c==='design_id'?'<span title="'+v+'">'+v+'</span>':v)+'</td>';}});h+='</tr>';}});tb.innerHTML=h;}}
+function renderTable(){{var tb=document.getElementById('table-body');if(!tb)return;var q=(document.getElementById('table-search')||{{}}).value||'';q=q.toLowerCase();var tf=(document.getElementById('table-tool-filter')||{{}}).value||'';var sf=(document.getElementById('table-strategy-filter')||{{}}).value||'';var rf=(document.getElementById('table-round-filter')||{{}}).value||'';var rows=tableData.filter(function(r){{if(q&&r.design_id.toLowerCase().indexOf(q)<0)return false;if(tf&&r.tool!==tf)return false;if(sf&&r.strategy!==sf)return false;if(rf&&String(r.round||'')!==rf)return false;return true;}});if(curSort){{rows.sort(function(a,b){{var av=a[curSort],bv=b[curSort];var an=parseFloat(av),bn=parseFloat(bv);if(!isNaN(an)&&!isNaN(bn))return(an-bn)*curDir;av=String(av||'');bv=String(bv||'');return av.localeCompare(bv)*curDir;}});}}var h='';rows.forEach(function(r){{h+='<tr>';tableCols.forEach(function(c){{var v=r[c];if(v===''||v===null||v===undefined)v='—';else if(typeof v==='number')v=Number.isInteger(v)?v:parseFloat(v).toFixed(3);var cls=clsCell(r[c],colDirs[c]);if(c==='composite'&&r.score_partial)cls=(cls?cls+' ':'')+'partial';h+='<td'+(cls?' class="'+cls+'"':'')+'>'+(c==='design_id'?'<span title="'+v+'">'+v+'</span>':v)+'</td>';}});h+='</tr>';}});tb.innerHTML=h;}}
 function filterTable(){{renderTable();}}
 function sortTable(th){{var col=th.getAttribute('data-col');if(curSort===col){{curDir*=-1;}}else{{curSort=col;curDir=1;}}document.querySelectorAll('.design-table th').forEach(function(h){{h.classList.remove('sorted');h.querySelector('.sort-arrow').innerHTML='&#9650;';}});th.classList.add('sorted');th.querySelector('.sort-arrow').innerHTML=curDir>0?'&#9650;':'&#9660;';renderTable();}}
 function toggleStyle(i,m){{var v=vs[i];if(!v)return;var vw=v.viewer;vw.removeAllSurfaces();var bc=v.binderChain,tc2=v.targetChain,c=v.color;if(m==='cartoon'){{vw.setStyle({{chain:tc2}},{{cartoon:{{color:'#999',opacity:0.8}}}});vw.setStyle({{chain:bc}},{{cartoon:{{color:c}}}});}}else if(m==='surface'){{vw.setStyle({{chain:tc2}},{{cartoon:{{color:'#999',opacity:0.5}}}});vw.setStyle({{chain:bc}},{{cartoon:{{color:c,opacity:0.5}}}});vw.addSurface($3Dmol.SurfaceType.VDW,{{opacity:0.6,color:'#999'}},{{chain:tc2}});vw.addSurface($3Dmol.SurfaceType.VDW,{{opacity:0.6,color:c}},{{chain:bc}});}}else if(m==='sticks'){{vw.setStyle({{chain:tc2}},{{cartoon:{{color:'#999',opacity:0.8}}}});vw.setStyle({{chain:bc}},{{cartoon:{{color:c}}}});vw.addStyle({{chain:bc,within:{{distance:5,sel:{{chain:tc2}}}}}},{{stick:{{color:c}}}});vw.addStyle({{chain:tc2,within:{{distance:5,sel:{{chain:bc}}}}}},{{stick:{{color:'#FF6347'}}}});}}else if(m==='sequence'){{var ac={{'ALA':'#E8860C','VAL':'#E8860C','LEU':'#E8860C','ILE':'#E8860C','MET':'#E8860C','PHE':'#E8860C','TRP':'#E8860C','PRO':'#E8860C','SER':'#2ECC71','THR':'#2ECC71','ASN':'#2ECC71','GLN':'#2ECC71','TYR':'#2ECC71','CYS':'#2ECC71','LYS':'#3498DB','ARG':'#3498DB','HIS':'#3498DB','ASP':'#E74C3C','GLU':'#E74C3C','GLY':'#95A5A6'}};vw.setStyle({{chain:tc2}},{{cartoon:{{color:'#DDD',opacity:0.5}}}});Object.keys(ac).forEach(function(r){{vw.setStyle({{chain:bc,resn:r}},{{cartoon:{{color:ac[r]}},stick:{{color:ac[r]}}}});}});}}vw.render();['cartoon','surface','sticks','sequence'].forEach(function(mm){{var b=document.getElementById('btn_'+mm+'_'+i);if(b)b.classList.toggle('active',mm===m);}});var l=document.getElementById('seqleg_'+i);if(l)l.classList.toggle('visible',m==='sequence');}}

@@ -271,43 +271,47 @@ def submit_boltz2_validation_jobs(client: LyceumClient, designs: list[dict]) -> 
         client.upload_bytes(yaml_content.encode(), yaml_key)
         design_ids.append(design_id)
 
-    # Generate and upload a batch script
-    batch_lines = ["#!/bin/bash", "set -e", ""]
-    for design_id in design_ids:
-        batch_lines.append(f'echo "=== Validating {design_id} ==="')
-        batch_lines.append(
-            f"bash /mnt/s3/scripts/boltz2/run_boltz2.sh"
-            f" --input-yaml /root/boltz2_work/validate_{design_id}.yaml"
-            f" --output-dir /mnt/s3/output/boltz2/{design_id}"
-            f" --recycling-steps 10"
-            f" --diffusion-samples 5"
-            f" --cache /mnt/s3/models/boltz2"
-            f" --use-msa-server"
-            f" --write-full-pae"
-        )
-        batch_lines.append("")
-    batch_lines.append('echo "=== Batch validation complete ==="')
+    # Lyceum max timeout is 600s but jobs run to completion regardless.
+    # Split into 2-3 batch jobs to avoid queueing issues and allow parallelism.
+    MAX_JOBS = 3
+    chunk_size = max(1, (len(candidates) + MAX_JOBS - 1) // MAX_JOBS)
+    chunks = [candidates[i:i + chunk_size] for i in range(0, len(candidates), chunk_size)]
 
-    batch_script = "\n".join(batch_lines)
-    client.upload_bytes(batch_script.encode(), "input/boltz2/batch_validate.sh")
+    results = []
+    for ci, chunk in enumerate(chunks):
+        chunk_ids = [d["design_id"] for d in chunk]
+        batch_lines = ["#!/bin/bash", "set -e", ""]
+        for design_id in chunk_ids:
+            batch_lines.append(f'echo "=== Validating {design_id} ==="')
+            batch_lines.append(
+                f"bash /mnt/s3/scripts/boltz2/run_boltz2.sh"
+                f" --input-yaml /root/boltz2_work/validate_{design_id}.yaml"
+                f" --output-dir /mnt/s3/output/boltz2/{design_id}"
+                f" --recycling-steps 10"
+                f" --diffusion-samples 5"
+                f" --cache /mnt/s3/models/boltz2"
+                f" --use-msa-server"
+                f" --write-full-pae"
+            )
+            batch_lines.append("")
+        batch_lines.append('echo "=== Batch validation complete ==="')
 
-    # ~120s per design for Boltz-2, plus ~300s setup overhead
-    timeout = 300 + len(candidates) * 150
-    cmd = "bash /mnt/s3/input/boltz2/batch_validate.sh"
+        script_key = f"input/boltz2/batch_validate_{ci}.sh"
+        client.upload_bytes("\n".join(batch_lines).encode(), script_key)
 
-    try:
-        exec_id, _ = client.submit_docker_job(
-            docker_image="pytorch/pytorch:2.6.0-cuda12.6-cudnn9-runtime",
-            command=cmd,
-            execution_type="gpu.a100",
-            timeout=timeout,
-        )
-        print(f"  Submitted batch validation job: {exec_id}")
-        print(f"  {len(candidates)} designs, timeout={timeout}s")
-        return [("batch_validate", exec_id)]
-    except Exception as e:
-        print(f"  Failed to submit batch job: {e}")
-        return []
+        try:
+            exec_id, _ = client.submit_docker_job(
+                docker_image="pytorch/pytorch:2.6.0-cuda12.6-cudnn9-runtime",
+                command=f"bash /mnt/s3/{script_key}",
+                execution_type="gpu.a100",
+                timeout=600,
+            )
+            print(f"  Batch {ci+1}/{len(chunks)}: {len(chunk)} designs -> {exec_id}")
+            results.append((f"batch_validate_{ci}", exec_id))
+        except Exception as e:
+            print(f"  Failed to submit batch {ci+1}: {e}")
+
+    return results
 
 
 # ══════════════════════════════════════════════════════════════════════════

@@ -1,8 +1,8 @@
 entities:
-  # Designed binder protein (80-120 residues)
+  # Designed binder protein (40-80 residues — shorter for active site pocket)
   - protein:
       id: B
-      sequence: 80..120
+      sequence: 40..80
 
   # 15-PGDH target (PDB 2GDZ, chain A)
   - file:

@@ -1,8 +1,8 @@
 entities:
-  # Designed binder protein (80-140 residues)
+  # Designed binder protein (90-120 residues — narrowed to R1 sweet spot)
   - protein:
       id: B
-      sequence: 80..140
+      sequence: 90..120
 
   # 15-PGDH target (PDB 2GDZ, chain A)
   - file:
