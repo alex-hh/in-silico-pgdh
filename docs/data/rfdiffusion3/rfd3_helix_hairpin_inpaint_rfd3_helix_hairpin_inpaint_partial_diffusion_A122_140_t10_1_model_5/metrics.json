@@ -1,0 +1,31 @@
+{
+  "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_1_model_5",
+  "tool": "rfdiffusion3",
+  "strategy": "helix_hairpin_inpaint",
+  "status": "designed",
+  "evaluation_stage": "collected",
+  "created_at": "2026-02-27T23:49:31.960197+00:00",
+  "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYNDQAAVDAVLAVAAAGAAAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+  "num_residues": 82,
+  "hotspots": "",
+  "source_files": {
+    "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_1_model_5.json",
+    "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_1_model_5.cif.gz"
+  },
+  "design_metrics": {
+    "helix": 0.5072992700729927,
+    "sheet": 0.15693430656934307,
+    "loop": 0.3357664233576642,
+    "radius_of_gyration": 17.67921632133943,
+    "max_ca_deviation": 0.10664224624633789,
+    "n_chainbreaks": 0,
+    "num_ss_elements": 16,
+    "alanine_content": 0.12166172106824925,
+    "glycine_content": 0.09198813056379822,
+    "source": "rfdiffusion3"
+  },
+  "validation": null,
+  "scoring": null,
+  "composite_score": null,
+  "rank": 50
+}

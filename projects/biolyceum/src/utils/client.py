@@ -70,12 +70,23 @@ class LyceumClient:
         self._s3_client.upload_file(str(local_path), self._s3_bucket, storage_key)
         print(f"  uploaded {local_path} → {storage_key}")
 
+    def upload_bytes(self, data: bytes, storage_key: str):
+        """Upload raw bytes to Lyceum storage."""
+        self._ensure_s3()
+        self._s3_client.put_object(Bucket=self._s3_bucket, Key=storage_key, Body=data)
+
     def download_file(self, storage_key, local_path):
         """Download a file from Lyceum storage."""
         self._ensure_s3()
         Path(local_path).parent.mkdir(parents=True, exist_ok=True)
         self._s3_client.download_file(self._s3_bucket, storage_key, str(local_path))
         print(f"  downloaded {storage_key} → {local_path}")
+
+    def download_bytes(self, storage_key: str) -> bytes:
+        """Download a file from Lyceum storage as bytes."""
+        self._ensure_s3()
+        resp = self._s3_client.get_object(Bucket=self._s3_bucket, Key=storage_key)
+        return resp["Body"].read()
 
     def list_files(self, prefix=""):
         """List files in Lyceum storage under a prefix."""
@@ -207,7 +218,7 @@ class LyceumClient:
         resp = httpx.get(
             f"{self.base_url}/api/v2/external/execution/streaming/{execution_id}/status",
             headers=self._headers,
-            timeout=30.0,
+            timeout=120.0,
         )
         resp.raise_for_status()
         return resp.json()
@@ -357,6 +368,149 @@ class LyceumClient:
         # Download results
         print(f"Downloading results to {output_dir}...")
         downloaded = self.download_prefix("output/boltzgen/final_ranked_designs/", output_dir)
+        print(f"  downloaded {len(downloaded)} files")
+        return True, downloaded
+
+    # ── Boltz-2 ──────────────────────────────────────────────────────────
+
+    def run_boltz2(self, yaml_path, output_dir="./output/boltz2",
+                   recycling_steps=10, diffusion_samples=5,
+                   use_msa_server=True, machine="gpu.a100", timeout=600):
+        """Run Boltz-2 structure prediction on Lyceum via Docker execution.
+
+        Args:
+            yaml_path: Local path to YAML input file (or directory for batch).
+            output_dir: Local directory to download results to.
+            recycling_steps: Number of recycling steps.
+            diffusion_samples: Number of diffusion samples.
+            use_msa_server: Whether to use ColabFold MSA server.
+            machine: Machine type.
+            timeout: Timeout in seconds (max 600).
+
+        Returns:
+            (success: bool, downloaded_files: list[str])
+        """
+        yaml_path = Path(yaml_path)
+
+        # Upload YAML(s) to input/boltz2/
+        print("Uploading Boltz-2 inputs...")
+        if yaml_path.is_dir():
+            for f in sorted(yaml_path.glob("*.yaml")) + sorted(yaml_path.glob("*.yml")):
+                self.upload_file(str(f), f"input/boltz2/{f.name}")
+            input_flag = "--input-dir /root/boltz2_work"
+        else:
+            self.upload_file(str(yaml_path), f"input/boltz2/{yaml_path.name}")
+            input_flag = f"--input-yaml /root/boltz2_work/{yaml_path.name}"
+
+        # Build command
+        cmd = (
+            f"bash /mnt/s3/scripts/boltz2/run_boltz2.sh"
+            f" {input_flag}"
+            f" --output-dir /mnt/s3/output/boltz2"
+            f" --recycling-steps {recycling_steps}"
+            f" --diffusion-samples {diffusion_samples}"
+            f" --cache /mnt/s3/models/boltz2"
+        )
+        if use_msa_server:
+            cmd += " --use-msa-server"
+        else:
+            cmd += " --no-msa-server"
+
+        print(f"Submitting Boltz-2 Docker job on {machine}...")
+        exec_id, stream_url = self.submit_docker_job(
+            docker_image="pytorch/pytorch:2.6.0-cuda12.6-cudnn9-runtime",
+            command=cmd,
+            execution_type=machine,
+            timeout=timeout,
+        )
+        print(f"  execution_id: {exec_id}")
+
+        # Stream output
+        success, output = self.stream_output(exec_id, stream_url)
+        if not success:
+            print("Boltz-2 execution failed.")
+            return False, []
+
+        print("Boltz-2 execution completed.")
+
+        # Download results
+        print(f"Downloading results to {output_dir}...")
+        downloaded = self.download_prefix("output/boltz2/", output_dir)
+        print(f"  downloaded {len(downloaded)} files")
+        return True, downloaded
+
+    # ── PyRosetta Scoring ──────────────────────────────────────────────
+
+    def run_pyrosetta_scoring(self, structure_files, output_dir="./output/pyrosetta",
+                              binder_chain=None, relax=True, timeout=600):
+        """Run PyRosetta interface scoring on Lyceum via Docker execution (CPU).
+
+        Args:
+            structure_files: Local path(s) to CIF/PDB complex files.
+                Can be a single path (str/Path), a list of paths, or a directory.
+            output_dir: Local directory to download results to.
+            binder_chain: Binder chain ID (default: auto-detect shorter chain).
+            relax: Whether to FastRelax before scoring (default: True).
+            timeout: Timeout in seconds (default: 1800 = 30 min).
+
+        Returns:
+            (success: bool, downloaded_files: list[str])
+        """
+        structure_files = Path(structure_files) if isinstance(structure_files, str) else structure_files
+
+        # Upload structure files to input/pyrosetta/
+        print("Uploading structures for PyRosetta scoring...")
+        if isinstance(structure_files, Path) and structure_files.is_dir():
+            files = sorted(structure_files.glob("*.cif")) + sorted(structure_files.glob("*.pdb"))
+            for f in files:
+                self.upload_file(str(f), f"input/pyrosetta/{f.name}")
+            input_flag = f"--input-dir /root/pyrosetta_work"
+        elif isinstance(structure_files, (list, tuple)):
+            for f in structure_files:
+                f = Path(f)
+                self.upload_file(str(f), f"input/pyrosetta/{f.name}")
+            if len(structure_files) == 1:
+                name = Path(structure_files[0]).name
+                input_flag = f"--input /root/pyrosetta_work/{name}"
+            else:
+                input_flag = f"--input-dir /root/pyrosetta_work"
+        else:
+            # Single file
+            name = structure_files.name
+            self.upload_file(str(structure_files), f"input/pyrosetta/{name}")
+            input_flag = f"--input /root/pyrosetta_work/{name}"
+
+        # Build command
+        cmd = (
+            f"bash /mnt/s3/scripts/pyrosetta/run_pyrosetta.sh"
+            f" {input_flag}"
+            f" --output-dir /mnt/s3/output/pyrosetta"
+        )
+        if binder_chain:
+            cmd += f" --binder-chain {binder_chain}"
+        if not relax:
+            cmd += " --no-relax"
+
+        print(f"Submitting PyRosetta scoring job (CPU)...")
+        exec_id, stream_url = self.submit_docker_job(
+            docker_image="python:3.11-slim",
+            command=cmd,
+            execution_type="cpu",
+            timeout=timeout,
+        )
+        print(f"  execution_id: {exec_id}")
+
+        # Stream output
+        success, output = self.stream_output(exec_id, stream_url)
+        if not success:
+            print("PyRosetta scoring failed.")
+            return False, []
+
+        print("PyRosetta scoring completed.")
+
+        # Download results
+        print(f"Downloading results to {output_dir}...")
+        downloaded = self.download_prefix("output/pyrosetta/", output_dir)
         print(f"  downloaded {len(downloaded)} files")
         return True, downloaded
 
