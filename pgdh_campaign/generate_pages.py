@@ -296,7 +296,7 @@ def design_card_html(d, idx):
     rank = d.get("rank", "")
     composite = d.get("composite_score")
     rank_html = f'<span class="rank-badge">#{rank}</span>' if rank else ""
-    score_html = f'<span class="score-badge">{composite:.3f}</span>' if composite else ""
+    score_html = f'<span class="score-badge">Score: {composite:.3f} <span class="score-help" onclick="event.stopPropagation();document.getElementById(\'score-tooltip\').classList.toggle(\'visible\')">?</span></span>' if composite else ""
     rnd = d.get("round")
     round_html = f'<span class="tool-badge" style="background:#2ECC71">R{rnd}</span>' if rnd is not None else ""
 
@@ -435,7 +435,7 @@ TABLE_COLUMNS = [
     ("tool", "Tool", None),
     ("strategy", "Strategy", None),
     ("round", "Round", None),
-    ("composite", "Composite", "high"),
+    ("composite", "Score", "high"),
     # Designer metrics (single-seq, from BoltzGen/RFD3)
     ("iptm", "Design ipTM", "high"),
     ("ptm", "Design pTM", "high"),
@@ -553,6 +553,19 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
 .card-header h2{{font-size:16px;font-weight:600}}
 .rank-badge{{background:#e94560;color:white;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600}}
 .score-badge{{background:#4361ee;color:white;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600}}
+.score-help{{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:rgba(255,255,255,0.3);font-size:10px;font-weight:700;cursor:pointer;margin-left:4px;vertical-align:middle}}
+.score-help:hover{{background:rgba(255,255,255,0.5)}}
+#score-tooltip{{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#1a1a2e;color:#e0e0e0;padding:24px;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.4);z-index:10000;max-width:480px;font-size:13px;line-height:1.6}}
+#score-tooltip.visible{{display:block}}
+#score-tooltip h3{{color:white;margin:0 0 12px 0;font-size:15px}}
+#score-tooltip table{{width:100%;border-collapse:collapse;margin:8px 0}}
+#score-tooltip th,#score-tooltip td{{text-align:left;padding:4px 8px;border-bottom:1px solid #333}}
+#score-tooltip th{{color:#a0a0a0;font-weight:400;font-size:12px}}
+#score-tooltip td{{color:white}}
+#score-tooltip .formula{{color:#4361ee;font-weight:600}}
+#score-tooltip .note{{color:#a0a0a0;font-size:11px;margin-top:8px}}
+#score-tooltip .close-btn{{position:absolute;top:8px;right:12px;color:#888;cursor:pointer;font-size:18px;background:none;border:none}}
+#score-tooltip .close-btn:hover{{color:white}}
 .tool-badge{{color:white;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;margin-left:4px}}
 .card-body{{display:grid;grid-template-columns:1fr 1fr;gap:0}}
 .viewer-container{{height:500px;position:relative;border-right:1px solid #eee}}
@@ -600,6 +613,22 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
 </style>
 </head>
 <body>
+<div id="score-tooltip">
+  <button class="close-btn" onclick="this.parentElement.classList.remove('visible')">&times;</button>
+  <h3>Composite Score</h3>
+  <p>Weighted average of available metrics, normalised to [0, 1]. Only metrics present for a design contribute; weights are re-normalised accordingly.</p>
+  <table>
+    <tr><th>Metric</th><th>Weight</th><th>Transform</th></tr>
+    <tr><td>Design ipTM</td><td class="formula">0.25</td><td>raw (0&ndash;1)</td></tr>
+    <tr><td>Min iPAE</td><td class="formula">0.25</td><td>1 &minus; PAE/10 (lower better)</td></tr>
+    <tr><td>Xval ipTM (Boltz-2)</td><td class="formula">0.20</td><td>raw (0&ndash;1)</td></tr>
+    <tr><td>Refold RMSD</td><td class="formula">0.15</td><td>1 &minus; RMSD/5 (lower better)</td></tr>
+    <tr><td>Design pTM</td><td class="formula">0.10</td><td>raw (0&ndash;1)</td></tr>
+    <tr><td>Xval pLDDT (Boltz-2)</td><td class="formula">0.10</td><td>pLDDT/100 (0&ndash;1)</td></tr>
+    <tr><td>Design RMSD</td><td class="formula">0.05</td><td>1 &minus; RMSD/5 (lower better)</td></tr>
+  </table>
+  <p class="note">Weights sum to 1.10 when all metrics are available. The score is normalised by the sum of weights of metrics actually present for each design.</p>
+</div>
 <div class="header">
   <h1>In Silico PGDH</h1>
   <p>Protein binder design campaign &mdash; Target: 2GDZ (15-hydroxyprostaglandin dehydrogenase)</p>
@@ -701,6 +730,7 @@ function resetView(i){{if(vs[i]){{vs[i].viewer.zoomTo();vs[i].viewer.render();}}
 function resetTargetView(){{if(tv){{tv.zoomTo();tv.render();}}}}
 (function(){{var rs={{}};tableData.forEach(function(r){{var v=r.round;if(v!==''&&v!==null&&v!==undefined)rs[v]=1;}});var sel=document.getElementById('table-round-filter');if(sel){{Object.keys(rs).sort(function(a,b){{return parseInt(a)-parseInt(b);}}).forEach(function(r){{var o=document.createElement('option');o.value=r;o.textContent='Round '+r;sel.appendChild(o);}});}}}})();
 document.addEventListener('DOMContentLoaded',ivv);
+document.addEventListener('click',function(e){{var tt=document.getElementById('score-tooltip');if(tt&&tt.classList.contains('visible')&&!tt.contains(e.target)&&!e.target.classList.contains('score-help'))tt.classList.remove('visible');}});
 </script>
 </body>
 </html>"""
