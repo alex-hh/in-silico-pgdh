@@ -658,27 +658,22 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
 .progress-stat .ps-label{{font-size:12px;color:var(--text2)}}
 .progress-stat .ps-value{{font-size:20px;font-weight:700;color:var(--accent)}}
 /* Workflow tab — cyberpunk flowchart */
-.wf-wrap{{padding:24px 0;max-width:900px;margin:0 auto}}
-.wf-title{{text-align:center;margin-bottom:28px}}
+.wf-wrap{{padding:24px 0;max-width:880px;margin:0 auto;position:relative}}
+.wf-title{{text-align:center;margin-bottom:32px}}
 .wf-title h2{{font-size:20px;font-weight:700;background:linear-gradient(90deg,#39ff14,#00e5ff,#ff69b4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:3px;text-transform:uppercase}}
 .wf-title p{{color:var(--text2);font-size:12px;margin-top:4px;font-family:'SF Mono',Monaco,monospace}}
-.wf-flow{{display:flex;flex-direction:column;align-items:center;gap:0}}
-.wf-row{{display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap}}
-.wf-box{{background:var(--surface);border:2px solid;border-radius:6px;padding:10px 18px;text-align:center;min-width:110px;position:relative;transition:all 0.2s;cursor:default}}
-.wf-box:hover{{box-shadow:0 0 24px currentColor40;transform:translateY(-2px)}}
-.wf-box .wf-label{{font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase}}
-.wf-box .wf-sub{{font-size:10px;color:var(--text2);margin-top:2px;font-family:'SF Mono',Monaco,monospace}}
+.wf-canvas{{position:relative;min-height:520px}}
+.wf-canvas svg{{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0}}
+.wf-box{{background:var(--surface);border:2px solid;border-radius:6px;padding:12px 16px;position:absolute;width:280px;transition:all 0.2s;cursor:default;z-index:1}}
+.wf-box:hover{{box-shadow:0 0 28px currentColor;transform:scale(1.02)}}
+.wf-box .wf-label{{font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase}}
+.wf-box .wf-desc{{font-size:11px;color:var(--text2);margin-top:4px;line-height:1.5}}
+.wf-box .wf-skills{{margin-top:6px;display:flex;gap:4px;flex-wrap:wrap}}
+.wf-box .wf-skill{{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:1px 6px;font-size:9px;font-family:'SF Mono',Monaco,monospace;color:var(--text2)}}
 .wf-box .wf-tag{{position:absolute;top:-8px;right:-8px;background:var(--bg);border:1px solid;border-radius:8px;padding:1px 6px;font-size:9px;font-weight:700}}
-.wf-arrow{{display:flex;align-items:center;justify-content:center;padding:4px 0;font-size:20px;line-height:1}}
-.wf-arrow-down{{color:#39ff14;text-shadow:0 0 10px #39ff1480}}
-.wf-arrow-right{{color:#39ff14;text-shadow:0 0 10px #39ff1480;padding:0 4px;font-size:18px}}
-.wf-arrow-branch{{color:#ff69b4;text-shadow:0 0 10px #ff69b480}}
-.wf-split{{display:flex;align-items:center;gap:16px;position:relative}}
-.wf-split::before{{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:80%;height:1px;background:var(--border)}}
 .wf-g{{color:#39ff14;border-color:#39ff14}}.wf-c{{color:#00e5ff;border-color:#00e5ff}}.wf-p{{color:#ff69b4;border-color:#ff69b4}}.wf-o{{color:#f0883e;border-color:#f0883e}}.wf-v{{color:#bc8cff;border-color:#bc8cff}}.wf-y{{color:#d29922;border-color:#d29922}}
-.wf-loop{{border:1px dashed #39ff1460;border-radius:12px;padding:16px;margin-top:4px;position:relative}}
-.wf-loop-label{{position:absolute;top:-10px;left:16px;background:var(--bg);padding:0 8px;font-size:10px;color:#39ff14;font-family:'SF Mono',Monaco,monospace;letter-spacing:1px}}
-@media(max-width:600px){{.wf-row{{flex-direction:column}}.wf-arrow-right{{transform:rotate(90deg)}}}}
+.wf-glow-g{{filter:drop-shadow(0 0 4px #39ff1480)}}.wf-glow-o{{filter:drop-shadow(0 0 4px #f0883e80)}}.wf-glow-p{{filter:drop-shadow(0 0 4px #ff69b480)}}.wf-glow-c{{filter:drop-shadow(0 0 4px #00e5ff80)}}
+@media(max-width:700px){{.wf-box{{position:relative;width:100%;margin-bottom:16px;left:0!important;top:0!important}}.wf-canvas{{min-height:auto}}.wf-canvas svg{{display:none}}}}
 @media(max-width:900px){{.card-body{{grid-template-columns:1fr}}.viewer-container{{border-right:none;border-bottom:1px solid var(--border)}}}}
 </style>
 </head>
@@ -875,31 +870,57 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
 <div class="wf-wrap">
   <div class="wf-title">
     <h2>// Design Pipeline //</h2>
-    <p>&gt; binder_campaign.exe</p>
+    <p>&gt; autonomous binder campaign &mdash; human sets strategy, agents execute</p>
   </div>
-  <div class="wf-flow">
-    <div class="wf-loop">
-      <span class="wf-loop-label">LOOP PER ROUND</span>
+  <div class="wf-canvas">
+    <svg viewBox="0 0 880 520" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Design → Evaluate (top-right to mid-left) -->
+      <path d="M 420 75 L 480 75 Q 520 75 520 115 L 520 155 Q 520 195 480 195 L 460 195" stroke="#39ff14" stroke-width="2" class="wf-glow-g"/>
+      <polygon points="462,190 462,200 450,195" fill="#39ff14" class="wf-glow-g"/>
+      <!-- Evaluate → Analyse (mid-left to bottom-right) -->
+      <path d="M 420 195 Q 440 195 440 215 L 440 300 Q 440 330 470 330 L 490 330" stroke="#f0883e" stroke-width="2" class="wf-glow-o"/>
+      <polygon points="488,325 488,335 500,330" fill="#f0883e" class="wf-glow-o"/>
+      <!-- Analyse → Publish (bottom-right to bottom-center) -->
+      <path d="M 500 365 Q 470 365 470 395 L 470 430 Q 470 460 430 460 L 380 460" stroke="#ff69b4" stroke-width="2" class="wf-glow-p"/>
+      <polygon points="382,455 382,465 370,460" fill="#ff69b4" class="wf-glow-p"/>
+      <!-- Analyse → Design (loop back, dashed) -->
+      <path d="M 780 340 Q 830 340 830 290 L 830 60 Q 830 20 790 20 L 200 20 Q 160 20 160 55 L 160 60" stroke="#00e5ff" stroke-width="1.5" stroke-dasharray="6 4" class="wf-glow-c"/>
+      <polygon points="155,58 165,58 160,70" fill="#00e5ff" class="wf-glow-c"/>
+      <text x="450" y="16" fill="#00e5ff" font-size="10" font-family="monospace" text-anchor="middle" opacity="0.7">next round</text>
+    </svg>
 
-      <div class="wf-flow">
-        <div class="wf-row">
-          <div class="wf-box wf-g"><span class="wf-tag wf-g">GPU</span><div class="wf-label">Design</div><div class="wf-sub">BoltzGen / RFD3</div></div>
-        </div>
-        <div class="wf-arrow wf-arrow-down">&darr;</div>
-        <div class="wf-row">
-          <div class="wf-box wf-o"><span class="wf-tag wf-o">GPU</span><div class="wf-label">Evaluate</div><div class="wf-sub">Refold &bull; Boltz-2 &bull; ipSAE</div></div>
-        </div>
-        <div class="wf-arrow wf-arrow-down">&darr;</div>
-        <div class="wf-row">
-          <div class="wf-box wf-p"><span class="wf-tag wf-p">AI</span><div class="wf-label">Analyse</div><div class="wf-sub">Rank &bull; Compare &bull; Propose</div></div>
-        </div>
-      </div>
+    <!-- Box 1: DESIGN — top left -->
+    <div class="wf-box wf-g" style="left:40px;top:40px">
+      <span class="wf-tag wf-g">GPU</span>
+      <div class="wf-label">Design</div>
+      <div class="wf-desc">Claude invokes <code>/design-round-modal</code> &mdash; submits up to 3 jobs per round via Modal. BoltzGen generates binders with self-consistency filtering; RFdiffusion3 does atomic-level diffusion with hotspot constraints.</div>
+      <div class="wf-skills"><span class="wf-skill">BoltzGen</span><span class="wf-skill">RFdiffusion3</span><span class="wf-skill">Modal GPUs</span></div>
+    </div>
 
+    <!-- Box 2: EVALUATE — middle, offset right -->
+    <div class="wf-box wf-o" style="left:140px;top:155px">
+      <span class="wf-tag wf-o">GPU</span>
+      <div class="wf-label">Evaluate</div>
+      <div class="wf-desc">Three-stage filter. BoltzGen refolds each sequence to check designability (RMSD). Boltz-2 + MSA cross-validates binding independently. ipSAE scores the interface PAE and pDockQ.</div>
+      <div class="wf-skills"><span class="wf-skill">BoltzGen fold</span><span class="wf-skill">Boltz-2+MSA</span><span class="wf-skill">ipSAE</span></div>
     </div>
-    <div class="wf-arrow wf-arrow-down" style="font-size:24px">&darr;</div>
-    <div class="wf-row">
-      <div class="wf-box wf-c"><div class="wf-label">Publish</div><div class="wf-sub">This page</div></div>
+
+    <!-- Box 3: ANALYSE — bottom right -->
+    <div class="wf-box wf-p" style="left:500px;top:290px">
+      <span class="wf-tag wf-p">AI</span>
+      <div class="wf-label">Analyse</div>
+      <div class="wf-desc">Claude runs <code>/propose-designs</code> &mdash; reads all metrics, compares strategies and tools, identifies which hotspots and binder lengths are working, writes a concrete plan for the next round.</div>
+      <div class="wf-skills"><span class="wf-skill">/propose-designs</span><span class="wf-skill">composite score</span></div>
     </div>
+
+    <!-- Box 4: PUBLISH — bottom left -->
+    <div class="wf-box wf-c" style="left:80px;top:425px">
+      <span class="wf-tag wf-c">CPU</span>
+      <div class="wf-label">Publish</div>
+      <div class="wf-desc">Regenerate this site from ranked designs, push to GitHub Pages. Advance round counter.</div>
+      <div class="wf-skills"><span class="wf-skill">generate_pages.py</span><span class="wf-skill">git push</span></div>
+    </div>
+
   </div>
 </div>
 </div>
