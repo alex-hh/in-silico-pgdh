@@ -4,8 +4,8 @@
   "strategy": "active_site",
   "round": 0,
   "status": "validated",
-  "evaluation_stage": "collected",
-  "created_at": "2026-02-28T05:22:40.495804+00:00",
+  "evaluation_stage": "validated",
+  "created_at": "2026-02-28T05:48:58.632117+00:00",
   "sequence": "SEIEAAQDLVLSIVKEAYALASSTTEEGLRRARELLEEVRTLAETPVPEAPALTAGAAGALGVILSTFRALALKGNELAKKLVEELNIPESVGAGV",
   "num_residues": 96,
   "rank": 1,
@@ -16,6 +16,8 @@
   "design_metrics": {
     "iptm": 0.69456,
     "min_pae": 2.7304,
+    "interaction_pae": 2.7304,
+    "interaction_pae_full": 10.43754,
     "ptm": 0.80343,
     "filter_rmsd": 1.95542,
     "plip_hbonds": 10.0,
@@ -30,11 +32,12 @@
   },
   "validation": null,
   "scoring": null,
-  "composite_score": 0.6832,
+  "composite_score": 0.6969,
   "refolding": {
     "source": "boltzgen_self_consistency",
     "boltzgen_rmsd": 1.95542,
     "boltzgen_plddt": null,
-    "boltzgen_iptm": 0.69456
+    "boltzgen_iptm": 0.69456,
+    "min_interaction_pae": 2.7304
   }
 }

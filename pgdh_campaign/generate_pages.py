@@ -352,21 +352,19 @@ def design_card_html(d, idx):
 
     scr = d.get("scoring") or {}
     if scr:
-        card += '<div class="section-label">Scoring (ipSAE)</div>'
-        if scr.get("ipsae"):
-            card += metric_row("ipSAE", scr["ipsae"], cls_high(scr["ipsae"], 0.70, 0.61))
+        card += '<div class="section-label">Scoring</div>'
+        if scr.get("min_interaction_pae"):
+            card += metric_row("Min iPAE", scr["min_interaction_pae"], cls_low(scr["min_interaction_pae"], 3.0, 5.0))
         if scr.get("pdockq"):
             card += metric_row("pDockQ", scr["pdockq"], cls_high(scr["pdockq"], 0.50, 0.23))
 
     refold = d.get("refolding") or {}
-    if refold and (refold.get("boltzgen_rmsd") or refold.get("ipsae")):
+    if refold and (refold.get("boltzgen_rmsd") or refold.get("min_interaction_pae")):
         card += '<div class="section-label">Designability</div>'
         if refold.get("boltzgen_rmsd"):
             card += metric_row("BoltzGen RMSD", f"{refold['boltzgen_rmsd']} &Aring;", cls_low(refold["boltzgen_rmsd"], 2.0, 2.5))
-        if refold.get("ipsae") and not scr.get("ipsae"):
-            card += metric_row("ipSAE (refold)", refold["ipsae"], cls_high(refold["ipsae"], 0.70, 0.61))
-        if refold.get("interaction_pae"):
-            card += metric_row("PAE (inter.)", refold["interaction_pae"], cls_low(refold["interaction_pae"], 5.0, 10.0))
+        if refold.get("min_interaction_pae") and not scr.get("min_interaction_pae"):
+            card += metric_row("Min iPAE", refold["min_interaction_pae"], cls_low(refold["min_interaction_pae"], 3.0, 5.0))
 
     if tool == "boltzgen":
         if dm.get("plip_hbonds"):
@@ -423,10 +421,8 @@ def build_table_data(all_designs):
             "bg_iptm": refold.get("boltzgen_iptm", ""),
             "val_iptm": val.get("iptm", ""),
             "val_plddt": val.get("plddt", ""),
-            "ipsae": scr.get("ipsae", "") or refold.get("ipsae", ""),
+            "min_ipae": scr.get("min_interaction_pae", "") or refold.get("min_interaction_pae", ""),
             "pdockq": scr.get("pdockq", ""),
-            "refold_ipsae": refold.get("ipsae", ""),
-            "refold_pae": refold.get("interaction_pae", ""),
             "length": d.get("length", ""),
             "status": d.get("status", ""),
         })
@@ -453,7 +449,7 @@ TABLE_COLUMNS = [
     ("val_iptm", "Xval ipTM (BZ2+MSA)", "high"),
     ("val_plddt", "Xval pLDDT (BZ2+MSA)", "high"),
     # Scoring
-    ("ipsae", "ipSAE", "high"),
+    ("min_ipae", "Min iPAE", "low"),
     ("pdockq", "pDockQ", "high"),
     ("length", "Length", None),
     ("status", "Status", None),

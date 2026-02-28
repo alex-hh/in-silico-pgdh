@@ -204,6 +204,8 @@ def parse_boltzgen_outputs(client: LyceumClient, prefix: str = "output/boltzgen/
             metric_map = {
                 "design_to_target_iptm": "iptm",
                 "min_design_to_target_pae": "min_pae",
+                "min_interaction_pae": "interaction_pae",
+                "interaction_pae": "interaction_pae_full",
                 "design_ptm": "ptm",
                 "filter_rmsd": "filter_rmsd",
                 "plip_hbonds_refolded": "plip_hbonds",
@@ -520,20 +522,22 @@ def attach_boltz2_validation(client: LyceumClient, designs: list[dict]) -> int:
     return updated
 
 
-def _promote_boltzgen_self_consistency(designs: list[dict]) -> int:
+def _promote_boltzgen_self_consistency(designs: list[dict], force: bool = False) -> int:
     """Promote BoltzGen self-consistency metrics into the refolding field.
 
     BoltzGen already computes filter_rmsd during design. For these designs,
     we promote the existing metrics into the refolding field so the composite
     score picks them up — no GPU needed.
 
+    If force=True, overwrite existing self-consistency refolding data.
+
     Returns count of promoted designs.
     """
     promoted = 0
     for d in designs:
-        if d.get("refolding"):
-            continue
         if d.get("tool") != "boltzgen":
+            continue
+        if d.get("refolding") and not force:
             continue
 
         dm = d.get("design_metrics") or {}
@@ -546,11 +550,20 @@ def _promote_boltzgen_self_consistency(designs: list[dict]) -> int:
         except (ValueError, TypeError):
             continue
 
+        min_ipae = dm.get("interaction_pae")
+        min_ipae_val = None
+        if min_ipae is not None:
+            try:
+                min_ipae_val = float(min_ipae)
+            except (ValueError, TypeError):
+                pass
+
         d["refolding"] = {
             "source": "boltzgen_self_consistency",
             "boltzgen_rmsd": rmsd_val,
             "boltzgen_plddt": dm.get("plddt"),
             "boltzgen_iptm": dm.get("iptm"),
+            "min_interaction_pae": min_ipae_val,
         }
 
         if d.get("evaluation_stage") in ("raw", "collected"):
@@ -618,7 +631,7 @@ def attach_pyrosetta_scores(client: LyceumClient, designs: list[dict]) -> int:
     return updated
 
 
-def attach_refolding_results(client: LyceumClient, designs: list[dict]) -> int:
+def attach_refolding_results(client: LyceumClient, designs: list[dict], force: bool = False) -> int:
     """Scan output/refolding/ on S3 for completed BoltzGen folding results and attach them.
 
     Also promotes BoltzGen self-consistency metrics (filter_rmsd) into the refolding
@@ -628,7 +641,7 @@ def attach_refolding_results(client: LyceumClient, designs: list[dict]) -> int:
     CIF and any metrics, then attaches refolding data including RMSD if computable.
     """
     # First: promote BoltzGen self-consistency (free, no S3 scan needed)
-    n_promoted = _promote_boltzgen_self_consistency(designs)
+    n_promoted = _promote_boltzgen_self_consistency(designs, force=force)
     if n_promoted:
         print(f"    Promoted {n_promoted} BoltzGen designs (self-consistency -> refolding)")
 
@@ -704,11 +717,8 @@ def attach_refolding_results(client: LyceumClient, designs: list[dict]) -> int:
                 pass
 
         # Check for NPZ confidence files (BoltzGen FoldingWriter output).
-        # These contain ipSAE, PAE, pLDDT, iptm and other prediction metrics.
-        ipsae = None
-        ipsae_d2t = None
-        ipsae_t2d = None
-        interaction_pae = None
+        # These contain PAE, pLDDT, iptm and other prediction metrics.
+        min_ipae = None
         npz_files = [f for f in files if f.endswith(".npz")]
         for npz_key in npz_files:
             try:
@@ -716,15 +726,8 @@ def attach_refolding_results(client: LyceumClient, designs: list[dict]) -> int:
                 import io as _io
                 import numpy as _np
                 data = _np.load(_io.BytesIO(npz_data))
-                # Extract key metrics from BoltzGen's eval_keys
-                if "design_ipsae_min" in data:
-                    ipsae = float(data["design_ipsae_min"])
-                if "design_to_target_ipsae" in data:
-                    ipsae_d2t = float(data["design_to_target_ipsae"])
-                if "target_to_design_ipsae" in data:
-                    ipsae_t2d = float(data["target_to_design_ipsae"])
                 if "min_interaction_pae" in data:
-                    interaction_pae = float(data["min_interaction_pae"])
+                    min_ipae = float(data["min_interaction_pae"])
                 if "iptm" in data and iptm is None:
                     iptm = float(data["iptm"])
                 if "complex_plddt" in data and plddt is None:
@@ -741,10 +744,7 @@ def attach_refolding_results(client: LyceumClient, designs: list[dict]) -> int:
             "boltzgen_rmsd": rmsd,
             "boltzgen_plddt": plddt,
             "boltzgen_iptm": iptm,
-            "ipsae": ipsae,
-            "ipsae_design_to_target": ipsae_d2t,
-            "ipsae_target_to_design": ipsae_t2d,
-            "interaction_pae": interaction_pae,
+            "min_interaction_pae": min_ipae,
         }
         d["source_files"] = d.get("source_files") or {}
         d["source_files"]["refolded_structure"] = refolded_cif
@@ -755,8 +755,8 @@ def attach_refolding_results(client: LyceumClient, designs: list[dict]) -> int:
         if d.get("status") == "designed":
             d["status"] = "validated"
         updated += 1
-        ipsae_str = f", ipsae={ipsae:.4f}" if ipsae is not None else ""
-        print(f"    Attached refolding for {did}: boltzgen_rmsd={rmsd}, boltzgen_plddt={plddt}{ipsae_str}")
+        ipae_str = f", min_interaction_pae={min_ipae:.4f}" if min_ipae is not None else ""
+        print(f"    Attached refolding for {did}: boltzgen_rmsd={rmsd}, boltzgen_plddt={plddt}{ipae_str}")
 
     return updated + n_promoted
 
@@ -828,14 +828,15 @@ def compute_composite_scores(designs: list[dict]) -> list[dict]:
             except (ValueError, TypeError):
                 pass
 
-        # Scoring metrics — ipSAE from standalone scoring or from refolding NPZ
-        ipsae = scr.get("ipsae")
-        if ipsae is None:
-            # Fall back to ipSAE from BoltzGen refolding NPZ
-            ipsae = refold.get("ipsae")
-        if ipsae is not None:
+        # min_interaction_pae — lower is better, from BoltzGen folding or scoring
+        min_ipae = scr.get("min_interaction_pae")
+        if min_ipae is None:
+            min_ipae = refold.get("min_interaction_pae")
+        if min_ipae is not None:
             try:
-                score += 0.25 * float(ipsae)
+                # Invert: lower PAE = better binding. Cap at 10, normalise to 0-1.
+                ipae_score = max(0.0, 1.0 - float(min_ipae) / 10.0)
+                score += 0.25 * ipae_score
                 weight_sum += 0.25
             except (ValueError, TypeError):
                 pass
@@ -944,7 +945,7 @@ def write_index(client: LyceumClient, designs: list[dict]):
             "ptm": dm.get("ptm"),
             "filter_rmsd": dm.get("filter_rmsd"),
             "refold_rmsd": refold.get("boltzgen_rmsd"),
-            "ipsae": scr.get("ipsae") or refold.get("ipsae"),
+            "min_interaction_pae": scr.get("min_interaction_pae") or refold.get("min_interaction_pae"),
             "interface_dG": (d.get("interface_metrics") or {}).get("interface_dG"),
             "interface_sc": (d.get("interface_metrics") or {}).get("interface_sc"),
         })
@@ -1017,7 +1018,7 @@ def sync_tracker(client: LyceumClient, designs: list[dict]):
 # MAIN — sync_all entry point
 # ══════════════════════════════════════════════════════════════════════════
 
-def sync_all(client: LyceumClient = None, extra_designs: list[dict] | None = None) -> list[dict]:
+def sync_all(client: LyceumClient = None, extra_designs: list[dict] | None = None, force: bool = False) -> list[dict]:
     """Collect, standardise, rank, and write all designs. Returns ranked list.
 
     Callable from CLI or imported by evaluate_designs.py and the Streamlit app.
@@ -1057,7 +1058,7 @@ def sync_all(client: LyceumClient = None, extra_designs: list[dict] | None = Non
     # Step 2: Attach existing validation/scoring/refolding results
     print("--- Step 2: Attach existing scores ---")
     n_val = attach_boltz2_validation(client, designs)
-    n_refold = attach_refolding_results(client, designs)
+    n_refold = attach_refolding_results(client, designs, force=force)
     n_scr = attach_ipsae_scores(client, designs)
     n_iface = attach_pyrosetta_scores(client, designs)
     print(f"  Attached {n_val} validations, {n_refold} refoldings, {n_scr} scores, {n_iface} interface metrics\n")
@@ -1083,7 +1084,12 @@ def sync_all(client: LyceumClient = None, extra_designs: list[dict] | None = Non
 
 
 def main():
-    sync_all()
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--force", action="store_true",
+                        help="Force re-promote all refolding data (overwrite existing)")
+    args = parser.parse_args()
+    sync_all(force=args.force)
 
 
 if __name__ == "__main__":

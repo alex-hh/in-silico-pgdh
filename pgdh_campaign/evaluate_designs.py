@@ -436,6 +436,7 @@ def run_evaluation(client: LyceumClient = None, fast: bool = False,
                    auto_slow: bool = False, score: bool = False,
                    interface: bool = False,
                    round_num: int | None = None,
+                   force: bool = False,
                    extra_designs: list[dict] | None = None) -> list[dict]:
     """Run sync + submit evaluation jobs. Returns ranked designs.
 
@@ -456,7 +457,7 @@ def run_evaluation(client: LyceumClient = None, fast: bool = False,
         client = LyceumClient()
 
     # Step 1: Sync all designs (collect, attach scores, rank, write to S3)
-    designs = sync_all(client=client, extra_designs=extra_designs)
+    designs = sync_all(client=client, extra_designs=extra_designs, force=force)
 
     # Step 1.5: Filter by round if specified
     if round_num is not None:
@@ -546,6 +547,8 @@ def main():
                         help="Submit PyRosetta interface scoring (CPU) for designs with structures")
     parser.add_argument("--round", type=int, default=None,
                         help="Only evaluate designs from this round (filters by round number)")
+    parser.add_argument("--force", action="store_true",
+                        help="Force re-promote refolding data (overwrite existing)")
     args = parser.parse_args()
 
     slow = args.slow is not None  # --slow was passed (even without IDs)
@@ -563,7 +566,7 @@ def main():
 
     run_evaluation(fast=args.fast, slow=slow, slow_ids=slow_ids,
                    auto_slow=args.auto, score=args.score, interface=args.interface,
-                   round_num=getattr(args, 'round'))
+                   round_num=getattr(args, 'round'), force=args.force)
 
 
 if __name__ == "__main__":
