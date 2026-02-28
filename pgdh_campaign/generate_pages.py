@@ -783,7 +783,7 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
     )
 
     html += f"""<div class="tab-panel" id="panel_progress">
-  <div class="tab-quote">&ldquo;Nothing human makes it out of the near-future.&rdquo;<span class="tq-attr">&mdash; Nick Land, <em>Meltdown</em></span></div>
+  <div class="tab-quote">&ldquo;The organism is not the environment of the genome: it is the genome&rsquo;s way of making more genomes.&rdquo;<span class="tq-attr">&mdash; Richard Dawkins, <em>The Extended Phenotype</em></span></div>
   <div class="progress-controls">
     <label>Metric:</label>
     <select id="progress-metric" onchange="updateProgressChart()">{progress_options}</select>
@@ -870,7 +870,7 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
 """
 
     html += """<div class="tab-panel" id="panel_workflow">
-<div class="tab-quote">&ldquo;Precisely because civilisation is not autonomous, it can be piloted.&rdquo;<span class="tq-attr">&mdash; Nick Land, <em>Fanged Noumena</em></span></div>
+<div class="tab-quote">&ldquo;We have to go beyond the machine, beyond the mechanistic, to arrive at the machinic.&rdquo;<span class="tq-attr">&mdash; F&eacute;lix Guattari, <em>Chaosmosis</em></span></div>
 <div class="wf-wrap">
   <div class="wf-header">
     <h2>// Design Pipeline //</h2>
