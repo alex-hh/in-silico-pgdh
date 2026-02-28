@@ -657,6 +657,27 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
 .progress-stat{{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px}}
 .progress-stat .ps-label{{font-size:12px;color:var(--text2)}}
 .progress-stat .ps-value{{font-size:20px;font-weight:700;color:var(--accent)}}
+/* Workflow tab — retro-futuristic */
+.wf-wrap{{position:relative;padding:32px 0}}
+.wf-grid{{display:grid;grid-template-columns:1fr;gap:0;max-width:800px;margin:0 auto}}
+.wf-step{{position:relative;padding:0 0 0 80px;min-height:120px}}
+.wf-step::before{{content:'';position:absolute;left:30px;top:0;bottom:0;width:2px;background:linear-gradient(180deg,#39ff14 0%,#00e5ff 50%,#ff69b4 100%);box-shadow:0 0 8px #39ff1480}}
+.wf-step:last-child::before{{display:none}}
+.wf-node{{position:absolute;left:19px;top:16px;width:24px;height:24px;border-radius:50%;border:2px solid;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;z-index:2;box-shadow:0 0 12px currentColor}}
+.wf-card{{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px 20px;margin-bottom:24px;position:relative;transition:all 0.2s}}
+.wf-card:hover{{border-color:var(--accent);box-shadow:0 0 20px rgba(88,166,255,0.15)}}
+.wf-card h3{{font-size:15px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:8px}}
+.wf-card p{{font-size:13px;color:var(--text2);line-height:1.5;margin:0}}
+.wf-card code{{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:12px;font-family:'SF Mono',Monaco,monospace;color:var(--accent)}}
+.wf-tag{{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;margin-left:4px}}
+.wf-neon-green{{color:#39ff14;border-color:#39ff14}}.wf-neon-cyan{{color:#00e5ff;border-color:#00e5ff}}.wf-neon-pink{{color:#ff69b4;border-color:#ff69b4}}.wf-neon-orange{{color:#f0883e;border-color:#f0883e}}.wf-neon-purple{{color:#bc8cff;border-color:#bc8cff}}.wf-neon-yellow{{color:#d29922;border-color:#d29922}}
+.wf-tools{{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}}
+.wf-tool{{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 12px;font-size:12px;font-family:'SF Mono',Monaco,monospace;color:var(--text2)}}
+.wf-arrow{{color:#39ff14;font-size:18px;text-align:center;padding:4px 0;text-shadow:0 0 8px #39ff1480}}
+.wf-header{{text-align:center;margin-bottom:32px}}
+.wf-header h2{{font-size:22px;font-weight:700;background:linear-gradient(90deg,#39ff14,#00e5ff,#ff69b4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:2px;text-transform:uppercase}}
+.wf-header p{{color:var(--text2);font-size:13px;margin-top:4px;font-family:'SF Mono',Monaco,monospace}}
+.wf-scanline{{position:absolute;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);pointer-events:none;border-radius:8px}}
 @media(max-width:900px){{.card-body{{grid-template-columns:1fr}}.viewer-container{{border-right:none;border-bottom:1px solid var(--border)}}}}
 </style>
 </head>
@@ -703,6 +724,7 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
   <div class="tab" onclick="switchTab('progress')">Progress</div>
   <div class="tab" onclick="switchTab('strategies')">Strategies</div>
   <div class="tab" onclick="switchTab('target')">Target (2GDZ)</div>
+  <div class="tab" onclick="switchTab('workflow')">Workflow</div>
 </div>
 <div class="tab-panel active" id="panel_evaluated">
 <div class="tab-quote">&ldquo;What is great in man is that he is a bridge and not an end.&rdquo;<span class="tq-attr">&mdash; Friedrich Nietzsche, <em>Thus Spoke Zarathustra</em></span></div>
@@ -847,6 +869,112 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
 </div>
 """
 
+    html += """<div class="tab-panel" id="panel_workflow">
+<div class="tab-quote">&ldquo;Precisely because civilisation is not autonomous, it can be piloted.&rdquo;<span class="tq-attr">&mdash; Nick Land, <em>Fanged Noumena</em></span></div>
+<div class="wf-wrap">
+  <div class="wf-header">
+    <h2>// Design Pipeline //</h2>
+    <p>&gt; binder_campaign.exe &mdash; v2.0</p>
+  </div>
+  <div class="wf-grid">
+
+    <div class="wf-step">
+      <div class="wf-node wf-neon-green">01</div>
+      <div class="wf-card" style="border-left:3px solid #39ff14">
+        <div class="wf-scanline"></div>
+        <h3><span style="color:#39ff14">DESIGN</span> <span class="wf-tag" style="background:#39ff1420;color:#39ff14;border:1px solid #39ff1440">GPU</span></h3>
+        <p>Generate binder candidates using generative protein models. Each round submits up to 3 design jobs targeting different binding strategies.</p>
+        <div class="wf-tools">
+          <span class="wf-tool" style="border-color:#39ff1440;color:#39ff14">BoltzGen</span>
+          <span class="wf-tool" style="border-color:#f0883e40;color:#f0883e">RFdiffusion3</span>
+        </div>
+        <p style="margin-top:8px"><code>python pgdh_modal/design.py boltzgen --strategy active_site</code></p>
+      </div>
+    </div>
+
+    <div class="wf-step">
+      <div class="wf-node wf-neon-cyan">02</div>
+      <div class="wf-card" style="border-left:3px solid #00e5ff">
+        <div class="wf-scanline"></div>
+        <h3><span style="color:#00e5ff">SYNC</span> <span class="wf-tag" style="background:#00e5ff20;color:#00e5ff;border:1px solid #00e5ff40">CPU</span></h3>
+        <p>Collect raw outputs, parse tool-native formats, compute composite scores, rank all designs. Writes the local source of truth.</p>
+        <div class="wf-tools">
+          <span class="wf-tool" style="border-color:#00e5ff40;color:#00e5ff">sync.py</span>
+        </div>
+        <p style="margin-top:8px"><code>python pgdh_modal/sync.py</code></p>
+      </div>
+    </div>
+
+    <div class="wf-step">
+      <div class="wf-node wf-neon-orange">03</div>
+      <div class="wf-card" style="border-left:3px solid #f0883e">
+        <div class="wf-scanline"></div>
+        <h3><span style="color:#f0883e">FAST EVAL</span> <span class="wf-tag" style="background:#f0883e20;color:#f0883e;border:1px solid #f0883e40">GPU</span></h3>
+        <p>BoltzGen refolding &mdash; does the designed sequence fold back into the intended structure? Measures designability via RMSD to original prediction.</p>
+        <div class="wf-tools">
+          <span class="wf-tool" style="border-color:#f0883e40;color:#f0883e">BoltzGen fold</span>
+        </div>
+        <p style="margin-top:8px"><code>python pgdh_modal/evaluate.py --fast</code></p>
+      </div>
+    </div>
+
+    <div class="wf-step">
+      <div class="wf-node wf-neon-pink">04</div>
+      <div class="wf-card" style="border-left:3px solid #ff69b4">
+        <div class="wf-scanline"></div>
+        <h3><span style="color:#ff69b4">SLOW EVAL</span> <span class="wf-tag" style="background:#ff69b420;color:#ff69b4;border:1px solid #ff69b440">GPU</span></h3>
+        <p>Boltz-2 cross-validation with MSA server &mdash; independent structure prediction of the binder&ndash;target complex. The acid test: does a different model agree the binder binds?</p>
+        <div class="wf-tools">
+          <span class="wf-tool" style="border-color:#ff69b440;color:#ff69b4">Boltz-2 + MSA</span>
+        </div>
+        <p style="margin-top:8px"><code>python pgdh_modal/evaluate.py --slow --auto</code></p>
+      </div>
+    </div>
+
+    <div class="wf-step">
+      <div class="wf-node wf-neon-purple">05</div>
+      <div class="wf-card" style="border-left:3px solid #bc8cff">
+        <div class="wf-scanline"></div>
+        <h3><span style="color:#bc8cff">SCORE</span> <span class="wf-tag" style="background:#bc8cff20;color:#bc8cff;border:1px solid #bc8cff40">CPU</span></h3>
+        <p>ipSAE interface scoring &mdash; interaction PAE, pDockQ, LIS metrics. Quantifies binding confidence from predicted structures and PAE matrices.</p>
+        <div class="wf-tools">
+          <span class="wf-tool" style="border-color:#bc8cff40;color:#bc8cff">ipSAE</span>
+        </div>
+        <p style="margin-top:8px"><code>python pgdh_modal/evaluate.py --score</code></p>
+      </div>
+    </div>
+
+    <div class="wf-step">
+      <div class="wf-node wf-neon-yellow">06</div>
+      <div class="wf-card" style="border-left:3px solid #d29922">
+        <div class="wf-scanline"></div>
+        <h3><span style="color:#d29922">ANALYSE</span> <span class="wf-tag" style="background:#d2992220;color:#d29922;border:1px solid #d2992240">Claude</span></h3>
+        <p>Review metrics across strategies and tools. Identify what&rsquo;s working, propose hotspot adjustments, binder length changes, and parameter tuning for the next round.</p>
+        <div class="wf-tools">
+          <span class="wf-tool" style="border-color:#d2992240;color:#d29922">/propose-designs</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="wf-step">
+      <div class="wf-node wf-neon-green">07</div>
+      <div class="wf-card" style="border-left:3px solid #39ff14">
+        <div class="wf-scanline"></div>
+        <h3><span style="color:#39ff14">PUBLISH</span> <span class="wf-tag" style="background:#39ff1420;color:#39ff14;border:1px solid #39ff1440">CPU</span></h3>
+        <p>Generate this site from ranked designs, push to GitHub Pages. Advance the round counter and begin the next cycle.</p>
+        <div class="wf-tools">
+          <span class="wf-tool" style="border-color:#39ff1440;color:#39ff14">generate_pages.py</span>
+          <span class="wf-tool" style="border-color:#39ff1440;color:#39ff14">git push</span>
+        </div>
+        <p style="margin-top:8px"><code>python pgdh_campaign/generate_pages.py --designs-dir pgdh_modal/out/designs/</code></p>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+"""
+
     html += f"""
 </div>
 <script>
@@ -862,7 +990,7 @@ var tableInit=false,curSort=null,curDir=1,progressInit=false,progressChart=null;
 function iv(i){{if(init[i])return;var e=document.getElementById('viewer_'+i);if(!e||e.offsetParent===null)return;var d=vd[i];if(!d)return;if(!d.cif){{e.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#8b949e;font-size:14px">3D view available for top {MAX_CIF_EMBEDS} designs</div>';init[i]=true;return;}}var v=$3Dmol.createViewer(e,{{backgroundColor:'#0d1117'}});v.addModel(d.cif,'cif');var bc=d.binderChain,tc2=bc==='A'?'B':'A',c=tclr[d.tool]||'#00CED1';v.setStyle({{chain:tc2}},{{cartoon:{{color:'#ff69b4',opacity:0.6}}}});v.setStyle({{chain:bc}},{{cartoon:{{color:c}}}});v.zoomTo();v.render();vs[i]={{viewer:v,binderChain:bc,targetChain:tc2,color:c}};init[i]=true;}}
 function itv(){{if(tv)return;var e=document.getElementById('viewer_target');if(!e||e.offsetParent===null)return;tv=$3Dmol.createViewer('viewer_target',{{backgroundColor:'#0d1117'}});tv.addModel(tc,'cif');tv.setStyle({{}},{{cartoon:{{color:'#6e7681',opacity:0.7}}}});tv.setStyle({{chain:'A',resi:as}},{{cartoon:{{color:'#FF4500'}},stick:{{color:'#FF4500'}}}});tv.setStyle({{chain:'A',resi:di}},{{cartoon:{{color:'#1E90FF'}},stick:{{color:'#1E90FF'}}}});tv.zoomTo();tv.render();}}
 function ivv(){{for(var i=0;i<vd.length;i++){{var e=document.getElementById('viewer_'+i);if(e&&e.offsetParent!==null&&!init[i])iv(i);}}if(document.getElementById('viewer_target')&&document.getElementById('viewer_target').offsetParent!==null)itv();if(document.getElementById('viewer_strategies')&&document.getElementById('viewer_strategies').offsetParent!==null)initStratViewer();}}
-function switchTab(t){{var ts=['evaluated','unevaluated','all','table','progress','strategies','target'];document.querySelectorAll('.tab').forEach(function(e,i){{e.classList.toggle('active',ts[i]===t);}});document.querySelectorAll('.tab-panel').forEach(function(p){{p.classList.remove('active');}});var p=document.getElementById('panel_'+t);if(p)p.classList.add('active');if(t==='table'&&!tableInit){{renderTable();tableInit=true;}}if(t==='progress'&&!progressInit){{initProgressChart();progressInit=true;}}setTimeout(ivv,100);}}
+function switchTab(t){{var ts=['evaluated','unevaluated','all','table','progress','strategies','target','workflow'];document.querySelectorAll('.tab').forEach(function(e,i){{e.classList.toggle('active',ts[i]===t);}});document.querySelectorAll('.tab-panel').forEach(function(p){{p.classList.remove('active');}});var p=document.getElementById('panel_'+t);if(p)p.classList.add('active');if(t==='table'&&!tableInit){{renderTable();tableInit=true;}}if(t==='progress'&&!progressInit){{initProgressChart();progressInit=true;}}setTimeout(ivv,100);}}
 function clsCell(val,dir){{if(val===''||val===null||val===undefined)return'';var v=parseFloat(val);if(isNaN(v))return'';if(dir==='high')return v>=0.7?'good':v>=0.5?'warn':'bad';if(dir==='low')return v<=2.0?'good':v<=3.0?'warn':'bad';return'';}}
 var colDirs={{{",".join(f'"{c[0]}":"{c[2] or ""}"' for c in TABLE_COLUMNS)}}};
 function renderTable(){{var tb=document.getElementById('table-body');if(!tb)return;var q=(document.getElementById('table-search')||{{}}).value||'';q=q.toLowerCase();var tf=(document.getElementById('table-tool-filter')||{{}}).value||'';var sf=(document.getElementById('table-strategy-filter')||{{}}).value||'';var rf=(document.getElementById('table-round-filter')||{{}}).value||'';var rows=tableData.filter(function(r){{if(q&&r.design_id.toLowerCase().indexOf(q)<0)return false;if(tf&&r.tool!==tf)return false;if(sf&&r.strategy!==sf)return false;if(rf&&String(r.round||'')!==rf)return false;return true;}});if(curSort){{rows.sort(function(a,b){{var av=a[curSort],bv=b[curSort];var an=parseFloat(av),bn=parseFloat(bv);if(!isNaN(an)&&!isNaN(bn))return(an-bn)*curDir;av=String(av||'');bv=String(bv||'');return av.localeCompare(bv)*curDir;}});}}var h='';rows.forEach(function(r){{h+='<tr>';tableCols.forEach(function(c){{var v=r[c];if(v===''||v===null||v===undefined)v='—';else if(typeof v==='number')v=Number.isInteger(v)?v:parseFloat(v).toFixed(3);var cls=clsCell(r[c],colDirs[c]);if(c==='composite'&&r.score_partial)cls=(cls?cls+' ':'')+'partial';h+='<td'+(cls?' class="'+cls+'"':'')+'>'+(c==='design_id'?'<span title="'+v+'">'+v+'</span>':v)+'</td>';}});h+='</tr>';}});tb.innerHTML=h;}}
