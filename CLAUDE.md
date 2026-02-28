@@ -3,11 +3,17 @@ Never write plans, notes, or scratchpad files to ~/.claude or any directory outs
 Document utils required for pgdh design by my user account on lyceum in pgdh_campaign/readme.md
 Document generic biolyceum features in biolyceum/README.md
 
+## Campaign Round
+**Current round: 0** (testing round — verifying pipeline end-to-end with CPU metrics)
+- Warmup designs (pre-ipSAE baseline) are archived, not part of any round
+- Output dir convention: `output/{tool}/r{N}/{strategy}/`
+- Submission name convention: `-f "pgdh_{tool}_r{N}_{strategy}"`
+
 ## Lyceum Rules
 - **Always use informative submission names** via `-f` flag for Lyceum jobs (e.g. `-f "pgdh_boltzgen_s1_active_site"`) so that `lyceum execution ls` shows what each job was.
 - **Always download results immediately** after a Lyceum job completes — storage is not guaranteed to persist.
 - Never run `lyceum storage rmdir` on output directories without downloading first.
-- Use strategy-specific output subdirs (e.g. `output/boltzgen/s1_active_site/`) to avoid overwriting between runs.
+- Use round + strategy output subdirs (e.g. `output/boltzgen/r1/s1_active_site/`) to avoid overwriting between runs.
 - **NEVER delete design results** — not from S3 (`output/`, `designs/`), not from local (`pgdh_campaign/out/`), not from `tracker/state.json`. Results are irreplaceable and cost GPU time to regenerate. If results seem wrong, flag them with status "failed" rather than deleting.
 - **The `designs/` directory on S3 is the source of truth and is READ-ONLY.** It must NEVER be edited directly — not by Claude Code, not by manual commands. The ONLY thing that writes to `designs/` is `pgdh_campaign/sync_designs.py`. All other code reads from it.
 
@@ -55,6 +61,28 @@ git add docs/ && git commit && git push # publish
 ```
 
 Use `--no-sync` to skip the S3 download and use cached local data.
+
+## Modal Pipeline (alternative to Lyceum)
+
+`pgdh_modal/` is a self-contained Modal-based evaluation pipeline. All data is local — no S3.
+
+```bash
+source .venv/bin/activate
+
+python pgdh_modal/sync.py                    # Collect + rank (local, no GPU)
+python pgdh_modal/evaluate.py --fast         # BoltzGen refolding via Modal
+python pgdh_modal/evaluate.py --slow --auto  # Boltz-2 cross-validation via Modal
+python pgdh_modal/evaluate.py --score        # ipSAE scoring via Modal
+python pgdh_modal/sync.py                    # Re-sync after eval
+
+# Generate pages from local Modal results
+python pgdh_campaign/generate_pages.py --designs-dir pgdh_modal/out/designs/
+```
+
+- Source of truth: `pgdh_modal/out/designs/` (local, written ONLY by `pgdh_modal/sync.py`)
+- Raw outputs: `pgdh_modal/out/{boltzgen,refolding,boltz2,ipsae}/`
+- Modal scripts: `resources/biomodals/modal_boltz.py`, `modal_boltzgen.py`, `modal_ipsae.py`
+- Same ranking formula as Lyceum pipeline
 
 ## Design Tool Integration Rules
 - **Design tools can write outputs in any format to any location.** There are no constraints on how a design tool stores its raw outputs. The sync pipeline handles all standardisation.

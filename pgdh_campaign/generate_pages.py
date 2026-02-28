@@ -217,6 +217,7 @@ def load_from_docs_data():
             dest.append({
                 "design_id": did, "name": did, "tool": tool,
                 "strategy": entry.get("strategy", "unknown"),
+                "round": entry.get("round"),
                 "cif_path": cif_path, "cif": "", "sequence": seq,
                 "length": len(seq) if seq else entry.get("num_residues", 0),
                 "binder_chain": "B" if tool == "boltzgen" else "A",
@@ -296,6 +297,8 @@ def design_card_html(d, idx):
     composite = d.get("composite_score")
     rank_html = f'<span class="rank-badge">#{rank}</span>' if rank else ""
     score_html = f'<span class="score-badge">{composite:.3f}</span>' if composite else ""
+    rnd = d.get("round")
+    round_html = f'<span class="tool-badge" style="background:#2ECC71">R{rnd}</span>' if rnd is not None else ""
 
     card = f"""
 <div class="design-card">
@@ -304,6 +307,7 @@ def design_card_html(d, idx):
     <div>{rank_html} {score_html}
       <span class="tool-badge" style="background:{tool_color}">{tool}</span>
       <span class="tool-badge" style="background:{strat_meta['color']}">{strat_meta['label']}</span>
+      {round_html}
     </div>
   </div>
   <div class="card-body">
@@ -408,6 +412,7 @@ def build_table_data(all_designs):
             "design_id": d.get("design_id", ""),
             "tool": d.get("tool", ""),
             "strategy": d.get("strategy", ""),
+            "round": d.get("round") if d.get("round") is not None else "",
             "composite": d.get("composite_score") or "",
             "iptm": dm.get("iptm", dm.get("design_to_target_iptm", "")),
             "ptm": dm.get("ptm", dm.get("design_ptm", "")),
@@ -433,6 +438,7 @@ TABLE_COLUMNS = [
     ("design_id", "Design ID", None),
     ("tool", "Tool", None),
     ("strategy", "Strategy", None),
+    ("round", "Round", None),
     ("composite", "Composite", "high"),
     # Designer metrics (single-seq, from BoltzGen/RFD3)
     ("iptm", "Design ipTM", "high"),
@@ -644,6 +650,9 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
       <option value="dimer_interface">Dimer Interface</option>
       <option value="surface">Surface</option>
     </select>
+    <select id="table-round-filter" onchange="filterTable()">
+      <option value="">All rounds</option>
+    </select>
   </div>
   <div class="table-wrap">
     <table class="design-table" id="design-table">
@@ -688,12 +697,13 @@ function ivv(){{for(var i=0;i<vd.length;i++){{var e=document.getElementById('vie
 function switchTab(t){{var ts=['evaluated','unevaluated','all','table','target'];document.querySelectorAll('.tab').forEach(function(e,i){{e.classList.toggle('active',ts[i]===t);}});document.querySelectorAll('.tab-panel').forEach(function(p){{p.classList.remove('active');}});var p=document.getElementById('panel_'+t);if(p)p.classList.add('active');if(t==='table'&&!tableInit){{renderTable();tableInit=true;}}setTimeout(ivv,100);}}
 function clsCell(val,dir){{if(val===''||val===null||val===undefined)return'';var v=parseFloat(val);if(isNaN(v))return'';if(dir==='high')return v>=0.7?'good':v>=0.5?'warn':'bad';if(dir==='low')return v<=2.0?'good':v<=3.0?'warn':'bad';return'';}}
 var colDirs={{{",".join(f'"{c[0]}":"{c[2] or ""}"' for c in TABLE_COLUMNS)}}};
-function renderTable(){{var tb=document.getElementById('table-body');if(!tb)return;var q=(document.getElementById('table-search')||{{}}).value||'';q=q.toLowerCase();var tf=(document.getElementById('table-tool-filter')||{{}}).value||'';var sf=(document.getElementById('table-strategy-filter')||{{}}).value||'';var rows=tableData.filter(function(r){{if(q&&r.design_id.toLowerCase().indexOf(q)<0)return false;if(tf&&r.tool!==tf)return false;if(sf&&r.strategy!==sf)return false;return true;}});if(curSort){{rows.sort(function(a,b){{var av=a[curSort],bv=b[curSort];var an=parseFloat(av),bn=parseFloat(bv);if(!isNaN(an)&&!isNaN(bn))return(an-bn)*curDir;av=String(av||'');bv=String(bv||'');return av.localeCompare(bv)*curDir;}});}}var h='';rows.forEach(function(r){{h+='<tr>';tableCols.forEach(function(c){{var v=r[c];if(v===''||v===null||v===undefined)v='—';else if(typeof v==='number')v=Number.isInteger(v)?v:parseFloat(v).toFixed(3);var cls=clsCell(r[c],colDirs[c]);h+='<td'+(cls?' class="'+cls+'"':'')+'>'+(c==='design_id'?'<span title="'+v+'">'+v+'</span>':v)+'</td>';}});h+='</tr>';}});tb.innerHTML=h;}}
+function renderTable(){{var tb=document.getElementById('table-body');if(!tb)return;var q=(document.getElementById('table-search')||{{}}).value||'';q=q.toLowerCase();var tf=(document.getElementById('table-tool-filter')||{{}}).value||'';var sf=(document.getElementById('table-strategy-filter')||{{}}).value||'';var rf=(document.getElementById('table-round-filter')||{{}}).value||'';var rows=tableData.filter(function(r){{if(q&&r.design_id.toLowerCase().indexOf(q)<0)return false;if(tf&&r.tool!==tf)return false;if(sf&&r.strategy!==sf)return false;if(rf&&String(r.round||'')!==rf)return false;return true;}});if(curSort){{rows.sort(function(a,b){{var av=a[curSort],bv=b[curSort];var an=parseFloat(av),bn=parseFloat(bv);if(!isNaN(an)&&!isNaN(bn))return(an-bn)*curDir;av=String(av||'');bv=String(bv||'');return av.localeCompare(bv)*curDir;}});}}var h='';rows.forEach(function(r){{h+='<tr>';tableCols.forEach(function(c){{var v=r[c];if(v===''||v===null||v===undefined)v='—';else if(typeof v==='number')v=Number.isInteger(v)?v:parseFloat(v).toFixed(3);var cls=clsCell(r[c],colDirs[c]);h+='<td'+(cls?' class="'+cls+'"':'')+'>'+(c==='design_id'?'<span title="'+v+'">'+v+'</span>':v)+'</td>';}});h+='</tr>';}});tb.innerHTML=h;}}
 function filterTable(){{renderTable();}}
 function sortTable(th){{var col=th.getAttribute('data-col');if(curSort===col){{curDir*=-1;}}else{{curSort=col;curDir=1;}}document.querySelectorAll('.design-table th').forEach(function(h){{h.classList.remove('sorted');h.querySelector('.sort-arrow').innerHTML='&#9650;';}});th.classList.add('sorted');th.querySelector('.sort-arrow').innerHTML=curDir>0?'&#9650;':'&#9660;';renderTable();}}
 function toggleStyle(i,m){{var v=vs[i];if(!v)return;var vw=v.viewer;vw.removeAllSurfaces();var bc=v.binderChain,tc2=v.targetChain,c=v.color;if(m==='cartoon'){{vw.setStyle({{chain:tc2}},{{cartoon:{{color:'#999',opacity:0.8}}}});vw.setStyle({{chain:bc}},{{cartoon:{{color:c}}}});}}else if(m==='surface'){{vw.setStyle({{chain:tc2}},{{cartoon:{{color:'#999',opacity:0.5}}}});vw.setStyle({{chain:bc}},{{cartoon:{{color:c,opacity:0.5}}}});vw.addSurface($3Dmol.SurfaceType.VDW,{{opacity:0.6,color:'#999'}},{{chain:tc2}});vw.addSurface($3Dmol.SurfaceType.VDW,{{opacity:0.6,color:c}},{{chain:bc}});}}else if(m==='sticks'){{vw.setStyle({{chain:tc2}},{{cartoon:{{color:'#999',opacity:0.8}}}});vw.setStyle({{chain:bc}},{{cartoon:{{color:c}}}});vw.addStyle({{chain:bc,within:{{distance:5,sel:{{chain:tc2}}}}}},{{stick:{{color:c}}}});vw.addStyle({{chain:tc2,within:{{distance:5,sel:{{chain:bc}}}}}},{{stick:{{color:'#FF6347'}}}});}}else if(m==='sequence'){{var ac={{'ALA':'#E8860C','VAL':'#E8860C','LEU':'#E8860C','ILE':'#E8860C','MET':'#E8860C','PHE':'#E8860C','TRP':'#E8860C','PRO':'#E8860C','SER':'#2ECC71','THR':'#2ECC71','ASN':'#2ECC71','GLN':'#2ECC71','TYR':'#2ECC71','CYS':'#2ECC71','LYS':'#3498DB','ARG':'#3498DB','HIS':'#3498DB','ASP':'#E74C3C','GLU':'#E74C3C','GLY':'#95A5A6'}};vw.setStyle({{chain:tc2}},{{cartoon:{{color:'#DDD',opacity:0.5}}}});Object.keys(ac).forEach(function(r){{vw.setStyle({{chain:bc,resn:r}},{{cartoon:{{color:ac[r]}},stick:{{color:ac[r]}}}});}});}}vw.render();['cartoon','surface','sticks','sequence'].forEach(function(mm){{var b=document.getElementById('btn_'+mm+'_'+i);if(b)b.classList.toggle('active',mm===m);}});var l=document.getElementById('seqleg_'+i);if(l)l.classList.toggle('visible',m==='sequence');}}
 function resetView(i){{if(vs[i]){{vs[i].viewer.zoomTo();vs[i].viewer.render();}}}}
 function resetTargetView(){{if(tv){{tv.zoomTo();tv.render();}}}}
+(function(){{var rs={{}};tableData.forEach(function(r){{var v=r.round;if(v!==''&&v!==null&&v!==undefined)rs[v]=1;}});var sel=document.getElementById('table-round-filter');if(sel){{Object.keys(rs).sort(function(a,b){{return parseInt(a)-parseInt(b);}}).forEach(function(r){{var o=document.createElement('option');o.value=r;o.textContent='Round '+r;sel.appendChild(o);}});}}}})();
 document.addEventListener('DOMContentLoaded',ivv);
 </script>
 </body>
@@ -705,5 +715,56 @@ document.addEventListener('DOMContentLoaded',ivv);
 
 
 if __name__ == "__main__":
-    skip_sync = "--no-sync" in sys.argv
-    build_html(skip_sync=skip_sync)
+    import argparse as _ap
+    _parser = _ap.ArgumentParser(description="Generate GitHub Pages site from design data")
+    _parser.add_argument("--no-sync", action="store_true",
+                         help="Skip S3 sync, use cached docs/data/")
+    _parser.add_argument("--designs-dir", type=str, default=None,
+                         help="Load designs from a local directory instead of S3 (e.g. pgdh_modal/out/designs/)")
+    _args = _parser.parse_args()
+
+    if _args.designs_dir:
+        # Override DOCS_DATA to point at the local designs directory
+        # and load data from there without S3 sync
+        local_dir = Path(_args.designs_dir)
+        if not local_dir.exists():
+            print(f"Error: {local_dir} does not exist")
+            sys.exit(1)
+        # Copy local designs into docs/data/ so load_from_docs_data() works
+        DOCS_DATA.mkdir(parents=True, exist_ok=True)
+        local_index = local_dir / "index.json"
+        if local_index.exists():
+            index = json.loads(local_index.read_text())
+            (DOCS_DATA / "index.json").write_text(json.dumps(index, indent=2))
+            evaluated, unevaluated = [], []
+            for entry in index.get("designs", []):
+                did = entry["design_id"]
+                tool = entry.get("tool", "unknown")
+                src_dir = local_dir / tool / did
+                dest_dir = DOCS_DATA / tool / did
+                dest_dir.mkdir(parents=True, exist_ok=True)
+                # Copy metrics.json
+                src_metrics = src_dir / "metrics.json"
+                if src_metrics.exists():
+                    metrics = json.loads(src_metrics.read_text())
+                    (dest_dir / "metrics.json").write_text(json.dumps(metrics, indent=2))
+                else:
+                    metrics = entry
+                # Copy CIF files
+                for cif_name in ["designed.cif", "refolded.cif"]:
+                    src_cif = src_dir / cif_name
+                    if src_cif.exists():
+                        (dest_dir / cif_name).write_bytes(src_cif.read_bytes())
+                # Classify
+                has_eval = (
+                    metrics.get("validation") is not None
+                    or metrics.get("scoring") is not None
+                    or metrics.get("refolding") is not None
+                )
+                (evaluated if has_eval else unevaluated).append(metrics)
+            (DOCS_DATA / "evaluated.json").write_text(json.dumps(evaluated, indent=2))
+            (DOCS_DATA / "unevaluated.json").write_text(json.dumps(unevaluated, indent=2))
+            print(f"Loaded {len(index.get('designs', []))} designs from {local_dir}")
+        build_html(skip_sync=True)
+    else:
+        build_html(skip_sync=_args.no_sync)

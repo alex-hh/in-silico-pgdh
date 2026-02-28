@@ -94,6 +94,30 @@ at a time** and wait for completion before submitting the next. The Python clien
 uses 120s API timeouts to handle this. For parallel work or if Lyceum is down,
 use the standalone A100 server scripts in `server/` — see `server/README.md`.
 
+## Modal Alternative
+
+If Lyceum is down or unreliable, use the Modal-based pipeline in `pgdh_modal/`:
+
+```bash
+source .venv/bin/activate
+
+# Collect + rank (no GPU, local filesystem)
+python pgdh_modal/sync.py
+
+# GPU evaluation via Modal
+python pgdh_modal/evaluate.py --fast       # BoltzGen refolding
+python pgdh_modal/evaluate.py --slow --auto # Boltz-2 cross-validation
+python pgdh_modal/evaluate.py --score       # ipSAE scoring
+
+# After evaluation, sync again
+python pgdh_modal/sync.py
+
+# Generate pages from Modal results
+python pgdh_campaign/generate_pages.py --designs-dir pgdh_modal/out/designs/
+```
+
+All data is local in `pgdh_modal/out/` — no S3 dependency. See `pgdh_modal/README.md`.
+
 After each `sync_designs.py` run, update GitHub Pages:
 - **GitHub Pages**: `generate_pages.py` (syncs from S3 + generates HTML) + git push
 

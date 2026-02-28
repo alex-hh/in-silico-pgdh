@@ -129,7 +129,7 @@ exec_id, stream_url = client.submit_docker_job(
     command=[
         "python", "/mnt/s3/scripts/rfdiffusion3/lyceum_rfdiffusion3.py",
         "--input-json", "/mnt/s3/input/rfdiffusion3/rfd3_pgdh_binder.json",
-        "--output-dir", "/mnt/s3/output/rfdiffusion3",
+        "--output-dir", "/mnt/s3/output/rfdiffusion3/r{N}/{strategy}",  # Replace {N} with current round from CLAUDE.md
         "--num-designs", "4",
         "--num-batches", "1",
         "--step-scale", "3",
@@ -143,7 +143,7 @@ exec_id, stream_url = client.submit_docker_job(
 success, output = client.stream_output(exec_id, stream_url)
 
 # Download results
-client.download_prefix("output/rfdiffusion3/", "pgdh_campaign/out/rfd3")
+client.download_prefix("output/rfdiffusion3/r1/", "pgdh_campaign/out/rfd3/r1")
 ```
 
 ### Via submission script
@@ -252,6 +252,8 @@ uses 120s API timeouts to handle this.
 - Submission script: `pgdh_campaign/run_rfd3_pgdh.py`
 - JSON config: `pgdh_campaign/configs/rfd3_pgdh_binder.json`
 - Target structure: `pgdh_campaign/structures/2GDZ.pdb`
-- Output dir: `pgdh_campaign/out/rfd3/`
+- S3 output dir: `output/rfdiffusion3/r{N}/{strategy}/` (use round prefix)
+- Local output dir: `pgdh_campaign/out/rfd3/`
+- Submission name convention: `-f "pgdh_rfd3_r{N}_{strategy}"`
 - Docker image: `rosettacommons/foundry`
 - Machine: `gpu.a100`

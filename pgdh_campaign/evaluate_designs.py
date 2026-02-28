@@ -224,7 +224,12 @@ def submit_refold_jobs(client: LyceumClient, designs: list[dict]) -> list[tuple[
 # ══════════════════════════════════════════════════════════════════════════
 
 def _generate_boltz2_yaml(design_id: str, binder_sequence: str) -> str:
-    """Generate a Boltz-2 YAML for predicting the binder+PGDH complex."""
+    """Generate a Boltz-2 YAML for predicting the binder+PGDH complex.
+
+    NOTE: Do NOT use the msa: field with pre-computed CSVs — Boltz-2 loses
+    TaxID/pairing info from cached MSAs, degrading ipTM by ~40%
+    (see github.com/jwohlwend/boltz/issues/627). Always use --use-msa-server.
+    """
     return (
         f"# Boltz-2 validation for {design_id}\n"
         f"sequences:\n"
@@ -430,6 +435,7 @@ def run_evaluation(client: LyceumClient = None, fast: bool = False,
                    slow: bool = False, slow_ids: list[str] | None = None,
                    auto_slow: bool = False, score: bool = False,
                    interface: bool = False,
+                   round_num: int | None = None,
                    extra_designs: list[dict] | None = None) -> list[dict]:
     """Run sync + submit evaluation jobs. Returns ranked designs.
 
@@ -443,6 +449,7 @@ def run_evaluation(client: LyceumClient = None, fast: bool = False,
         auto_slow: If True, auto-select designs with refolding RMSD < threshold.
         score: If True, submit ipSAE scoring jobs.
         interface: If True, submit PyRosetta interface scoring jobs (CPU).
+        round_num: If set, only evaluate designs from this round number.
         extra_designs: Additional designs to inject (e.g. custom FASTA uploads).
     """
     if client is None:
@@ -450,6 +457,12 @@ def run_evaluation(client: LyceumClient = None, fast: bool = False,
 
     # Step 1: Sync all designs (collect, attach scores, rank, write to S3)
     designs = sync_all(client=client, extra_designs=extra_designs)
+
+    # Step 1.5: Filter by round if specified
+    if round_num is not None:
+        before = len(designs)
+        designs = [d for d in designs if d.get("round") == round_num]
+        print(f"  Filtered to round {round_num}: {len(designs)} designs (of {before} total)")
 
     # Step 2: Submit GPU jobs based on flags
     if fast:
@@ -531,6 +544,8 @@ def main():
                         help="Submit ipSAE scoring jobs for validated designs")
     parser.add_argument("--interface", action="store_true",
                         help="Submit PyRosetta interface scoring (CPU) for designs with structures")
+    parser.add_argument("--round", type=int, default=None,
+                        help="Only evaluate designs from this round (filters by round number)")
     args = parser.parse_args()
 
     slow = args.slow is not None  # --slow was passed (even without IDs)
@@ -547,7 +562,8 @@ def main():
         sys.exit(1)
 
     run_evaluation(fast=args.fast, slow=slow, slow_ids=slow_ids,
-                   auto_slow=args.auto, score=args.score, interface=args.interface)
+                   auto_slow=args.auto, score=args.score, interface=args.interface,
+                   round_num=getattr(args, 'round'))
 
 
 if __name__ == "__main__":

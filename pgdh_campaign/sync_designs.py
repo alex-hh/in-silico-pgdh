@@ -41,6 +41,7 @@ import csv
 import gzip
 import io
 import json
+import re
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -53,6 +54,12 @@ from client import LyceumClient
 
 def _now() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+def _detect_round(key: str) -> int | None:
+    """Extract round from path like 'output/boltzgen/r1/s1_active_site/...'"""
+    m = re.search(r'/r(\d+)/', key)
+    return int(m.group(1)) if m else None
 
 
 def _detect_strategy(key: str) -> str:
@@ -188,7 +195,9 @@ def parse_boltzgen_outputs(client: LyceumClient, prefix: str = "output/boltzgen/
                 continue
 
             rank = row.get("final_rank", "")
-            design_id = f"boltzgen_{s_short}_{raw_id}"
+            round_num = _detect_round(csv_key)
+            round_tag = f"r{round_num}_" if round_num is not None else ""
+            design_id = f"boltzgen_{round_tag}{s_short}_{raw_id}"
             seq = row.get("sequence", row.get("binder_sequence", ""))
 
             # Map tool-specific columns -> standard metric names
@@ -232,6 +241,7 @@ def parse_boltzgen_outputs(client: LyceumClient, prefix: str = "output/boltzgen/
                 "design_id": design_id,
                 "tool": "boltzgen",
                 "strategy": strategy,
+                "round": _detect_round(csv_key),
                 "status": "designed",
                 "evaluation_stage": "raw",
                 "created_at": _now(),
@@ -266,7 +276,9 @@ def parse_rfd3_outputs(client: LyceumClient, prefix: str = "output/rfdiffusion3/
 
         strategy = _detect_strategy(json_key)
         stem = json_key.rsplit("/", 1)[-1].rsplit(".", 1)[0]
-        design_id = f"rfd3_{_strategy_short(strategy)}_{stem}"
+        round_num = _detect_round(json_key)
+        round_tag = f"r{round_num}_" if round_num is not None else ""
+        design_id = f"rfd3_{round_tag}{_strategy_short(strategy)}_{stem}"
 
         metrics_raw = data.get("metrics", {})
         spec = data.get("specification", {})
@@ -316,6 +328,7 @@ def parse_rfd3_outputs(client: LyceumClient, prefix: str = "output/rfdiffusion3/
             "design_id": design_id,
             "tool": "rfdiffusion3",
             "strategy": strategy,
+            "round": _detect_round(json_key),
             "status": "designed",
             "evaluation_stage": "raw",
             "created_at": _now(),
@@ -894,16 +907,20 @@ def write_index(client: LyceumClient, designs: list[dict]):
     by_tool = {}
     by_strategy = {}
     by_status = {}
+    by_round = {}
     entries = []
 
     for d in designs:
         tool = d.get("tool", "unknown")
         strategy = d.get("strategy", "unknown")
         status = d.get("status", "designed")
+        rnd = d.get("round")
 
         by_tool[tool] = by_tool.get(tool, 0) + 1
         by_strategy[strategy] = by_strategy.get(strategy, 0) + 1
         by_status[status] = by_status.get(status, 0) + 1
+        rnd_key = str(rnd) if rnd is not None else "none"
+        by_round[rnd_key] = by_round.get(rnd_key, 0) + 1
 
         dm = d.get("design_metrics", {})
         scr = d.get("scoring") or {}
@@ -914,6 +931,7 @@ def write_index(client: LyceumClient, designs: list[dict]):
             "design_id": d["design_id"],
             "tool": tool,
             "strategy": strategy,
+            "round": d.get("round"),
             "status": status,
             "rank": d.get("rank"),
             "composite_score": d.get("composite_score"),
@@ -938,6 +956,7 @@ def write_index(client: LyceumClient, designs: list[dict]):
         "by_tool": by_tool,
         "by_strategy": by_strategy,
         "by_status": by_status,
+        "by_round": by_round,
         "designs": entries,
     }
 
@@ -946,6 +965,7 @@ def write_index(client: LyceumClient, designs: list[dict]):
     print(f"  by_tool: {by_tool}")
     print(f"  by_strategy: {by_strategy}")
     print(f"  by_status: {by_status}")
+    print(f"  by_round: {by_round}")
 
 
 def sync_tracker(client: LyceumClient, designs: list[dict]):

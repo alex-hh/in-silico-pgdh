@@ -68,17 +68,6 @@ lyceum storage load /path/to/modified_config.yaml --key input/boltzgen/config.ya
 ### Step 2: Run BoltzGen
 
 ```bash
-# Option A: Custom image (fast — skips ~2min setup)
-lyceum docker run alexhh/boltzgen:latest \
-  -m gpu.a100 \
-  -t 600 \
-  -c "bash /mnt/s3/scripts/boltzgen/run_boltzgen.sh \
-      --input-yaml /root/boltzgen_work/config.yaml \
-      --output-dir /mnt/s3/output/boltzgen \
-      --num-designs 10 \
-      --cache /mnt/s3/models/boltzgen"
-
-# Option B: Generic image (slower — installs boltzgen each run)
 lyceum docker run pytorch/pytorch:2.6.0-cuda12.6-cudnn9-runtime \
   -m gpu.a100 \
   -t 600 \
@@ -89,12 +78,12 @@ lyceum docker run pytorch/pytorch:2.6.0-cuda12.6-cudnn9-runtime \
       --cache /mnt/s3/models/boltzgen"
 ```
 
-The `run_boltzgen.sh` script auto-detects whether `boltzgen` is pre-installed and skips setup if so.
+**Do NOT use custom Docker images** (e.g. `alexhh/boltzgen:latest`) — they cause `system_failure` on Lyceum. Always use the generic `pytorch/pytorch:2.6.0-cuda12.6-cudnn9-runtime` image. The `run_boltzgen.sh` script handles installation automatically.
 
 **Parameters**:
 - `--num-designs`: Number of designs (3-10 for testing, 50 for production)
 - `--protocol`: `protein-anything` (default, correct for binder design)
-- `-t 600`: Max timeout (600s). Custom image: ~5 designs fit in 600s. Generic: ~3.
+- `-t 600`: Max timeout (600s). ~3 designs fit in 600s with setup overhead.
 
 **API Stability (Feb 2026)**: Lyceum API has high latency. The Python client uses
 120s timeouts for API calls. **Schedule at most 1 job at a time** and wait for it
@@ -146,31 +135,38 @@ success, files = client.run_boltzgen(
 guaranteed to persist — files can disappear between sessions. Always download
 metrics CSVs and CIF files locally before starting the next run.
 
-Each strategy writes to its own output subdirectory to avoid overwriting:
+Each strategy writes to its own output subdirectory to avoid overwriting.
+**Output dirs must use `r{N}/` round prefix**: `output/boltzgen/r{N}/{strategy}/`
+Check the current round number in CLAUDE.md before submitting jobs.
+
+The `-f` submission name should include the round: `-f "pgdh_boltzgen_r{N}_s1_active_site"`
 
 ```bash
 # Strategy 1: Active site
+# Replace {N} with current round from CLAUDE.md
 lyceum storage load /tmp/strategy1_lyceum.yaml --key input/boltzgen/config.yaml
 lyceum docker run pytorch/pytorch:2.6.0-cuda12.6-cudnn9-runtime \
   -m gpu.a100 -t 600 \
+  -f "pgdh_boltzgen_r{N}_s1_active_site" \
   -c "bash /mnt/s3/scripts/boltzgen/run_boltzgen.sh \
       --input-yaml /root/boltzgen_work/config.yaml \
-      --output-dir /mnt/s3/output/boltzgen/s1_active_site \
+      --output-dir /mnt/s3/output/boltzgen/r{N}/s1_active_site \
       --num-designs 3 --cache /mnt/s3/models/boltzgen"
 
 # >>> DOWNLOAD S1 RESULTS IMMEDIATELY <<<
-mkdir -p pgdh_campaign/out/boltzgen/s1_active_site/designs
-lyceum storage download output/boltzgen/s1_active_site/final_ranked_designs/all_designs_metrics.csv \
-  --output pgdh_campaign/out/boltzgen/s1_active_site/all_designs_metrics.csv
+mkdir -p pgdh_campaign/out/boltzgen/r{N}/s1_active_site/designs
+lyceum storage download output/boltzgen/r{N}/s1_active_site/final_ranked_designs/all_designs_metrics.csv \
+  --output pgdh_campaign/out/boltzgen/r{N}/s1_active_site/all_designs_metrics.csv
 # Download each CIF from final_30_designs/ too
 
 # Strategy 2: Dimer interface
 lyceum storage load /tmp/strategy2_lyceum.yaml --key input/boltzgen/config.yaml
 lyceum docker run pytorch/pytorch:2.6.0-cuda12.6-cudnn9-runtime \
   -m gpu.a100 -t 600 \
+  -f "pgdh_boltzgen_r{N}_s2_dimer" \
   -c "bash /mnt/s3/scripts/boltzgen/run_boltzgen.sh \
       --input-yaml /root/boltzgen_work/config.yaml \
-      --output-dir /mnt/s3/output/boltzgen/s2_dimer \
+      --output-dir /mnt/s3/output/boltzgen/r{N}/s2_dimer \
       --num-designs 3 --cache /mnt/s3/models/boltzgen"
 
 # >>> DOWNLOAD S2 RESULTS IMMEDIATELY <<<
@@ -179,9 +175,10 @@ lyceum docker run pytorch/pytorch:2.6.0-cuda12.6-cudnn9-runtime \
 lyceum storage load /tmp/strategy3_lyceum.yaml --key input/boltzgen/config.yaml
 lyceum docker run pytorch/pytorch:2.6.0-cuda12.6-cudnn9-runtime \
   -m gpu.a100 -t 600 \
+  -f "pgdh_boltzgen_r{N}_s3_surface" \
   -c "bash /mnt/s3/scripts/boltzgen/run_boltzgen.sh \
       --input-yaml /root/boltzgen_work/config.yaml \
-      --output-dir /mnt/s3/output/boltzgen/s3_surface \
+      --output-dir /mnt/s3/output/boltzgen/r{N}/s3_surface \
       --num-designs 3 --cache /mnt/s3/models/boltzgen"
 
 # >>> DOWNLOAD S3 RESULTS IMMEDIATELY <<<
