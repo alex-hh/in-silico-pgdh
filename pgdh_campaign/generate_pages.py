@@ -22,6 +22,8 @@ DOCS_DATA = BASE.parent / "docs" / "data"
 STRUCTURES_DIR = BASE / "structures"
 OUTPUT_HTML = BASE.parent / "docs" / "index.html"
 
+MAX_CIF_EMBEDS = 30  # Only embed 3D structures for top K designs by rank
+
 STRATEGY_META = {
     "active_site": {"label": "Active Site", "color": "#FF6B6B"},
     "dimer_interface": {"label": "Dimer Interface", "color": "#9B59B6"},
@@ -122,7 +124,7 @@ def load_from_docs_data():
             dest.append({
                 "design_id": did, "name": did, "tool": tool,
                 "strategy": entry.get("strategy", "unknown"),
-                "cif": cif_path.read_text(), "sequence": seq,
+                "cif_path": cif_path, "cif": "", "sequence": seq,
                 "length": len(seq) if seq else entry.get("num_residues", 0),
                 "binder_chain": "B" if tool == "boltzgen" else "A",
                 "metrics": dm, "status": entry.get("status", "designed"),
@@ -310,6 +312,21 @@ def build_html():
         print("No designs found. Run sync_to_pages.py first.")
         return
 
+    # Load CIF text only for top-ranked designs to keep HTML size manageable
+    top_ids = set()
+    ranked = sorted(all_designs, key=lambda d: (d.get("rank") or 9999))
+    for d in ranked[:MAX_CIF_EMBEDS]:
+        top_ids.add(d["design_id"])
+    n_embedded = 0
+    for d in all_designs:
+        if d["design_id"] in top_ids and d.get("cif_path"):
+            try:
+                d["cif"] = d["cif_path"].read_text()
+                n_embedded += 1
+            except Exception:
+                d["cif"] = ""
+    print(f"  Embedded 3D structures for top {n_embedded} designs (of {len(all_designs)} total)")
+
     target_cif = STRUCTURES_DIR / "2GDZ.cif"
     target_cif_text = target_cif.read_text() if target_cif.exists() else ""
 
@@ -325,11 +342,11 @@ def build_html():
     for d in all_designs:
         all_cards += design_card_html(d, idx); idx += 1
 
-    # Viewer data for JS
+    # Viewer data for JS — only include CIF text for embedded designs
     viewer_data = []
     for d in evaluated + unevaluated + all_designs:
         viewer_data.append({
-            "cif": d["cif"], "name": d["name"],
+            "cif": d.get("cif", ""), "name": d["name"],
             "binderChain": d.get("binder_chain", "B"),
             "tool": d.get("tool", "unknown"),
         })
@@ -459,7 +476,7 @@ var as={json.dumps([138,148,151,155,185,217])};
 var di={json.dumps([146,153,161,167,168,206])};
 var tclr={json.dumps(TOOL_COLORS)};
 var vs={{}},tv=null,init={{}};
-function iv(i){{if(init[i])return;var e=document.getElementById('viewer_'+i);if(!e||e.offsetParent===null)return;var d=vd[i];if(!d)return;var v=$3Dmol.createViewer(e,{{backgroundColor:'white'}});v.addModel(d.cif,'cif');var bc=d.binderChain,tc2=bc==='A'?'B':'A',c=tclr[d.tool]||'#00CED1';v.setStyle({{chain:tc2}},{{cartoon:{{color:'#999',opacity:0.8}}}});v.setStyle({{chain:bc}},{{cartoon:{{color:c}}}});v.zoomTo();v.render();vs[i]={{viewer:v,binderChain:bc,targetChain:tc2,color:c}};init[i]=true;}}
+function iv(i){{if(init[i])return;var e=document.getElementById('viewer_'+i);if(!e||e.offsetParent===null)return;var d=vd[i];if(!d)return;if(!d.cif){{e.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#999;font-size:14px">3D view available for top {MAX_CIF_EMBEDS} designs</div>';init[i]=true;return;}}var v=$3Dmol.createViewer(e,{{backgroundColor:'white'}});v.addModel(d.cif,'cif');var bc=d.binderChain,tc2=bc==='A'?'B':'A',c=tclr[d.tool]||'#00CED1';v.setStyle({{chain:tc2}},{{cartoon:{{color:'#999',opacity:0.8}}}});v.setStyle({{chain:bc}},{{cartoon:{{color:c}}}});v.zoomTo();v.render();vs[i]={{viewer:v,binderChain:bc,targetChain:tc2,color:c}};init[i]=true;}}
 function itv(){{if(tv)return;var e=document.getElementById('viewer_target');if(!e||e.offsetParent===null)return;tv=$3Dmol.createViewer('viewer_target',{{backgroundColor:'white'}});tv.addModel(tc,'cif');tv.setStyle({{}},{{cartoon:{{color:'#CCC',opacity:0.7}}}});tv.setStyle({{chain:'A',resi:as}},{{cartoon:{{color:'#FF4500'}},stick:{{color:'#FF4500'}}}});tv.setStyle({{chain:'A',resi:di}},{{cartoon:{{color:'#1E90FF'}},stick:{{color:'#1E90FF'}}}});tv.zoomTo();tv.render();}}
 function ivv(){{for(var i=0;i<vd.length;i++){{var e=document.getElementById('viewer_'+i);if(e&&e.offsetParent!==null&&!init[i])iv(i);}}if(document.getElementById('viewer_target')&&document.getElementById('viewer_target').offsetParent!==null)itv();}}
 function switchTab(t){{var ts=['evaluated','unevaluated','all','target'];document.querySelectorAll('.tab').forEach(function(e,i){{e.classList.toggle('active',ts[i]===t);}});document.querySelectorAll('.tab-panel').forEach(function(p){{p.classList.remove('active');}});var p=document.getElementById('panel_'+t);if(p)p.classList.add('active');setTimeout(ivv,100);}}
