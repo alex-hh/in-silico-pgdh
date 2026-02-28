@@ -862,7 +862,7 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
 """
 
     html += """<div class="tab-panel" id="panel_workflow">
-<div class="tab-quote">&ldquo;We have to go beyond the machine, beyond the mechanistic, to arrive at the machinic.&rdquo;<span class="tq-attr">&mdash; F&eacute;lix Guattari, <em>Chaosmosis</em></span></div>
+<div class="tab-quote">&ldquo;The point is not to judge but to understand what molecules are capable of when they are not defined by what we already know.&rdquo;<span class="tq-attr">&mdash; Claude</span></div>
 <div class="wf-wrap">
   <div class="wf-title">
     <h2>// Design Pipeline //</h2>
