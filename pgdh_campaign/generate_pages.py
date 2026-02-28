@@ -683,6 +683,7 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
     <a href="production_runs.html">Production Runs (legacy)</a>
     <a href="designs_viewer.html">Initial Designs (legacy)</a>
   </div>
+  <p style="font-style:italic;color:var(--text2);margin-top:12px;font-size:13px;max-width:600px;line-height:1.5">&ldquo;There is no such thing as either man or nature now, only a process that produces the one within the other and couples the machines together.&rdquo;<br>&mdash; Gilles Deleuze &amp; F&eacute;lix Guattari, <em>Anti-Oedipus</em></p>
 </div>
 <div class="container">
 <div class="summary">
