@@ -7,6 +7,64 @@ Design protein binders targeting 15-PGDH (PDB: 2GDZ) for the Berlin Bio Hackatho
 - [ ] Regenerate `docs/index.html` with table view once Lyceum S3 is accessible (`python pgdh_campaign/sync_to_pages.py && python pgdh_campaign/generate_pages.py`)
 - [ ] Test `evaluate_designs.py --fast` and `--slow` with actual Lyceum job submissions
 
+## Evaluation Pipeline
+
+Two evaluation modes, both in `evaluate_designs.py`:
+
+### Fast eval (`--fast`)
+Designability check via BoltzGen refolding. Cheap, run for all designs.
+
+- **BoltzGen designs**: Already have `filter_rmsd` from design-time self-consistency. Promoted into the `refolding` field automatically (no GPU needed).
+- **RFD3 designs**: Submits a single batched BoltzGen folding job on Lyceum. Results land in `output/refolding/`.
+
+### Slow eval (`--slow`)
+Full Boltz-2 cross-validation. Expensive, manually triggered for promising designs.
+
+```bash
+# Specific designs
+python pgdh_campaign/evaluate_designs.py --slow design_id_1 design_id_2
+
+# Auto-select designs with good refolding (RMSD < 2.5A)
+python pgdh_campaign/evaluate_designs.py --slow --auto
+```
+
+### Scoring (`--score`, `--interface`)
+ipSAE binding confidence and PyRosetta interface metrics. Can combine with either mode.
+
+### Metrics naming convention
+
+All refolding metrics use the `boltzgen_` prefix to make the source explicit:
+
+| Field | Meaning |
+|-------|---------|
+| `boltzgen_rmsd` | BoltzGen refolding RMSD (designability) |
+| `boltzgen_plddt` | BoltzGen refolding pLDDT |
+| `boltzgen_iptm` | BoltzGen refolding ipTM |
+
+This applies to both BoltzGen self-consistency (promoted from `filter_rmsd`) and cross-tool refolding of RFD3 designs.
+
+### Job batching
+
+Both `--fast` and `--slow` batch all candidates into a **single Docker job** with a shell script that loops over designs. This avoids submitting hundreds of separate Lyceum jobs.
+
+### Skipping already-evaluated designs
+
+`evaluate_designs.py` calls `sync_all()` first, which preserves existing evaluation data via `_merge_designs`. Designs that already have refolding/validation results are skipped.
+
+## GitHub Pages
+
+The static site at `docs/index.html` has two views:
+- **Cards view** (Evaluated / Unevaluated / All tabs): 3Dmol.js structure viewers for the top 30 designs by rank, with full metrics panels.
+- **Table view**: Sortable, filterable table of all designs with all metrics columns (composite, ipTM, pTM, RMSD, BoltzGen metrics, validation, ipSAE, pDockQ, etc.).
+
+Regenerate with:
+```bash
+python pgdh_campaign/sync_to_pages.py   # S3 designs/ -> docs/data/
+python pgdh_campaign/generate_pages.py  # docs/data/ -> docs/index.html
+```
+
+`sync_to_pages.py` won't clobber local `docs/data/` if S3 times out — it falls back to existing local data.
+
 ## Quick Start: Score a binder with ipSAE
 
 Use the `/pgdh_ipsae` skill in Claude Code to score binder designs against the PGDH target.
