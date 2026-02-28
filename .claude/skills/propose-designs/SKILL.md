@@ -22,7 +22,7 @@ updated design strategies for the next round.
 
 ### Step 1: Load current results
 
-Read the ranked design index and per-design metrics:
+Read the ranked design index, per-design metrics, and prior round logs:
 
 ```python
 import json
@@ -35,8 +35,10 @@ index = json.loads(Path("pgdh_modal/out/designs/index.json").read_text())
 index = json.loads(Path("docs/data/index.json").read_text())
 ```
 
-Also read round summaries from `pgdh_campaign/rounds/r*_summary.md` to understand
-what was tried and what was observed.
+Also read:
+- `pgdh_campaign/rounds/r*_designs.md` — what was submitted each round and why
+- `pgdh_campaign/rounds/r*_summary.md` — post-evaluation results and observations
+- `pgdh_campaign/rounds/r*_analysis.md` — prior analysis reports (from this skill)
 
 ### Step 2: Analyse by strategy
 
@@ -102,7 +104,12 @@ Output a concrete proposal with:
 3. **New configs** — any new strategy files to create
 4. **Expected improvement** — what metrics should improve and why
 
-Write the proposal to `pgdh_campaign/rounds/r{N+1}_plan.md`.
+Write two files:
+
+- `pgdh_campaign/rounds/r{N}_analysis.md` — the full analysis of round N results
+  (metrics breakdown by strategy/tool, what worked, what didn't, statistical summaries)
+- `pgdh_campaign/rounds/r{N+1}_plan.md` — the concrete proposal for round N+1
+  (which 3 jobs to run, config changes, rationale)
 
 ## Metrics Reference
 

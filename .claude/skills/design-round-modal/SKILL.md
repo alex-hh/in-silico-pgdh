@@ -90,6 +90,15 @@ python pgdh_modal/design.py rfd3 --strategy inpaint --num-designs 8
 
 Outputs land in `pgdh_modal/out/{boltzgen,rfdiffusion3}/r{N}/{strategy}/`.
 
+After submitting design jobs, write a design log at `pgdh_campaign/rounds/r{N}_designs.md`:
+
+- **Date and round number**
+- **Jobs submitted** (tool, strategy, num_designs, key parameters)
+- **Rationale** — why these strategies were chosen (from Phase 0 proposal or campaign plan)
+- **Expected outputs** — what we hope to see (e.g. "active site binders with RMSD < 2.5A")
+
+This records what was run and why, before results are known.
+
 ### Phase 2: SYNC
 
 ```bash
