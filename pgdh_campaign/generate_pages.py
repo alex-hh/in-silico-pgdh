@@ -870,7 +870,7 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
 <div class="wf-wrap">
   <div class="wf-title">
     <h2>// Design Pipeline //</h2>
-    <p>&gt; strategy emerges from the machinic assemblage &mdash; agents design, evaluate, iterate</p>
+    <p>&gt; binding emerges from the machinic assemblage &mdash; agents design, evaluate, iterate</p>
   </div>
   <div class="wf-canvas">
     <svg viewBox="0 0 880 580" fill="none" xmlns="http://www.w3.org/2000/svg">
