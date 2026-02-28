@@ -698,10 +698,6 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
 <div class="header">
   <h1>Molecular Agentic Rationality Portal (PGDH module)</h1>
   <p>Protein binder design campaign &mdash; Target: 2GDZ (15-hydroxyprostaglandin dehydrogenase)</p>
-  <div class="nav-links">
-    <a href="production_runs.html">Production Runs (legacy)</a>
-    <a href="designs_viewer.html">Initial Designs (legacy)</a>
-  </div>
   <p style="font-style:italic;color:var(--text);margin-top:12px;font-size:15px;max-width:640px;line-height:1.6">&ldquo;There is no such thing as either man or nature now, only a process that produces the one within the other and couples the machines together.&rdquo;<br><span style="color:var(--text2);font-size:13px">&mdash; Gilles Deleuze &amp; F&eacute;lix Guattari, <em>Anti-Oedipus</em></span></p>
 </div>
 <div class="container">
