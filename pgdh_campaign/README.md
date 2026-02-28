@@ -2,6 +2,11 @@
 
 Design protein binders targeting 15-PGDH (PDB: 2GDZ) for the Berlin Bio Hackathon x Adaptyv competition.
 
+## TODO
+
+- [ ] Regenerate `docs/index.html` with table view once Lyceum S3 is accessible (`python pgdh_campaign/sync_to_pages.py && python pgdh_campaign/generate_pages.py`)
+- [ ] Test `evaluate_designs.py --fast` and `--slow` with actual Lyceum job submissions
+
 ## Quick Start: Score a binder with ipSAE
 
 Use the `/pgdh_ipsae` skill in Claude Code to score binder designs against the PGDH target.
