@@ -1017,7 +1017,22 @@ def sync_all(client: LyceumClient = None, extra_designs: list[dict] | None = Non
     if extra_designs:
         print(f"  + {len(extra_designs)} extra designs injected")
         designs.extend(extra_designs)
-    print(f"\n  Total: {len(designs)} designs collected\n")
+    print(f"\n  Total: {len(designs)} designs collected")
+
+    # Filter out archived designs
+    archive_file = Path(__file__).parent / "archived_designs.txt"
+    if archive_file.exists():
+        archived = {
+            line.strip()
+            for line in archive_file.read_text().splitlines()
+            if line.strip() and not line.startswith("#")
+        }
+        before = len(designs)
+        designs = [d for d in designs if d["design_id"] not in archived]
+        n_skipped = before - len(designs)
+        if n_skipped:
+            print(f"  Archived: {n_skipped} designs skipped (see archived_designs.txt)")
+    print()
 
     # Step 2: Attach existing validation/scoring/refolding results
     print("--- Step 2: Attach existing scores ---")

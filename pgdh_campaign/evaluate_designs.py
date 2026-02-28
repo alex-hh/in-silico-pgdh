@@ -433,7 +433,7 @@ def run_evaluation(client: LyceumClient = None, fast: bool = False,
                    extra_designs: list[dict] | None = None) -> list[dict]:
     """Run sync + submit evaluation jobs. Returns ranked designs.
 
-    Callable from CLI or imported by the Streamlit app.
+    Calls sync_all() first, which filters out archived designs (see archived_designs.txt).
 
     Args:
         client: LyceumClient instance (created if None).
