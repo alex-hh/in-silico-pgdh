@@ -660,17 +660,17 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
 /* Workflow tab — cyberpunk flowchart */
 .wf-wrap{{padding:24px 0;max-width:880px;margin:0 auto;position:relative}}
 .wf-title{{text-align:center;margin-bottom:32px}}
-.wf-title h2{{font-size:26px;font-weight:700;background:linear-gradient(90deg,#39ff14,#00e5ff,#ff80bf);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:3px;text-transform:uppercase}}
-.wf-title p{{color:var(--text2);font-size:14px;margin-top:6px;font-family:'SF Mono',Monaco,monospace}}
+.wf-title h2{{font-size:30px;font-weight:700;background:linear-gradient(90deg,#39ff14,#00e5ff,#ff80bf);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:3px;text-transform:uppercase}}
+.wf-title p{{color:var(--text2);font-size:15px;margin-top:6px;font-family:'SF Mono',Monaco,monospace}}
 .wf-canvas{{position:relative;min-height:580px}}
 .wf-canvas svg{{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0}}
 .wf-box{{background:var(--surface);border:2px solid;border-radius:6px;padding:14px 18px;position:absolute;width:320px;transition:all 0.2s;cursor:default;z-index:1}}
 .wf-box:hover{{box-shadow:0 0 28px currentColor;transform:scale(1.02)}}
-.wf-box .wf-label{{font-size:17px;font-weight:700;letter-spacing:1px;text-transform:uppercase}}
-.wf-box .wf-desc{{font-size:13px;color:var(--text2);margin-top:5px;line-height:1.5}}
-.wf-box .wf-skills{{margin-top:8px;display:flex;gap:5px;flex-wrap:wrap}}
-.wf-box .wf-skill{{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 8px;font-size:10px;font-family:'SF Mono',Monaco,monospace;color:var(--text2)}}
-.wf-box .wf-tag{{position:absolute;top:-9px;right:-9px;background:var(--bg);border:1px solid;border-radius:8px;padding:2px 8px;font-size:10px;font-weight:700}}
+.wf-box .wf-label{{font-size:20px;font-weight:700;letter-spacing:1px;text-transform:uppercase}}
+.wf-box .wf-desc{{font-size:15px;color:var(--text2);margin-top:6px;line-height:1.5}}
+.wf-box .wf-skills{{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap}}
+.wf-box .wf-skill{{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:3px 10px;font-size:12px;font-family:'SF Mono',Monaco,monospace;color:var(--text2)}}
+.wf-box .wf-tag{{position:absolute;top:-10px;right:-10px;background:var(--bg);border:1px solid;border-radius:8px;padding:2px 10px;font-size:12px;font-weight:700}}
 .wf-g{{color:#39ff14;border-color:#39ff14}}.wf-c{{color:#00e5ff;border-color:#00e5ff}}.wf-p{{color:#ff80bf;border-color:#ff80bf}}.wf-o{{color:#f0883e;border-color:#f0883e}}.wf-v{{color:#bc8cff;border-color:#bc8cff}}.wf-y{{color:#d29922;border-color:#d29922}}
 .wf-glow-g{{filter:drop-shadow(0 0 4px #39ff1480)}}.wf-glow-o{{filter:drop-shadow(0 0 4px #f0883e80)}}.wf-glow-p{{filter:drop-shadow(0 0 4px #ff80bf80)}}.wf-glow-c{{filter:drop-shadow(0 0 4px #00e5ff80)}}
 @media(max-width:700px){{.wf-box{{position:relative;width:100%;margin-bottom:16px;left:0!important;top:0!important}}.wf-canvas{{min-height:auto}}.wf-canvas svg{{display:none}}}}
@@ -893,15 +893,15 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
     <div class="wf-box wf-g" style="left:50px;top:50px">
       <span class="wf-tag wf-g">GPU</span>
       <div class="wf-label">Design</div>
-      <div class="wf-desc">Claude invokes <code>/design-round-modal</code> &mdash; up to 3 jobs per round. BoltzGen + RFdiffusion3 generate binder candidates on Modal GPUs.</div>
-      <div class="wf-skills"><span class="wf-skill">BoltzGen</span><span class="wf-skill">RFdiffusion3</span><span class="wf-skill">Modal</span></div>
+      <div class="wf-desc">BoltzGen + RFdiffusion3 generate binder candidates on Lyceum GPUs.</div>
+      <div class="wf-skills"><span class="wf-skill">BoltzGen</span><span class="wf-skill">RFdiffusion3</span><span class="wf-skill">Lyceum</span></div>
     </div>
 
     <!-- Box 2: EVALUATE — middle right -->
     <div class="wf-box wf-o" style="left:280px;top:170px">
       <span class="wf-tag wf-o">GPU</span>
       <div class="wf-label">Evaluate</div>
-      <div class="wf-desc">Three-stage filter: refold to check designability, Boltz-2 + MSA cross-validation, ipSAE interface scoring.</div>
+      <div class="wf-desc">Refold, Boltz-2 cross-validation, ipSAE interface scoring.</div>
       <div class="wf-skills"><span class="wf-skill">BoltzGen fold</span><span class="wf-skill">Boltz-2+MSA</span><span class="wf-skill">ipSAE</span></div>
     </div>
 
@@ -909,7 +909,7 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
     <div class="wf-box wf-p" style="left:530px;top:300px">
       <span class="wf-tag wf-p">AI</span>
       <div class="wf-label">Analyse</div>
-      <div class="wf-desc">Claude reads metrics, compares strategies, proposes hotspot and parameter changes for the next round.</div>
+      <div class="wf-desc">Compare strategies, propose changes for next round.</div>
       <div class="wf-skills"><span class="wf-skill">/propose-designs</span><span class="wf-skill">composite score</span></div>
     </div>
 
