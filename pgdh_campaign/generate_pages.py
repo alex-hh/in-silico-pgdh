@@ -723,7 +723,7 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
   <div class="tab" onclick="switchTab('workflow')">Workflow</div>
 </div>
 <div class="tab-panel active" id="panel_evaluated">
-<div class="tab-quote">&ldquo;What is great in man is that he is a bridge and not an end.&rdquo;<span class="tq-attr">&mdash; Friedrich Nietzsche, <em>Thus Spoke Zarathustra</em></span></div>
+<div class="tab-quote">&ldquo;The boundary between science fiction and social reality is an optical illusion.&rdquo;<span class="tq-attr">&mdash; Donna Haraway, <em>A Cyborg Manifesto</em></span></div>
 {eval_cards if eval_cards else '<div class="empty">No evaluated designs yet. Run evaluate_designs.py then generate_pages.py.</div>'}
 </div>
 <div class="tab-panel" id="panel_unevaluated">
@@ -850,7 +850,7 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
 
     if target_cif_text:
         html += f"""<div class="tab-panel" id="panel_target">
-<div class="tab-quote">&ldquo;The will to power is not a being, not a becoming, but a pathos.&rdquo;<span class="tq-attr">&mdash; Friedrich Nietzsche, <em>The Will to Power</em></span></div>
+<div class="tab-quote">&ldquo;It matters what matters we use to think other matters with.&rdquo;<span class="tq-attr">&mdash; Donna Haraway, <em>Staying with the Trouble</em></span></div>
 <div class="design-card">
   <div class="card-header"><h2>15-PGDH Target (2GDZ)</h2><span class="rank-badge" style="background:#4361ee">Reference</span></div>
   <div class="card-body">
