@@ -243,7 +243,7 @@ def load_from_docs_data():
                 "round": entry.get("round"),
                 "cif_path": cif_path, "cif": "", "sequence": seq,
                 "length": len(seq) if seq else entry.get("num_residues", 0),
-                "binder_chain": "B" if tool == "boltzgen" else "A",
+                "binder_chain": "A",
                 "metrics": dm, "status": entry.get("status", "designed"),
                 "composite_score": entry.get("composite_score"),
                 "rank": entry.get("rank"),
@@ -276,7 +276,7 @@ def load_from_local():
                 "design_id": f"boltzgen_local_{cif.stem}", "name": cif.stem,
                 "tool": "boltzgen", "strategy": "surface",
                 "cif": cif.read_text(), "sequence": seq, "length": len(seq),
-                "binder_chain": "B", "metrics": matched or {}, "status": "designed",
+                "binder_chain": "A", "metrics": matched or {}, "status": "designed",
             })
 
     # RFD3
@@ -621,6 +621,8 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
 .seq-legend.visible{{display:block}}
 .seq-legend-item{{display:inline-block;margin-right:10px}}
 .seq-legend-dot{{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:3px;vertical-align:middle}}
+.tab-quote{{font-style:italic;color:var(--text);font-size:15px;line-height:1.6;padding:16px 0 20px;border-bottom:1px solid var(--border);margin-bottom:20px;max-width:720px}}
+.tab-quote .tq-attr{{color:var(--text2);font-size:13px;margin-top:4px;display:block}}
 .empty{{text-align:center;padding:48px;color:var(--text2);font-size:16px}}
 .nav-links{{margin-top:8px;font-size:13px}}
 .nav-links a{{color:var(--accent);margin-right:16px}}
@@ -683,7 +685,7 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
     <a href="production_runs.html">Production Runs (legacy)</a>
     <a href="designs_viewer.html">Initial Designs (legacy)</a>
   </div>
-  <p style="font-style:italic;color:var(--text2);margin-top:12px;font-size:13px;max-width:600px;line-height:1.5">&ldquo;There is no such thing as either man or nature now, only a process that produces the one within the other and couples the machines together.&rdquo;<br>&mdash; Gilles Deleuze &amp; F&eacute;lix Guattari, <em>Anti-Oedipus</em></p>
+  <p style="font-style:italic;color:var(--text);margin-top:12px;font-size:15px;max-width:640px;line-height:1.6">&ldquo;There is no such thing as either man or nature now, only a process that produces the one within the other and couples the machines together.&rdquo;<br><span style="color:var(--text2);font-size:13px">&mdash; Gilles Deleuze &amp; F&eacute;lix Guattari, <em>Anti-Oedipus</em></span></p>
 </div>
 <div class="container">
 <div class="summary">
@@ -703,15 +705,19 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
   <div class="tab" onclick="switchTab('target')">Target (2GDZ)</div>
 </div>
 <div class="tab-panel active" id="panel_evaluated">
+<div class="tab-quote">&ldquo;What is great in man is that he is a bridge and not an end.&rdquo;<span class="tq-attr">&mdash; Friedrich Nietzsche, <em>Thus Spoke Zarathustra</em></span></div>
 {eval_cards if eval_cards else '<div class="empty">No evaluated designs yet. Run evaluate_designs.py then generate_pages.py.</div>'}
 </div>
 <div class="tab-panel" id="panel_unevaluated">
+<div class="tab-quote">&ldquo;The simulacrum is never that which conceals the truth &mdash; it is the truth which conceals that there is none.&rdquo;<span class="tq-attr">&mdash; Jean Baudrillard, <em>Simulacra and Simulation</em></span></div>
 {uneval_cards if uneval_cards else '<div class="empty">No unevaluated designs.</div>'}
 </div>
 <div class="tab-panel" id="panel_all">
+<div class="tab-quote">&ldquo;A self does not amount to much, but no self is an island; each exists in a fabric of relations that is now more complex and mobile than ever before.&rdquo;<span class="tq-attr">&mdash; Jean-Fran&ccedil;ois Lyotard, <em>The Postmodern Condition</em></span></div>
 {all_cards}
 </div>
 <div class="tab-panel" id="panel_table">
+  <div class="tab-quote">&ldquo;Information is information, not matter or energy. No materialism which does not admit this can survive at the present day.&rdquo;<span class="tq-attr">&mdash; Norbert Wiener, <em>Cybernetics</em></span></div>
   <div class="table-filter">
     <input type="text" id="table-search" placeholder="Filter by design ID..." oninput="filterTable()">
     <select id="table-tool-filter" onchange="filterTable()">
@@ -755,6 +761,7 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
     )
 
     html += f"""<div class="tab-panel" id="panel_progress">
+  <div class="tab-quote">&ldquo;Nothing human makes it out of the near-future.&rdquo;<span class="tq-attr">&mdash; Nick Land, <em>Meltdown</em></span></div>
   <div class="progress-controls">
     <label>Metric:</label>
     <select id="progress-metric" onchange="updateProgressChart()">{progress_options}</select>
@@ -802,6 +809,7 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
         </div>"""
 
     html += f"""<div class="tab-panel" id="panel_strategies">
+<div class="tab-quote">&ldquo;The essence of technology is by no means anything technological.&rdquo;<span class="tq-attr">&mdash; Martin Heidegger, <em>The Question Concerning Technology</em></span></div>
 <div class="design-card">
   <div class="card-header"><h2>Binding Strategies</h2><span class="tool-badge" style="background:#4361ee">3 strategies</span></div>
   <div class="card-body">
@@ -824,6 +832,7 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
 
     if target_cif_text:
         html += f"""<div class="tab-panel" id="panel_target">
+<div class="tab-quote">&ldquo;The will to power is not a being, not a becoming, but a pathos.&rdquo;<span class="tq-attr">&mdash; Friedrich Nietzsche, <em>The Will to Power</em></span></div>
 <div class="design-card">
   <div class="card-header"><h2>15-PGDH Target (2GDZ)</h2><span class="rank-badge" style="background:#4361ee">Reference</span></div>
   <div class="card-body">
