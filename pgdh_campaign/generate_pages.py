@@ -657,27 +657,28 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
 .progress-stat{{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px}}
 .progress-stat .ps-label{{font-size:12px;color:var(--text2)}}
 .progress-stat .ps-value{{font-size:20px;font-weight:700;color:var(--accent)}}
-/* Workflow tab — retro-futuristic */
-.wf-wrap{{position:relative;padding:32px 0}}
-.wf-grid{{display:grid;grid-template-columns:1fr;gap:0;max-width:800px;margin:0 auto}}
-.wf-step{{position:relative;padding:0 0 0 80px;min-height:120px}}
-.wf-step::before{{content:'';position:absolute;left:30px;top:0;bottom:0;width:2px;background:linear-gradient(180deg,#39ff14 0%,#00e5ff 50%,#ff69b4 100%);box-shadow:0 0 8px #39ff1480}}
-.wf-step:last-child::before{{display:none}}
-.wf-node{{position:absolute;left:19px;top:16px;width:24px;height:24px;border-radius:50%;border:2px solid;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;z-index:2;box-shadow:0 0 12px currentColor}}
-.wf-card{{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px 20px;margin-bottom:24px;position:relative;transition:all 0.2s}}
-.wf-card:hover{{border-color:var(--accent);box-shadow:0 0 20px rgba(88,166,255,0.15)}}
-.wf-card h3{{font-size:15px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:8px}}
-.wf-card p{{font-size:13px;color:var(--text2);line-height:1.5;margin:0}}
-.wf-card code{{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:12px;font-family:'SF Mono',Monaco,monospace;color:var(--accent)}}
-.wf-tag{{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;margin-left:4px}}
-.wf-neon-green{{color:#39ff14;border-color:#39ff14}}.wf-neon-cyan{{color:#00e5ff;border-color:#00e5ff}}.wf-neon-pink{{color:#ff69b4;border-color:#ff69b4}}.wf-neon-orange{{color:#f0883e;border-color:#f0883e}}.wf-neon-purple{{color:#bc8cff;border-color:#bc8cff}}.wf-neon-yellow{{color:#d29922;border-color:#d29922}}
-.wf-tools{{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}}
-.wf-tool{{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 12px;font-size:12px;font-family:'SF Mono',Monaco,monospace;color:var(--text2)}}
-.wf-arrow{{color:#39ff14;font-size:18px;text-align:center;padding:4px 0;text-shadow:0 0 8px #39ff1480}}
-.wf-header{{text-align:center;margin-bottom:32px}}
-.wf-header h2{{font-size:22px;font-weight:700;background:linear-gradient(90deg,#39ff14,#00e5ff,#ff69b4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:2px;text-transform:uppercase}}
-.wf-header p{{color:var(--text2);font-size:13px;margin-top:4px;font-family:'SF Mono',Monaco,monospace}}
-.wf-scanline{{position:absolute;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);pointer-events:none;border-radius:8px}}
+/* Workflow tab — cyberpunk flowchart */
+.wf-wrap{{padding:24px 0;max-width:900px;margin:0 auto}}
+.wf-title{{text-align:center;margin-bottom:28px}}
+.wf-title h2{{font-size:20px;font-weight:700;background:linear-gradient(90deg,#39ff14,#00e5ff,#ff69b4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:3px;text-transform:uppercase}}
+.wf-title p{{color:var(--text2);font-size:12px;margin-top:4px;font-family:'SF Mono',Monaco,monospace}}
+.wf-flow{{display:flex;flex-direction:column;align-items:center;gap:0}}
+.wf-row{{display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap}}
+.wf-box{{background:var(--surface);border:2px solid;border-radius:6px;padding:10px 18px;text-align:center;min-width:110px;position:relative;transition:all 0.2s;cursor:default}}
+.wf-box:hover{{box-shadow:0 0 24px currentColor40;transform:translateY(-2px)}}
+.wf-box .wf-label{{font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase}}
+.wf-box .wf-sub{{font-size:10px;color:var(--text2);margin-top:2px;font-family:'SF Mono',Monaco,monospace}}
+.wf-box .wf-tag{{position:absolute;top:-8px;right:-8px;background:var(--bg);border:1px solid;border-radius:8px;padding:1px 6px;font-size:9px;font-weight:700}}
+.wf-arrow{{display:flex;align-items:center;justify-content:center;padding:4px 0;font-size:20px;line-height:1}}
+.wf-arrow-down{{color:#39ff14;text-shadow:0 0 10px #39ff1480}}
+.wf-arrow-right{{color:#39ff14;text-shadow:0 0 10px #39ff1480;padding:0 4px;font-size:18px}}
+.wf-arrow-branch{{color:#ff69b4;text-shadow:0 0 10px #ff69b480}}
+.wf-split{{display:flex;align-items:center;gap:16px;position:relative}}
+.wf-split::before{{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:80%;height:1px;background:var(--border)}}
+.wf-g{{color:#39ff14;border-color:#39ff14}}.wf-c{{color:#00e5ff;border-color:#00e5ff}}.wf-p{{color:#ff69b4;border-color:#ff69b4}}.wf-o{{color:#f0883e;border-color:#f0883e}}.wf-v{{color:#bc8cff;border-color:#bc8cff}}.wf-y{{color:#d29922;border-color:#d29922}}
+.wf-loop{{border:1px dashed #39ff1460;border-radius:12px;padding:16px;margin-top:4px;position:relative}}
+.wf-loop-label{{position:absolute;top:-10px;left:16px;background:var(--bg);padding:0 8px;font-size:10px;color:#39ff14;font-family:'SF Mono',Monaco,monospace;letter-spacing:1px}}
+@media(max-width:600px){{.wf-row{{flex-direction:column}}.wf-arrow-right{{transform:rotate(90deg)}}}}
 @media(max-width:900px){{.card-body{{grid-template-columns:1fr}}.viewer-container{{border-right:none;border-bottom:1px solid var(--border)}}}}
 </style>
 </head>
@@ -872,104 +873,33 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
     html += """<div class="tab-panel" id="panel_workflow">
 <div class="tab-quote">&ldquo;We have to go beyond the machine, beyond the mechanistic, to arrive at the machinic.&rdquo;<span class="tq-attr">&mdash; F&eacute;lix Guattari, <em>Chaosmosis</em></span></div>
 <div class="wf-wrap">
-  <div class="wf-header">
+  <div class="wf-title">
     <h2>// Design Pipeline //</h2>
-    <p>&gt; binder_campaign.exe &mdash; v2.0</p>
+    <p>&gt; binder_campaign.exe</p>
   </div>
-  <div class="wf-grid">
+  <div class="wf-flow">
+    <div class="wf-loop">
+      <span class="wf-loop-label">LOOP PER ROUND</span>
 
-    <div class="wf-step">
-      <div class="wf-node wf-neon-green">01</div>
-      <div class="wf-card" style="border-left:3px solid #39ff14">
-        <div class="wf-scanline"></div>
-        <h3><span style="color:#39ff14">DESIGN</span> <span class="wf-tag" style="background:#39ff1420;color:#39ff14;border:1px solid #39ff1440">GPU</span></h3>
-        <p>Generate binder candidates using generative protein models. Each round submits up to 3 design jobs targeting different binding strategies.</p>
-        <div class="wf-tools">
-          <span class="wf-tool" style="border-color:#39ff1440;color:#39ff14">BoltzGen</span>
-          <span class="wf-tool" style="border-color:#f0883e40;color:#f0883e">RFdiffusion3</span>
+      <div class="wf-flow">
+        <div class="wf-row">
+          <div class="wf-box wf-g"><span class="wf-tag wf-g">GPU</span><div class="wf-label">Design</div><div class="wf-sub">BoltzGen / RFD3</div></div>
         </div>
-        <p style="margin-top:8px"><code>python pgdh_modal/design.py boltzgen --strategy active_site</code></p>
-      </div>
-    </div>
-
-    <div class="wf-step">
-      <div class="wf-node wf-neon-cyan">02</div>
-      <div class="wf-card" style="border-left:3px solid #00e5ff">
-        <div class="wf-scanline"></div>
-        <h3><span style="color:#00e5ff">SYNC</span> <span class="wf-tag" style="background:#00e5ff20;color:#00e5ff;border:1px solid #00e5ff40">CPU</span></h3>
-        <p>Collect raw outputs, parse tool-native formats, compute composite scores, rank all designs. Writes the local source of truth.</p>
-        <div class="wf-tools">
-          <span class="wf-tool" style="border-color:#00e5ff40;color:#00e5ff">sync.py</span>
+        <div class="wf-arrow wf-arrow-down">&darr;</div>
+        <div class="wf-row">
+          <div class="wf-box wf-o"><span class="wf-tag wf-o">GPU</span><div class="wf-label">Evaluate</div><div class="wf-sub">Refold &bull; Boltz-2 &bull; ipSAE</div></div>
         </div>
-        <p style="margin-top:8px"><code>python pgdh_modal/sync.py</code></p>
-      </div>
-    </div>
-
-    <div class="wf-step">
-      <div class="wf-node wf-neon-orange">03</div>
-      <div class="wf-card" style="border-left:3px solid #f0883e">
-        <div class="wf-scanline"></div>
-        <h3><span style="color:#f0883e">FAST EVAL</span> <span class="wf-tag" style="background:#f0883e20;color:#f0883e;border:1px solid #f0883e40">GPU</span></h3>
-        <p>BoltzGen refolding &mdash; does the designed sequence fold back into the intended structure? Measures designability via RMSD to original prediction.</p>
-        <div class="wf-tools">
-          <span class="wf-tool" style="border-color:#f0883e40;color:#f0883e">BoltzGen fold</span>
-        </div>
-        <p style="margin-top:8px"><code>python pgdh_modal/evaluate.py --fast</code></p>
-      </div>
-    </div>
-
-    <div class="wf-step">
-      <div class="wf-node wf-neon-pink">04</div>
-      <div class="wf-card" style="border-left:3px solid #ff69b4">
-        <div class="wf-scanline"></div>
-        <h3><span style="color:#ff69b4">SLOW EVAL</span> <span class="wf-tag" style="background:#ff69b420;color:#ff69b4;border:1px solid #ff69b440">GPU</span></h3>
-        <p>Boltz-2 cross-validation with MSA server &mdash; independent structure prediction of the binder&ndash;target complex. The acid test: does a different model agree the binder binds?</p>
-        <div class="wf-tools">
-          <span class="wf-tool" style="border-color:#ff69b440;color:#ff69b4">Boltz-2 + MSA</span>
-        </div>
-        <p style="margin-top:8px"><code>python pgdh_modal/evaluate.py --slow --auto</code></p>
-      </div>
-    </div>
-
-    <div class="wf-step">
-      <div class="wf-node wf-neon-purple">05</div>
-      <div class="wf-card" style="border-left:3px solid #bc8cff">
-        <div class="wf-scanline"></div>
-        <h3><span style="color:#bc8cff">SCORE</span> <span class="wf-tag" style="background:#bc8cff20;color:#bc8cff;border:1px solid #bc8cff40">CPU</span></h3>
-        <p>ipSAE interface scoring &mdash; interaction PAE, pDockQ, LIS metrics. Quantifies binding confidence from predicted structures and PAE matrices.</p>
-        <div class="wf-tools">
-          <span class="wf-tool" style="border-color:#bc8cff40;color:#bc8cff">ipSAE</span>
-        </div>
-        <p style="margin-top:8px"><code>python pgdh_modal/evaluate.py --score</code></p>
-      </div>
-    </div>
-
-    <div class="wf-step">
-      <div class="wf-node wf-neon-yellow">06</div>
-      <div class="wf-card" style="border-left:3px solid #d29922">
-        <div class="wf-scanline"></div>
-        <h3><span style="color:#d29922">ANALYSE</span> <span class="wf-tag" style="background:#d2992220;color:#d29922;border:1px solid #d2992240">Claude</span></h3>
-        <p>Review metrics across strategies and tools. Identify what&rsquo;s working, propose hotspot adjustments, binder length changes, and parameter tuning for the next round.</p>
-        <div class="wf-tools">
-          <span class="wf-tool" style="border-color:#d2992240;color:#d29922">/propose-designs</span>
+        <div class="wf-arrow wf-arrow-down">&darr;</div>
+        <div class="wf-row">
+          <div class="wf-box wf-p"><span class="wf-tag wf-p">AI</span><div class="wf-label">Analyse</div><div class="wf-sub">Rank &bull; Compare &bull; Propose</div></div>
         </div>
       </div>
-    </div>
 
-    <div class="wf-step">
-      <div class="wf-node wf-neon-green">07</div>
-      <div class="wf-card" style="border-left:3px solid #39ff14">
-        <div class="wf-scanline"></div>
-        <h3><span style="color:#39ff14">PUBLISH</span> <span class="wf-tag" style="background:#39ff1420;color:#39ff14;border:1px solid #39ff1440">CPU</span></h3>
-        <p>Generate this site from ranked designs, push to GitHub Pages. Advance the round counter and begin the next cycle.</p>
-        <div class="wf-tools">
-          <span class="wf-tool" style="border-color:#39ff1440;color:#39ff14">generate_pages.py</span>
-          <span class="wf-tool" style="border-color:#39ff1440;color:#39ff14">git push</span>
-        </div>
-        <p style="margin-top:8px"><code>python pgdh_campaign/generate_pages.py --designs-dir pgdh_modal/out/designs/</code></p>
-      </div>
     </div>
-
+    <div class="wf-arrow wf-arrow-down" style="font-size:24px">&darr;</div>
+    <div class="wf-row">
+      <div class="wf-box wf-c"><div class="wf-label">Publish</div><div class="wf-sub">This page</div></div>
+    </div>
   </div>
 </div>
 </div>
