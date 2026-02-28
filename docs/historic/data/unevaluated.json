@@ -1,0 +1,3046 @@
+[
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_0_model_0",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:25.920693+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYGSSAALDAALNEIAANAAAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 82,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_0_model_0.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_0_model_0.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.45255474452554745,
+      "sheet": 0.19343065693430658,
+      "loop": 0.354014598540146,
+      "radius_of_gyration": 18.331659163979165,
+      "max_ca_deviation": 0.0995934009552002,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 16,
+      "alanine_content": 0.11869436201780416,
+      "glycine_content": 0.09198813056379822,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 37,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_0_model_1",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:26.395319+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYGSSAAIDAVAALIAANAAAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 82,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_0_model_1.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_0_model_1.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.4051094890510949,
+      "sheet": 0.15328467153284672,
+      "loop": 0.4416058394160584,
+      "radius_of_gyration": 18.071004182331144,
+      "max_ca_deviation": 0.1258528232574463,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 17,
+      "alanine_content": 0.12166172106824925,
+      "glycine_content": 0.09198813056379822,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 38,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_0_model_2",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:26.859427+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYKSQDVVDAAIAAGLTDPAAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 82,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_0_model_2.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_0_model_2.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.5,
+      "sheet": 0.13138686131386862,
+      "loop": 0.3686131386861314,
+      "radius_of_gyration": 18.02499287478605,
+      "max_ca_deviation": 0.15283775329589844,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 18,
+      "alanine_content": 0.10979228486646884,
+      "glycine_content": 0.09198813056379822,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 39,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_0_model_3",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:27.327869+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYGSAAGIAAAAALVAANAAAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 82,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_0_model_3.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_0_model_3.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.8394160583941606,
+      "sheet": 0.0,
+      "loop": 0.16058394160583941,
+      "radius_of_gyration": 17.99220817210451,
+      "max_ca_deviation": 0.15338587760925293,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 12,
+      "alanine_content": 0.12759643916913946,
+      "glycine_content": 0.09495548961424333,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 40,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_0_model_4",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:27.790166+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYASQAIVDAVLALAAAGLAAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 82,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_0_model_4.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_0_model_4.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.5072992700729927,
+      "sheet": 0.13138686131386862,
+      "loop": 0.3613138686131387,
+      "radius_of_gyration": 18.202462199572455,
+      "max_ca_deviation": 0.11429882049560547,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 18,
+      "alanine_content": 0.11869436201780416,
+      "glycine_content": 0.09198813056379822,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 41,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_0_model_5",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:28.250922+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYKDQAIVDGALAIAAAGAKAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 82,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_0_model_5.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_0_model_5.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.5583941605839416,
+      "sheet": 0.18248175182481752,
+      "loop": 0.2591240875912409,
+      "radius_of_gyration": 18.437951842569966,
+      "max_ca_deviation": 0.7909889221191406,
+      "n_chainbreaks": 1,
+      "num_ss_elements": 17,
+      "alanine_content": 0.11572700296735905,
+      "glycine_content": 0.09495548961424333,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 42,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_0_model_6",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:28.712120+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYAAKLNGAVPTTIVVASSAAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 82,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_0_model_6.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_0_model_6.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.48175182481751827,
+      "sheet": 0.18613138686131386,
+      "loop": 0.33211678832116787,
+      "radius_of_gyration": 18.46642957570262,
+      "max_ca_deviation": 0.1260676383972168,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 16,
+      "alanine_content": 0.10979228486646884,
+      "glycine_content": 0.09198813056379822,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 43,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_0_model_7",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:29.184656+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYGDAAIVDAANAVVIAGAASGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 82,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_0_model_7.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_0_model_7.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.5109489051094891,
+      "sheet": 0.15328467153284672,
+      "loop": 0.3357664233576642,
+      "radius_of_gyration": 18.17405479172512,
+      "max_ca_deviation": 0.12153148651123047,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 19,
+      "alanine_content": 0.11572700296735905,
+      "glycine_content": 0.09495548961424333,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 44,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_1_model_0",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:29.644735+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYNSPAALDAAAALILANAAAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 82,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_1_model_0.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_1_model_0.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.4708029197080292,
+      "sheet": 0.17883211678832117,
+      "loop": 0.35036496350364965,
+      "radius_of_gyration": 18.27890835428595,
+      "max_ca_deviation": 0.1163480281829834,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 19,
+      "alanine_content": 0.12166172106824925,
+      "glycine_content": 0.08902077151335312,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 45,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_1_model_1",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:30.102642+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYGNTALVNALIAAALADAAAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 82,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_1_model_1.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_1_model_1.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.49635036496350365,
+      "sheet": 0.19343065693430658,
+      "loop": 0.3102189781021898,
+      "radius_of_gyration": 18.244109702338577,
+      "max_ca_deviation": 0.10332202911376953,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 20,
+      "alanine_content": 0.11869436201780416,
+      "glycine_content": 0.09198813056379822,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 46,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_1_model_2",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:30.573116+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYNDAAVVDAIIAAGLADIAAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 82,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_1_model_2.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_1_model_2.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.4416058394160584,
+      "sheet": 0.13503649635036497,
+      "loop": 0.4233576642335766,
+      "radius_of_gyration": 18.09031525921816,
+      "max_ca_deviation": 0.6424996852874756,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 15,
+      "alanine_content": 0.11572700296735905,
+      "glycine_content": 0.09198813056379822,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 47,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_1_model_3",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:31.038740+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYGSQAVIDAVNALVAANAAAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 82,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_1_model_3.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_1_model_3.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.5620437956204379,
+      "sheet": 0.17518248175182483,
+      "loop": 0.26277372262773724,
+      "radius_of_gyration": 17.945355052868496,
+      "max_ca_deviation": 0.11113667488098145,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 20,
+      "alanine_content": 0.11572700296735905,
+      "glycine_content": 0.09198813056379822,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 48,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_1_model_4",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:31.498568+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYGSADAVNAILALIAQNQAAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 82,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_1_model_4.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_1_model_4.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.5182481751824818,
+      "sheet": 0.1386861313868613,
+      "loop": 0.34306569343065696,
+      "radius_of_gyration": 18.56372011343937,
+      "max_ca_deviation": 0.1630263328552246,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 17,
+      "alanine_content": 0.11275964391691394,
+      "glycine_content": 0.09198813056379822,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 49,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_1_model_5",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:31.960197+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYNDQAAVDAVLAVAAAGAAAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 82,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_1_model_5.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_1_model_5.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.5072992700729927,
+      "sheet": 0.15693430656934307,
+      "loop": 0.3357664233576642,
+      "radius_of_gyration": 17.67921632133943,
+      "max_ca_deviation": 0.10664224624633789,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 16,
+      "alanine_content": 0.12166172106824925,
+      "glycine_content": 0.09198813056379822,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 50,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_1_model_6",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:32.424134+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYGSSAALDAAQAEIAANAAAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 82,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_1_model_6.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_1_model_6.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.40875912408759124,
+      "sheet": 0.20802919708029197,
+      "loop": 0.38321167883211676,
+      "radius_of_gyration": 18.003892520706106,
+      "max_ca_deviation": 0.10113835334777832,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 17,
+      "alanine_content": 0.12166172106824925,
+      "glycine_content": 0.09198813056379822,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 51,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_1_model_7",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:32.885057+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYQDTALFNAIVAAGLSDIAAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 82,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_1_model_7.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t10_1_model_7.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.4562043795620438,
+      "sheet": 0.145985401459854,
+      "loop": 0.3978102189781022,
+      "radius_of_gyration": 18.653663554469624,
+      "max_ca_deviation": 0.11338090896606445,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 17,
+      "alanine_content": 0.10979228486646884,
+      "glycine_content": 0.09198813056379822,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 52,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_0_model_0",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:33.344998+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYNDAALFDALVALAAANAAAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 82,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_0_model_0.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_0_model_0.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.5912408759124088,
+      "sheet": 0.12408759124087591,
+      "loop": 0.2846715328467153,
+      "radius_of_gyration": 18.15242575087763,
+      "max_ca_deviation": 0.1266324520111084,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 16,
+      "alanine_content": 0.12166172106824925,
+      "glycine_content": 0.08902077151335312,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 53,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_0_model_1",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:33.809543+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYGSSAGLSAAEALIDANAAAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 82,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_0_model_1.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_0_model_1.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.8211678832116789,
+      "sheet": 0.0,
+      "loop": 0.17883211678832117,
+      "radius_of_gyration": 18.718452545613907,
+      "max_ca_deviation": 0.1066439151763916,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 12,
+      "alanine_content": 0.11572700296735905,
+      "glycine_content": 0.09495548961424333,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 54,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_0_model_2",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:34.273292+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYNDQDVVDAINAAAAIGLAAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 82,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_0_model_2.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_0_model_2.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.4416058394160584,
+      "sheet": 0.21532846715328466,
+      "loop": 0.34306569343065696,
+      "radius_of_gyration": 18.474462137909295,
+      "max_ca_deviation": 0.13025641441345215,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 18,
+      "alanine_content": 0.11275964391691394,
+      "glycine_content": 0.09198813056379822,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 55,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_0_model_3",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:34.747286+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYKDADLVDAIIAAGLADSAAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 82,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_0_model_3.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_0_model_3.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.5036496350364964,
+      "sheet": 0.13138686131386862,
+      "loop": 0.36496350364963503,
+      "radius_of_gyration": 18.250157729502398,
+      "max_ca_deviation": 0.10989928245544434,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 18,
+      "alanine_content": 0.11275964391691394,
+      "glycine_content": 0.09198813056379822,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 56,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_0_model_4",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:35.226560+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYGSAAALNAALALIAANALAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 82,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_0_model_4.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_0_model_4.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.4416058394160584,
+      "sheet": 0.15693430656934307,
+      "loop": 0.40145985401459855,
+      "radius_of_gyration": 19.082143512714627,
+      "max_ca_deviation": 0.11815619468688965,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 17,
+      "alanine_content": 0.12166172106824925,
+      "glycine_content": 0.09198813056379822,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 57,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_0_model_5",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:35.689442+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYSSAAAVSAILALIADNADAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 82,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_0_model_5.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_0_model_5.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.5,
+      "sheet": 0.15693430656934307,
+      "loop": 0.34306569343065696,
+      "radius_of_gyration": 18.6393617467826,
+      "max_ca_deviation": 0.13859033584594727,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 18,
+      "alanine_content": 0.11572700296735905,
+      "glycine_content": 0.08902077151335312,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 58,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_0_model_6",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:36.164510+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYKNASLVSAIIAAGLSNPLAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 82,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_0_model_6.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_0_model_6.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.5218978102189781,
+      "sheet": 0.14963503649635038,
+      "loop": 0.3284671532846715,
+      "radius_of_gyration": 18.857360235364155,
+      "max_ca_deviation": 0.1338658332824707,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 19,
+      "alanine_content": 0.10682492581602374,
+      "glycine_content": 0.09198813056379822,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 59,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_0_model_7",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:36.626364+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYGSSAALDAANALVAANAAAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 82,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_0_model_7.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_0_model_7.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.7408759124087592,
+      "sheet": 0.0,
+      "loop": 0.2591240875912409,
+      "radius_of_gyration": 18.80045056619491,
+      "max_ca_deviation": 0.11141395568847656,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 11,
+      "alanine_content": 0.12166172106824925,
+      "glycine_content": 0.09198813056379822,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 60,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_1_model_0",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:37.089453+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYGDNRVINAVLALVNNNAAAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 82,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_1_model_0.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_1_model_0.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.45985401459854014,
+      "sheet": 0.16058394160583941,
+      "loop": 0.3795620437956204,
+      "radius_of_gyration": 18.410394632663234,
+      "max_ca_deviation": 0.11704349517822266,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 17,
+      "alanine_content": 0.10682492581602374,
+      "glycine_content": 0.09198813056379822,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 61,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_1_model_1",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:37.558510+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYNDSAIVDAINALAAANAAAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 82,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_1_model_1.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_1_model_1.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.5109489051094891,
+      "sheet": 0.16423357664233576,
+      "loop": 0.3248175182481752,
+      "radius_of_gyration": 18.111022688041686,
+      "max_ca_deviation": 0.10169792175292969,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 18,
+      "alanine_content": 0.11869436201780416,
+      "glycine_content": 0.08902077151335312,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 62,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_1_model_2",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:38.020760+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYKDTALVNAIISAALADIAPGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 82,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_1_model_2.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_1_model_2.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.45985401459854014,
+      "sheet": 0.1897810218978102,
+      "loop": 0.35036496350364965,
+      "radius_of_gyration": 18.752426462173087,
+      "max_ca_deviation": 0.10985827445983887,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 18,
+      "alanine_content": 0.10979228486646884,
+      "glycine_content": 0.08902077151335312,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 63,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_1_model_3",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:38.481386+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYKNADLYNGIVAAGLSDIAAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 82,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_1_model_3.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_1_model_3.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.5291970802919708,
+      "sheet": 0.15693430656934307,
+      "loop": 0.31386861313868614,
+      "radius_of_gyration": 18.180297966649963,
+      "max_ca_deviation": 0.14264178276062012,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 18,
+      "alanine_content": 0.10682492581602374,
+      "glycine_content": 0.09495548961424333,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 64,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_1_model_4",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:38.948010+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYKSAALVNAILAAGLTDIAAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 82,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_1_model_4.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_1_model_4.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.49635036496350365,
+      "sheet": 0.12043795620437957,
+      "loop": 0.38321167883211676,
+      "radius_of_gyration": 18.398335076308417,
+      "max_ca_deviation": 0.14406490325927734,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 16,
+      "alanine_content": 0.11275964391691394,
+      "glycine_content": 0.09198813056379822,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 65,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_1_model_5",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:39.411895+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYASAALVDAIFAAGLADIAAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 82,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_1_model_5.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_1_model_5.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.4233576642335766,
+      "sheet": 0.1897810218978102,
+      "loop": 0.38686131386861317,
+      "radius_of_gyration": 18.5332482971997,
+      "max_ca_deviation": 0.11354660987854004,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 19,
+      "alanine_content": 0.11869436201780416,
+      "glycine_content": 0.09198813056379822,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 66,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_1_model_6",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:39.873908+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYANALKAAGTIVIASSNPLAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 82,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_1_model_6.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_1_model_6.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.5109489051094891,
+      "sheet": 0.17153284671532848,
+      "loop": 0.3175182481751825,
+      "radius_of_gyration": 18.404766260227436,
+      "max_ca_deviation": 0.804577112197876,
+      "n_chainbreaks": 1,
+      "num_ss_elements": 17,
+      "alanine_content": 0.10979228486646884,
+      "glycine_content": 0.09198813056379822,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 67,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_1_model_7",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:40.348481+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYKDQAIVDAILAALAANAAAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 82,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_1_model_7.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_partial_diffusion_A122_140_t6_1_model_7.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.5328467153284672,
+      "sheet": 0.09124087591240876,
+      "loop": 0.3759124087591241,
+      "radius_of_gyration": 18.764908831007407,
+      "max_ca_deviation": 0.13138413429260254,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 15,
+      "alanine_content": 0.11869436201780416,
+      "glycine_content": 0.08902077151335312,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 68,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_segment_replace_len15_25_0_model_0",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:40.797358+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYLAATGGTIIITSSAAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 78,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_segment_replace_len15_25_0_model_0.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_segment_replace_len15_25_0_model_0.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.0,
+      "sheet": 0.6,
+      "loop": 0.4,
+      "radius_of_gyration": 11.27795653056033,
+      "max_ca_deviation": 0.07767677307128906,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 1,
+      "alanine_content": 0.1282051282051282,
+      "glycine_content": 0.10256410256410256,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 69,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_segment_replace_len15_25_0_model_1",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:41.351990+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYLAATGGTIVVTSSAAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 78,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_segment_replace_len15_25_0_model_1.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_segment_replace_len15_25_0_model_1.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.0,
+      "sheet": 0.6,
+      "loop": 0.4,
+      "radius_of_gyration": 11.308748240084357,
+      "max_ca_deviation": 0.07767677307128906,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 1,
+      "alanine_content": 0.1282051282051282,
+      "glycine_content": 0.10256410256410256,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 70,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_segment_replace_len15_25_0_model_2",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:41.801595+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYLAATGGTIVVASSAAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 78,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_segment_replace_len15_25_0_model_2.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_segment_replace_len15_25_0_model_2.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.0,
+      "sheet": 0.6,
+      "loop": 0.4,
+      "radius_of_gyration": 11.37901650808179,
+      "max_ca_deviation": 0.07767677307128906,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 1,
+      "alanine_content": 0.14102564102564102,
+      "glycine_content": 0.10256410256410256,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 71,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_segment_replace_len15_25_0_model_3",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:42.260469+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYLAATGGTVIVTSSAAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 78,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_segment_replace_len15_25_0_model_3.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_segment_replace_len15_25_0_model_3.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.0,
+      "sheet": 0.6,
+      "loop": 0.4,
+      "radius_of_gyration": 11.351762127197285,
+      "max_ca_deviation": 0.07767677307128906,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 1,
+      "alanine_content": 0.1282051282051282,
+      "glycine_content": 0.10256410256410256,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 72,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_segment_replace_len15_25_0_model_4",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:42.718452+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYLASVGGTIVVVSSAAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 78,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_segment_replace_len15_25_0_model_4.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_segment_replace_len15_25_0_model_4.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.0,
+      "sheet": 0.6,
+      "loop": 0.4,
+      "radius_of_gyration": 11.451536661094552,
+      "max_ca_deviation": 0.07767677307128906,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 1,
+      "alanine_content": 0.11538461538461539,
+      "glycine_content": 0.10256410256410256,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 73,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_segment_replace_len15_25_0_model_5",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:43.170152+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYLAASGGTIVVTSSAAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 78,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_segment_replace_len15_25_0_model_5.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_segment_replace_len15_25_0_model_5.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.0,
+      "sheet": 0.6,
+      "loop": 0.4,
+      "radius_of_gyration": 11.274576122600713,
+      "max_ca_deviation": 0.07767677307128906,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 1,
+      "alanine_content": 0.1282051282051282,
+      "glycine_content": 0.10256410256410256,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 74,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_segment_replace_len15_25_0_model_6",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:43.622530+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYLASVGGTIVITSSAAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 78,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_segment_replace_len15_25_0_model_6.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_segment_replace_len15_25_0_model_6.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.0,
+      "sheet": 0.6,
+      "loop": 0.4,
+      "radius_of_gyration": 11.368597043504604,
+      "max_ca_deviation": 0.07767677307128906,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 1,
+      "alanine_content": 0.11538461538461539,
+      "glycine_content": 0.10256410256410256,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 75,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_segment_replace_len15_25_0_model_7",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:44.074580+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYLASTGGTIVVTSSAAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 78,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_segment_replace_len15_25_0_model_7.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_segment_replace_len15_25_0_model_7.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.0,
+      "sheet": 0.6,
+      "loop": 0.4,
+      "radius_of_gyration": 11.433723339118789,
+      "max_ca_deviation": 0.07767677307128906,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 1,
+      "alanine_content": 0.11538461538461539,
+      "glycine_content": 0.10256410256410256,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 76,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_segment_replace_len15_25_1_model_0",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:44.531806+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYANKSGAPGTIVITSSAAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 80,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_segment_replace_len15_25_1_model_0.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_segment_replace_len15_25_1_model_0.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.0,
+      "sheet": 0.5294117647058824,
+      "loop": 0.47058823529411764,
+      "radius_of_gyration": 12.16684663148799,
+      "max_ca_deviation": 0.08006834983825684,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 1,
+      "alanine_content": 0.125,
+      "glycine_content": 0.1,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 77,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_segment_replace_len15_25_1_model_1",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:44.982582+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYLVALGAPGTIVVTSSAAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 80,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_segment_replace_len15_25_1_model_1.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_segment_replace_len15_25_1_model_1.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.0,
+      "sheet": 0.5294117647058824,
+      "loop": 0.47058823529411764,
+      "radius_of_gyration": 11.944280391914772,
+      "max_ca_deviation": 0.08120155334472656,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 1,
+      "alanine_content": 0.125,
+      "glycine_content": 0.1,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 78,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_segment_replace_len15_25_1_model_2",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:45.452193+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYAVALSVPGTIAITSSAAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 80,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_segment_replace_len15_25_1_model_2.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_segment_replace_len15_25_1_model_2.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.0,
+      "sheet": 0.5294117647058824,
+      "loop": 0.47058823529411764,
+      "radius_of_gyration": 12.229125906675936,
+      "max_ca_deviation": 0.08006834983825684,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 1,
+      "alanine_content": 0.1375,
+      "glycine_content": 0.0875,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 79,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_segment_replace_len15_25_1_model_3",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:45.907354+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYAIALDAAGTIVATSSLAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 80,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_segment_replace_len15_25_1_model_3.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_segment_replace_len15_25_1_model_3.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.0,
+      "sheet": 0.5294117647058824,
+      "loop": 0.47058823529411764,
+      "radius_of_gyration": 12.698503842702644,
+      "max_ca_deviation": 0.08006834983825684,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 1,
+      "alanine_content": 0.15,
+      "glycine_content": 0.0875,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 80,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_segment_replace_len15_25_1_model_4",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:46.360261+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYLVPANTAGTIVVTSSAAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 80,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_segment_replace_len15_25_1_model_4.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_segment_replace_len15_25_1_model_4.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.0,
+      "sheet": 0.5294117647058824,
+      "loop": 0.47058823529411764,
+      "radius_of_gyration": 12.052758278457452,
+      "max_ca_deviation": 0.08006834983825684,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 1,
+      "alanine_content": 0.125,
+      "glycine_content": 0.0875,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 81,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_segment_replace_len15_25_1_model_5",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:46.814803+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYALAFNAPGTIVVASSAAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 80,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_segment_replace_len15_25_1_model_5.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_segment_replace_len15_25_1_model_5.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.0,
+      "sheet": 0.5294117647058824,
+      "loop": 0.47058823529411764,
+      "radius_of_gyration": 12.389573300174339,
+      "max_ca_deviation": 0.08006834983825684,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 1,
+      "alanine_content": 0.15,
+      "glycine_content": 0.0875,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 82,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_segment_replace_len15_25_1_model_6",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:47.272031+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYAVALNLAATINVTSSAAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 80,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_segment_replace_len15_25_1_model_6.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_segment_replace_len15_25_1_model_6.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.0,
+      "sheet": 0.47058823529411764,
+      "loop": 0.5294117647058824,
+      "radius_of_gyration": 12.156976044597648,
+      "max_ca_deviation": 0.08006834983825684,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 1,
+      "alanine_content": 0.15,
+      "glycine_content": 0.075,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 83,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_helix_hairpin_inpaint_rfd3_helix_hairpin_inpaint_segment_replace_len15_25_1_model_7",
+    "tool": "rfdiffusion3",
+    "strategy": "helix_hairpin_inpaint",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:47.740110+00:00",
+    "sequence": "NEKNWEKTLQINLVSVISGTYLGLDYCVAHNLAGTIAITSSAAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVR",
+    "num_residues": 80,
+    "hotspots": "",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_segment_replace_len15_25_1_model_7.json",
+      "structure": "output/rfdiffusion3/helix_hairpin_inpaint/rfd3_helix_hairpin_inpaint_segment_replace_len15_25_1_model_7.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.0,
+      "sheet": 0.5882352941176471,
+      "loop": 0.4117647058823529,
+      "radius_of_gyration": 12.230383352137359,
+      "max_ca_deviation": 0.08006834983825684,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 1,
+      "alanine_content": 0.1375,
+      "glycine_content": 0.0875,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 84,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_s1_rfd3_pgdh_binder_pgdh_active_site_0_model_0",
+    "tool": "rfdiffusion3",
+    "strategy": "active_site",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:48.201486+00:00",
+    "sequence": "MSLASIVNTAKELITLYTNLNASIPGLNVIASDVAKVLIASVDSYAASSDTNKLIALLVACALNTVYAVTTVAVNSIAAC",
+    "num_residues": 80,
+    "hotspots": "A138, A148, A151, A155, A185, A217",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/rfd3_pgdh_binder_pgdh_active_site_0_model_0.json",
+      "structure": "output/rfdiffusion3/rfd3_pgdh_binder_pgdh_active_site_0_model_0.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.9,
+      "sheet": 0.0,
+      "loop": 0.1,
+      "radius_of_gyration": 13.622559570344876,
+      "max_ca_deviation": 0.22822070121765137,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 3,
+      "alanine_content": 0.11849710982658959,
+      "glycine_content": 0.07514450867052024,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 85,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_s1_rfd3_pgdh_binder_pgdh_active_site_0_model_1",
+    "tool": "rfdiffusion3",
+    "strategy": "active_site",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:48.670125+00:00",
+    "sequence": "SIIIEATLSFAEQQIQLMLQLLDNYSALNALVAEYAKGNSSLLAALASTIADCAAKIATLEAEATENITIIANANLALIC",
+    "num_residues": 80,
+    "hotspots": "A138, A148, A151, A155, A185, A217",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/rfd3_pgdh_binder_pgdh_active_site_0_model_1.json",
+      "structure": "output/rfdiffusion3/rfd3_pgdh_binder_pgdh_active_site_0_model_1.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.9125,
+      "sheet": 0.0,
+      "loop": 0.0875,
+      "radius_of_gyration": 17.970724859755503,
+      "max_ca_deviation": 0.22822070121765137,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 2,
+      "alanine_content": 0.12716763005780346,
+      "glycine_content": 0.07514450867052024,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 86,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_s1_rfd3_pgdh_binder_pgdh_active_site_0_model_2",
+    "tool": "rfdiffusion3",
+    "strategy": "active_site",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:49.140263+00:00",
+    "sequence": "NSIINKALDITTKYGLPTSEKAIAIANAGQVIDTALIESLEAALTSNINYTQSLFKSLKDKHVSETLKAINEATGAAVAA",
+    "num_residues": 80,
+    "hotspots": "A138, A148, A151, A155, A185, A217",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/rfd3_pgdh_binder_pgdh_active_site_0_model_2.json",
+      "structure": "output/rfdiffusion3/rfd3_pgdh_binder_pgdh_active_site_0_model_2.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.7125,
+      "sheet": 0.0,
+      "loop": 0.2875,
+      "radius_of_gyration": 15.047765965122236,
+      "max_ca_deviation": 0.22822070121765137,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 4,
+      "alanine_content": 0.11560693641618497,
+      "glycine_content": 0.08092485549132948,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 87,
+    "has_structure": true
+  },
+  {
+    "design_id": "rfd3_s1_rfd3_pgdh_binder_pgdh_active_site_0_model_3",
+    "tool": "rfdiffusion3",
+    "strategy": "active_site",
+    "status": "designed",
+    "evaluation_stage": "collected",
+    "created_at": "2026-02-27T23:49:49.605717+00:00",
+    "sequence": "EAKQVVVKGRENAPIAESQDAAQLLNELAKRYNNYAKQLEGLKKDILEVGANFNKALANGNNENALAAAEKAFTLALNLA",
+    "num_residues": 80,
+    "hotspots": "A138, A148, A151, A155, A185, A217",
+    "source_files": {
+      "metadata_json": "output/rfdiffusion3/rfd3_pgdh_binder_pgdh_active_site_0_model_3.json",
+      "structure": "output/rfdiffusion3/rfd3_pgdh_binder_pgdh_active_site_0_model_3.cif.gz"
+    },
+    "design_metrics": {
+      "helix": 0.9,
+      "sheet": 0.0,
+      "loop": 0.1,
+      "radius_of_gyration": 14.932524340186072,
+      "max_ca_deviation": 0.22822070121765137,
+      "n_chainbreaks": 0,
+      "num_ss_elements": 4,
+      "alanine_content": 0.12427745664739884,
+      "glycine_content": 0.0838150289017341,
+      "source": "rfdiffusion3"
+    },
+    "validation": null,
+    "scoring": null,
+    "composite_score": null,
+    "rank": 88,
+    "has_structure": true
+  },
+  {
+    "design_id": "boltzgen_raw_rank1_pgdh_strategy3_surface_0",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/final_ranked_designs/final_30_designs/before_refolding/rank1_pgdh_strategy3_surface_0.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank2_pgdh_strategy3_surface_2",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/final_ranked_designs/final_30_designs/before_refolding/rank2_pgdh_strategy3_surface_2.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank3_pgdh_strategy3_surface_1",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/final_ranked_designs/final_30_designs/before_refolding/rank3_pgdh_strategy3_surface_1.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank1_pgdh_strategy3_surface_0",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/final_ranked_designs/final_30_designs/rank1_pgdh_strategy3_surface_0.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank2_pgdh_strategy3_surface_2",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/final_ranked_designs/final_30_designs/rank2_pgdh_strategy3_surface_2.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank3_pgdh_strategy3_surface_1",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/final_ranked_designs/final_30_designs/rank3_pgdh_strategy3_surface_1.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank0_pgdh_strategy3_surface_0",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/final_ranked_designs/intermediate_ranked_10_designs/before_refolding/rank0_pgdh_strategy3_surface_0.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank1_pgdh_strategy3_surface_2",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/final_ranked_designs/intermediate_ranked_10_designs/before_refolding/rank1_pgdh_strategy3_surface_2.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank2_pgdh_strategy3_surface_1",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/final_ranked_designs/intermediate_ranked_10_designs/before_refolding/rank2_pgdh_strategy3_surface_1.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank0_pgdh_strategy3_surface_0",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/final_ranked_designs/intermediate_ranked_10_designs/rank0_pgdh_strategy3_surface_0.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank1_pgdh_strategy3_surface_2",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/final_ranked_designs/intermediate_ranked_10_designs/rank1_pgdh_strategy3_surface_2.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank2_pgdh_strategy3_surface_1",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/final_ranked_designs/intermediate_ranked_10_designs/rank2_pgdh_strategy3_surface_1.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank01_config_5",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s1_active_site/final_ranked_designs/final_30_designs/before_refolding/rank01_config_5.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank02_config_4",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s1_active_site/final_ranked_designs/final_30_designs/before_refolding/rank02_config_4.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank03_config_3",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s1_active_site/final_ranked_designs/final_30_designs/before_refolding/rank03_config_3.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank04_config_7",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s1_active_site/final_ranked_designs/final_30_designs/before_refolding/rank04_config_7.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank05_config_1",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s1_active_site/final_ranked_designs/final_30_designs/before_refolding/rank05_config_1.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank06_config_9",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s1_active_site/final_ranked_designs/final_30_designs/before_refolding/rank06_config_9.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank07_config_0",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s1_active_site/final_ranked_designs/final_30_designs/before_refolding/rank07_config_0.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank08_config_8",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s1_active_site/final_ranked_designs/final_30_designs/before_refolding/rank08_config_8.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank09_config_2",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s1_active_site/final_ranked_designs/final_30_designs/before_refolding/rank09_config_2.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank10_config_6",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s1_active_site/final_ranked_designs/final_30_designs/before_refolding/rank10_config_6.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank01_config_5",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s1_active_site/final_ranked_designs/final_30_designs/rank01_config_5.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank02_config_4",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s1_active_site/final_ranked_designs/final_30_designs/rank02_config_4.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank03_config_3",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s1_active_site/final_ranked_designs/final_30_designs/rank03_config_3.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank04_config_7",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s1_active_site/final_ranked_designs/final_30_designs/rank04_config_7.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank05_config_1",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s1_active_site/final_ranked_designs/final_30_designs/rank05_config_1.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank06_config_9",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s1_active_site/final_ranked_designs/final_30_designs/rank06_config_9.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank07_config_0",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s1_active_site/final_ranked_designs/final_30_designs/rank07_config_0.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank08_config_8",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s1_active_site/final_ranked_designs/final_30_designs/rank08_config_8.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank09_config_2",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s1_active_site/final_ranked_designs/final_30_designs/rank09_config_2.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank10_config_6",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s1_active_site/final_ranked_designs/final_30_designs/rank10_config_6.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank00_config_5",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s1_active_site/final_ranked_designs/intermediate_ranked_10_designs/before_refolding/rank00_config_5.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank01_config_4",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s1_active_site/final_ranked_designs/intermediate_ranked_10_designs/before_refolding/rank01_config_4.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank02_config_3",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s1_active_site/final_ranked_designs/intermediate_ranked_10_designs/before_refolding/rank02_config_3.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank03_config_7",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s1_active_site/final_ranked_designs/intermediate_ranked_10_designs/before_refolding/rank03_config_7.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank04_config_1",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s1_active_site/final_ranked_designs/intermediate_ranked_10_designs/before_refolding/rank04_config_1.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank05_config_9",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s1_active_site/final_ranked_designs/intermediate_ranked_10_designs/before_refolding/rank05_config_9.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank06_config_0",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s1_active_site/final_ranked_designs/intermediate_ranked_10_designs/before_refolding/rank06_config_0.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank07_config_8",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s1_active_site/final_ranked_designs/intermediate_ranked_10_designs/before_refolding/rank07_config_8.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank08_config_2",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s1_active_site/final_ranked_designs/intermediate_ranked_10_designs/before_refolding/rank08_config_2.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank09_config_6",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s1_active_site/final_ranked_designs/intermediate_ranked_10_designs/before_refolding/rank09_config_6.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank00_config_5",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s1_active_site/final_ranked_designs/intermediate_ranked_10_designs/rank00_config_5.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank01_config_4",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s1_active_site/final_ranked_designs/intermediate_ranked_10_designs/rank01_config_4.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank02_config_3",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s1_active_site/final_ranked_designs/intermediate_ranked_10_designs/rank02_config_3.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank03_config_7",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s1_active_site/final_ranked_designs/intermediate_ranked_10_designs/rank03_config_7.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank04_config_1",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s1_active_site/final_ranked_designs/intermediate_ranked_10_designs/rank04_config_1.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank05_config_9",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s1_active_site/final_ranked_designs/intermediate_ranked_10_designs/rank05_config_9.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank06_config_0",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s1_active_site/final_ranked_designs/intermediate_ranked_10_designs/rank06_config_0.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank07_config_8",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s1_active_site/final_ranked_designs/intermediate_ranked_10_designs/rank07_config_8.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank08_config_2",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s1_active_site/final_ranked_designs/intermediate_ranked_10_designs/rank08_config_2.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank09_config_6",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s1_active_site/final_ranked_designs/intermediate_ranked_10_designs/rank09_config_6.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank01_config_6",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/final_30_designs/before_refolding/rank01_config_6.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank02_config_s2_0",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/final_30_designs/before_refolding/rank02_config_s2_0.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank03_config_4",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/final_30_designs/before_refolding/rank03_config_4.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank04_config_1",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/final_30_designs/before_refolding/rank04_config_1.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank05_config_5",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/final_30_designs/before_refolding/rank05_config_5.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank06_config_9",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/final_30_designs/before_refolding/rank06_config_9.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank07_config_2",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/final_30_designs/before_refolding/rank07_config_2.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank08_config_0",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/final_30_designs/before_refolding/rank08_config_0.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank09_config_s2_1",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/final_30_designs/before_refolding/rank09_config_s2_1.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank10_config_8",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/final_30_designs/before_refolding/rank10_config_8.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank11_config_s2_2",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/final_30_designs/before_refolding/rank11_config_s2_2.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank12_config_3",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/final_30_designs/before_refolding/rank12_config_3.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank13_config_7",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/final_30_designs/before_refolding/rank13_config_7.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank01_config_6",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/final_30_designs/rank01_config_6.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank02_config_s2_0",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/final_30_designs/rank02_config_s2_0.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank03_config_4",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/final_30_designs/rank03_config_4.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank04_config_1",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/final_30_designs/rank04_config_1.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank05_config_5",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/final_30_designs/rank05_config_5.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank06_config_9",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/final_30_designs/rank06_config_9.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank07_config_2",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/final_30_designs/rank07_config_2.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank08_config_0",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/final_30_designs/rank08_config_0.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank09_config_s2_1",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/final_30_designs/rank09_config_s2_1.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank10_config_8",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/final_30_designs/rank10_config_8.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank11_config_s2_2",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/final_30_designs/rank11_config_s2_2.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank12_config_3",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/final_30_designs/rank12_config_3.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank13_config_7",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/final_30_designs/rank13_config_7.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank00_config_6",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/intermediate_ranked_10_designs/before_refolding/rank00_config_6.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank01_config_s2_0",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/intermediate_ranked_10_designs/before_refolding/rank01_config_s2_0.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank02_config_4",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/intermediate_ranked_10_designs/before_refolding/rank02_config_4.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank03_config_1",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/intermediate_ranked_10_designs/before_refolding/rank03_config_1.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank04_config_5",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/intermediate_ranked_10_designs/before_refolding/rank04_config_5.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank05_config_9",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/intermediate_ranked_10_designs/before_refolding/rank05_config_9.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank06_config_2",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/intermediate_ranked_10_designs/before_refolding/rank06_config_2.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank07_config_0",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/intermediate_ranked_10_designs/before_refolding/rank07_config_0.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank08_config_s2_1",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/intermediate_ranked_10_designs/before_refolding/rank08_config_s2_1.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank09_config_8",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/intermediate_ranked_10_designs/before_refolding/rank09_config_8.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank00_config_6",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/intermediate_ranked_10_designs/rank00_config_6.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank01_config_s2_0",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/intermediate_ranked_10_designs/rank01_config_s2_0.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank02_config_4",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/intermediate_ranked_10_designs/rank02_config_4.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank03_config_1",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/intermediate_ranked_10_designs/rank03_config_1.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank04_config_5",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/intermediate_ranked_10_designs/rank04_config_5.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank05_config_9",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/intermediate_ranked_10_designs/rank05_config_9.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank06_config_2",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/intermediate_ranked_10_designs/rank06_config_2.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank07_config_0",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/intermediate_ranked_10_designs/rank07_config_0.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank08_config_s2_1",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/intermediate_ranked_10_designs/rank08_config_s2_1.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank09_config_8",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s2_dimer/final_ranked_designs/intermediate_ranked_10_designs/rank09_config_8.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank01_config_9",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s3_surface/final_ranked_designs/final_30_designs/before_refolding/rank01_config_9.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank02_config_0",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s3_surface/final_ranked_designs/final_30_designs/before_refolding/rank02_config_0.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank03_config_4",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s3_surface/final_ranked_designs/final_30_designs/before_refolding/rank03_config_4.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank04_config_3",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s3_surface/final_ranked_designs/final_30_designs/before_refolding/rank04_config_3.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank05_config_1",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s3_surface/final_ranked_designs/final_30_designs/before_refolding/rank05_config_1.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank06_config_5",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s3_surface/final_ranked_designs/final_30_designs/before_refolding/rank06_config_5.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank07_config_2",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s3_surface/final_ranked_designs/final_30_designs/before_refolding/rank07_config_2.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank08_config_6",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s3_surface/final_ranked_designs/final_30_designs/before_refolding/rank08_config_6.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank09_config_7",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s3_surface/final_ranked_designs/final_30_designs/before_refolding/rank09_config_7.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank10_config_8",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s3_surface/final_ranked_designs/final_30_designs/before_refolding/rank10_config_8.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank01_config_9",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s3_surface/final_ranked_designs/final_30_designs/rank01_config_9.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank02_config_0",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s3_surface/final_ranked_designs/final_30_designs/rank02_config_0.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank03_config_4",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s3_surface/final_ranked_designs/final_30_designs/rank03_config_4.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank04_config_3",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s3_surface/final_ranked_designs/final_30_designs/rank04_config_3.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank05_config_1",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s3_surface/final_ranked_designs/final_30_designs/rank05_config_1.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank06_config_5",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s3_surface/final_ranked_designs/final_30_designs/rank06_config_5.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank07_config_2",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s3_surface/final_ranked_designs/final_30_designs/rank07_config_2.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank08_config_6",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s3_surface/final_ranked_designs/final_30_designs/rank08_config_6.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank09_config_7",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s3_surface/final_ranked_designs/final_30_designs/rank09_config_7.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank10_config_8",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s3_surface/final_ranked_designs/final_30_designs/rank10_config_8.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank00_config_9",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s3_surface/final_ranked_designs/intermediate_ranked_10_designs/before_refolding/rank00_config_9.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank01_config_0",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s3_surface/final_ranked_designs/intermediate_ranked_10_designs/before_refolding/rank01_config_0.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank02_config_4",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s3_surface/final_ranked_designs/intermediate_ranked_10_designs/before_refolding/rank02_config_4.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank03_config_3",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s3_surface/final_ranked_designs/intermediate_ranked_10_designs/before_refolding/rank03_config_3.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank04_config_1",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s3_surface/final_ranked_designs/intermediate_ranked_10_designs/before_refolding/rank04_config_1.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank05_config_5",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s3_surface/final_ranked_designs/intermediate_ranked_10_designs/before_refolding/rank05_config_5.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank06_config_2",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s3_surface/final_ranked_designs/intermediate_ranked_10_designs/before_refolding/rank06_config_2.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank07_config_6",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s3_surface/final_ranked_designs/intermediate_ranked_10_designs/before_refolding/rank07_config_6.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank08_config_7",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s3_surface/final_ranked_designs/intermediate_ranked_10_designs/before_refolding/rank08_config_7.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank09_config_8",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s3_surface/final_ranked_designs/intermediate_ranked_10_designs/before_refolding/rank09_config_8.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank00_config_9",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s3_surface/final_ranked_designs/intermediate_ranked_10_designs/rank00_config_9.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank01_config_0",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s3_surface/final_ranked_designs/intermediate_ranked_10_designs/rank01_config_0.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank02_config_4",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s3_surface/final_ranked_designs/intermediate_ranked_10_designs/rank02_config_4.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank03_config_3",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s3_surface/final_ranked_designs/intermediate_ranked_10_designs/rank03_config_3.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank04_config_1",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s3_surface/final_ranked_designs/intermediate_ranked_10_designs/rank04_config_1.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank05_config_5",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s3_surface/final_ranked_designs/intermediate_ranked_10_designs/rank05_config_5.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank06_config_2",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s3_surface/final_ranked_designs/intermediate_ranked_10_designs/rank06_config_2.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank07_config_6",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s3_surface/final_ranked_designs/intermediate_ranked_10_designs/rank07_config_6.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank08_config_7",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s3_surface/final_ranked_designs/intermediate_ranked_10_designs/rank08_config_7.cif"
+    }
+  },
+  {
+    "design_id": "boltzgen_raw_rank09_config_8",
+    "tool": "boltzgen",
+    "strategy": "unknown",
+    "status": "raw",
+    "has_structure": true,
+    "source_files": {
+      "structure": "output/boltzgen/s3_surface/final_ranked_designs/intermediate_ranked_10_designs/rank09_config_8.cif"
+    }
+  }
+]

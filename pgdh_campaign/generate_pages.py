@@ -434,15 +434,19 @@ TABLE_COLUMNS = [
     ("tool", "Tool", None),
     ("strategy", "Strategy", None),
     ("composite", "Composite", "high"),
-    ("iptm", "ipTM", "high"),
-    ("ptm", "pTM", "high"),
+    # Designer metrics (single-seq, from BoltzGen/RFD3)
+    ("iptm", "Design ipTM", "high"),
+    ("ptm", "Design pTM", "high"),
     ("filter_rmsd", "Design RMSD", "low"),
-    ("min_pae", "Min PAE", "low"),
-    ("bg_rmsd", "BG RMSD", "low"),
-    ("bg_plddt", "BG pLDDT", "high"),
-    ("bg_iptm", "BG ipTM", "high"),
-    ("val_iptm", "Val ipTM", "high"),
-    ("val_plddt", "Val pLDDT", "high"),
+    ("min_pae", "Design PAE", "low"),
+    # Refolding (BoltzGen single-seq folding — does the sequence fold back?)
+    ("bg_rmsd", "Refold RMSD (BZG)", "low"),
+    ("bg_plddt", "Refold pLDDT (BZG)", "high"),
+    ("bg_iptm", "Refold ipTM (BZG)", "high"),
+    # Cross-validation (Boltz-2 + MSA — independent structure prediction)
+    ("val_iptm", "Xval ipTM (BZ2+MSA)", "high"),
+    ("val_plddt", "Xval pLDDT (BZ2+MSA)", "high"),
+    # Scoring
     ("ipsae", "ipSAE", "high"),
     ("pdockq", "pDockQ", "high"),
     ("length", "Length", None),
