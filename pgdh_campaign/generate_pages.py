@@ -37,6 +37,29 @@ STRATEGY_META = {
     "unknown": {"label": "Unknown", "color": "#95A5A6"},
 }
 
+STRATEGY_INFO = [
+    {
+        "key": "active_site", "label": "Active Site", "color": "#FF6B6B",
+        "length": "40\u201380 AA",
+        "desc": "Target the NAD+-binding active site pocket.",
+        "hotspots": [("Ser138", 138), ("Gln148", 148), ("Tyr151", 151),
+                     ("Lys155", 155), ("Phe185", 185), ("Tyr217", 217)],
+    },
+    {
+        "key": "dimer_interface", "label": "Dimer Interface", "color": "#9B59B6",
+        "length": "90\u2013120 AA",
+        "desc": "Disrupt the homodimer contact surface.",
+        "hotspots": [("Ala146", 146), ("Ala153", 153), ("Phe161", 161), ("Leu167", 167),
+                     ("Ala168", 168), ("Leu171", 171), ("Met172", 172), ("Tyr206", 206)],
+    },
+    {
+        "key": "surface", "label": "Surface", "color": "#00CED1",
+        "length": "60\u2013140 AA",
+        "desc": "No specified hotspots \u2014 BoltzGen auto-detects binding site.",
+        "hotspots": [],
+    },
+]
+
 TOOL_COLORS = {
     "boltzgen": "#3498DB",
     "rfdiffusion3": "#E67E22",
@@ -532,6 +555,7 @@ def build_html(skip_sync=False):
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>In Silico PGDH — Binder Design Campaign</title>
 <script src="https://3Dmol.org/build/3Dmol-min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <style>
 *{{box-sizing:border-box;margin:0;padding:0}}
 body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f5;color:#333}}
@@ -615,6 +639,21 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
 .table-filter{{margin-bottom:12px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}}
 .table-filter input{{padding:8px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px;width:240px}}
 .table-filter select{{padding:8px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px}}
+.strat-card{{background:white;border-radius:8px;padding:16px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,0.06)}}
+.strat-toggle{{background:rgba(255,255,255,0.9);border:1px solid #ddd;border-radius:6px;padding:6px 12px;font-size:12px;cursor:pointer}}
+.strat-toggle:hover{{opacity:0.8}}
+.strat-toggle.active{{font-weight:700}}
+.strat-toggle:not(.active){{opacity:0.5}}
+.hotspot-tag{{display:inline-block;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:600}}
+/* Progress chart */
+.progress-controls{{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:16px}}
+.progress-controls select{{padding:8px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px}}
+.progress-controls label{{font-size:13px;color:#666;font-weight:600}}
+.chart-container{{background:white;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.08);padding:24px;position:relative;height:420px}}
+.progress-stats{{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-top:16px}}
+.progress-stat{{background:white;border-radius:8px;padding:12px 16px;box-shadow:0 1px 3px rgba(0,0,0,0.08)}}
+.progress-stat .ps-label{{font-size:12px;color:#888}}
+.progress-stat .ps-value{{font-size:20px;font-weight:700;color:#1a1a2e}}
 @media(max-width:900px){{.card-body{{grid-template-columns:1fr}}.viewer-container{{border-right:none;border-bottom:1px solid #eee}}}}
 </style>
 </head>
@@ -657,6 +696,8 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
   <div class="tab" onclick="switchTab('unevaluated')">Unevaluated<span class="count">{len(unevaluated)}</span></div>
   <div class="tab" onclick="switchTab('all')">All<span class="count">{len(all_designs)}</span></div>
   <div class="tab" onclick="switchTab('table')">Table<span class="count">{len(all_designs)}</span></div>
+  <div class="tab" onclick="switchTab('progress')">Progress</div>
+  <div class="tab" onclick="switchTab('strategies')">Strategies</div>
   <div class="tab" onclick="switchTab('target')">Target (2GDZ)</div>
 </div>
 <div class="tab-panel active" id="panel_evaluated">
@@ -695,6 +736,90 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
 </div>
 """
 
+    # Progress chart metrics
+    PROGRESS_METRICS = [
+        ("composite", "Composite Score", "high"),
+        ("iptm", "Design ipTM", "high"),
+        ("val_iptm", "Xval ipTM (Boltz-2)", "high"),
+        ("min_ipae", "Min iPAE", "low"),
+        ("bg_rmsd", "Refold RMSD", "low"),
+        ("filter_rmsd", "Design RMSD", "low"),
+        ("pdockq", "pDockQ", "high"),
+        ("bg_iptm", "Refold ipTM", "high"),
+        ("val_plddt", "Xval pLDDT", "high"),
+    ]
+    progress_options = "".join(
+        f'<option value="{k}">{label}</option>' for k, label, _ in PROGRESS_METRICS
+    )
+
+    html += f"""<div class="tab-panel" id="panel_progress">
+  <div class="progress-controls">
+    <label>Metric:</label>
+    <select id="progress-metric" onchange="updateProgressChart()">{progress_options}</select>
+    <label style="margin-left:12px">Aggregation:</label>
+    <select id="progress-agg" onchange="updateProgressChart()">
+      <option value="mean">Mean</option>
+      <option value="best">Best</option>
+      <option value="median">Median</option>
+      <option value="count">Count (designs)</option>
+    </select>
+  </div>
+  <div class="chart-container">
+    <canvas id="progress-canvas"></canvas>
+  </div>
+  <div class="progress-stats" id="progress-stats"></div>
+</div>
+"""
+
+    # Strategy design counts
+    strat_counts = {}
+    for d in all_designs:
+        s = d.get("strategy", "unknown")
+        strat_counts[s] = strat_counts.get(s, 0) + 1
+
+    # Strategy cards HTML
+    strat_cards_html = ""
+    for si in STRATEGY_INFO:
+        count = strat_counts.get(si["key"], 0)
+        if si["hotspots"]:
+            hotspot_tags = " ".join(
+                f'<span class="hotspot-tag" style="background:{si["color"]}20;color:{si["color"]};border:1px solid {si["color"]}40">{name}</span>'
+                for name, _ in si["hotspots"]
+            )
+        else:
+            hotspot_tags = '<span class="hotspot-tag" style="background:#00CED120;color:#00CED1;border:1px solid #00CED140">Auto-detected</span>'
+        strat_cards_html += f"""
+        <div class="strat-card" style="border-left:4px solid {si['color']}">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <span class="tool-badge" style="background:{si['color']}">{si['label']}</span>
+            <span style="font-size:13px;color:#888">{count} design{"s" if count != 1 else ""}</span>
+          </div>
+          <p style="font-size:13px;color:#555;margin:0 0 8px">{si['desc']}</p>
+          <p style="font-size:12px;color:#888;margin:0 0 8px">Binder length: {si['length']}</p>
+          <div style="display:flex;flex-wrap:wrap;gap:6px">{hotspot_tags}</div>
+        </div>"""
+
+    html += f"""<div class="tab-panel" id="panel_strategies">
+<div class="design-card">
+  <div class="card-header"><h2>Binding Strategies</h2><span class="tool-badge" style="background:#4361ee">3 strategies</span></div>
+  <div class="card-body">
+    <div class="viewer-container" id="viewer_strategies">
+      <div class="viewer-controls">
+        <button onclick="resetStratView()">Reset</button>
+        <button class="strat-toggle active" id="strat_btn_active_site" onclick="toggleStrat('active_site')" style="border-left:3px solid #FF6B6B">Active Site</button>
+        <button class="strat-toggle active" id="strat_btn_dimer_interface" onclick="toggleStrat('dimer_interface')" style="border-left:3px solid #9B59B6">Dimer Interface</button>
+        <button class="strat-toggle active" id="strat_btn_surface" onclick="toggleStrat('surface')" style="border-left:3px solid #00CED1">Surface</button>
+      </div>
+    </div>
+    <div class="metrics-panel" style="overflow-y:auto;max-height:500px">
+      <div class="section-label">Strategies Overview</div>
+      {strat_cards_html}
+    </div>
+  </div>
+</div>
+</div>
+"""
+
     if target_cif_text:
         html += f"""<div class="tab-panel" id="panel_target">
 <div class="design-card">
@@ -722,11 +847,11 @@ var tclr={json.dumps(TOOL_COLORS)};
 var tableData={json.dumps(table_rows)};
 var tableCols={json.dumps([c[0] for c in TABLE_COLUMNS])};
 var vs={{}},tv=null,init={{}};
-var tableInit=false,curSort=null,curDir=1;
+var tableInit=false,curSort=null,curDir=1,progressInit=false,progressChart=null;
 function iv(i){{if(init[i])return;var e=document.getElementById('viewer_'+i);if(!e||e.offsetParent===null)return;var d=vd[i];if(!d)return;if(!d.cif){{e.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#999;font-size:14px">3D view available for top {MAX_CIF_EMBEDS} designs</div>';init[i]=true;return;}}var v=$3Dmol.createViewer(e,{{backgroundColor:'white'}});v.addModel(d.cif,'cif');var bc=d.binderChain,tc2=bc==='A'?'B':'A',c=tclr[d.tool]||'#00CED1';v.setStyle({{chain:tc2}},{{cartoon:{{color:'#999',opacity:0.8}}}});v.setStyle({{chain:bc}},{{cartoon:{{color:c}}}});v.zoomTo();v.render();vs[i]={{viewer:v,binderChain:bc,targetChain:tc2,color:c}};init[i]=true;}}
 function itv(){{if(tv)return;var e=document.getElementById('viewer_target');if(!e||e.offsetParent===null)return;tv=$3Dmol.createViewer('viewer_target',{{backgroundColor:'white'}});tv.addModel(tc,'cif');tv.setStyle({{}},{{cartoon:{{color:'#CCC',opacity:0.7}}}});tv.setStyle({{chain:'A',resi:as}},{{cartoon:{{color:'#FF4500'}},stick:{{color:'#FF4500'}}}});tv.setStyle({{chain:'A',resi:di}},{{cartoon:{{color:'#1E90FF'}},stick:{{color:'#1E90FF'}}}});tv.zoomTo();tv.render();}}
-function ivv(){{for(var i=0;i<vd.length;i++){{var e=document.getElementById('viewer_'+i);if(e&&e.offsetParent!==null&&!init[i])iv(i);}}if(document.getElementById('viewer_target')&&document.getElementById('viewer_target').offsetParent!==null)itv();}}
-function switchTab(t){{var ts=['evaluated','unevaluated','all','table','target'];document.querySelectorAll('.tab').forEach(function(e,i){{e.classList.toggle('active',ts[i]===t);}});document.querySelectorAll('.tab-panel').forEach(function(p){{p.classList.remove('active');}});var p=document.getElementById('panel_'+t);if(p)p.classList.add('active');if(t==='table'&&!tableInit){{renderTable();tableInit=true;}}setTimeout(ivv,100);}}
+function ivv(){{for(var i=0;i<vd.length;i++){{var e=document.getElementById('viewer_'+i);if(e&&e.offsetParent!==null&&!init[i])iv(i);}}if(document.getElementById('viewer_target')&&document.getElementById('viewer_target').offsetParent!==null)itv();if(document.getElementById('viewer_strategies')&&document.getElementById('viewer_strategies').offsetParent!==null)initStratViewer();}}
+function switchTab(t){{var ts=['evaluated','unevaluated','all','table','progress','strategies','target'];document.querySelectorAll('.tab').forEach(function(e,i){{e.classList.toggle('active',ts[i]===t);}});document.querySelectorAll('.tab-panel').forEach(function(p){{p.classList.remove('active');}});var p=document.getElementById('panel_'+t);if(p)p.classList.add('active');if(t==='table'&&!tableInit){{renderTable();tableInit=true;}}if(t==='progress'&&!progressInit){{initProgressChart();progressInit=true;}}setTimeout(ivv,100);}}
 function clsCell(val,dir){{if(val===''||val===null||val===undefined)return'';var v=parseFloat(val);if(isNaN(v))return'';if(dir==='high')return v>=0.7?'good':v>=0.5?'warn':'bad';if(dir==='low')return v<=2.0?'good':v<=3.0?'warn':'bad';return'';}}
 var colDirs={{{",".join(f'"{c[0]}":"{c[2] or ""}"' for c in TABLE_COLUMNS)}}};
 function renderTable(){{var tb=document.getElementById('table-body');if(!tb)return;var q=(document.getElementById('table-search')||{{}}).value||'';q=q.toLowerCase();var tf=(document.getElementById('table-tool-filter')||{{}}).value||'';var sf=(document.getElementById('table-strategy-filter')||{{}}).value||'';var rf=(document.getElementById('table-round-filter')||{{}}).value||'';var rows=tableData.filter(function(r){{if(q&&r.design_id.toLowerCase().indexOf(q)<0)return false;if(tf&&r.tool!==tf)return false;if(sf&&r.strategy!==sf)return false;if(rf&&String(r.round||'')!==rf)return false;return true;}});if(curSort){{rows.sort(function(a,b){{var av=a[curSort],bv=b[curSort];var an=parseFloat(av),bn=parseFloat(bv);if(!isNaN(an)&&!isNaN(bn))return(an-bn)*curDir;av=String(av||'');bv=String(bv||'');return av.localeCompare(bv)*curDir;}});}}var h='';rows.forEach(function(r){{h+='<tr>';tableCols.forEach(function(c){{var v=r[c];if(v===''||v===null||v===undefined)v='—';else if(typeof v==='number')v=Number.isInteger(v)?v:parseFloat(v).toFixed(3);var cls=clsCell(r[c],colDirs[c]);if(c==='composite'&&r.score_partial)cls=(cls?cls+' ':'')+'partial';h+='<td'+(cls?' class="'+cls+'"':'')+'>'+(c==='design_id'?'<span title="'+v+'">'+v+'</span>':v)+'</td>';}});h+='</tr>';}});tb.innerHTML=h;}}
@@ -735,6 +860,17 @@ function sortTable(th){{var col=th.getAttribute('data-col');if(curSort===col){{c
 function toggleStyle(i,m){{var v=vs[i];if(!v)return;var vw=v.viewer;vw.removeAllSurfaces();var bc=v.binderChain,tc2=v.targetChain,c=v.color;if(m==='cartoon'){{vw.setStyle({{chain:tc2}},{{cartoon:{{color:'#999',opacity:0.8}}}});vw.setStyle({{chain:bc}},{{cartoon:{{color:c}}}});}}else if(m==='surface'){{vw.setStyle({{chain:tc2}},{{cartoon:{{color:'#999',opacity:0.5}}}});vw.setStyle({{chain:bc}},{{cartoon:{{color:c,opacity:0.5}}}});vw.addSurface($3Dmol.SurfaceType.VDW,{{opacity:0.6,color:'#999'}},{{chain:tc2}});vw.addSurface($3Dmol.SurfaceType.VDW,{{opacity:0.6,color:c}},{{chain:bc}});}}else if(m==='sticks'){{vw.setStyle({{chain:tc2}},{{cartoon:{{color:'#999',opacity:0.8}}}});vw.setStyle({{chain:bc}},{{cartoon:{{color:c}}}});vw.addStyle({{chain:bc,within:{{distance:5,sel:{{chain:tc2}}}}}},{{stick:{{color:c}}}});vw.addStyle({{chain:tc2,within:{{distance:5,sel:{{chain:bc}}}}}},{{stick:{{color:'#FF6347'}}}});}}else if(m==='sequence'){{var ac={{'ALA':'#E8860C','VAL':'#E8860C','LEU':'#E8860C','ILE':'#E8860C','MET':'#E8860C','PHE':'#E8860C','TRP':'#E8860C','PRO':'#E8860C','SER':'#2ECC71','THR':'#2ECC71','ASN':'#2ECC71','GLN':'#2ECC71','TYR':'#2ECC71','CYS':'#2ECC71','LYS':'#3498DB','ARG':'#3498DB','HIS':'#3498DB','ASP':'#E74C3C','GLU':'#E74C3C','GLY':'#95A5A6'}};vw.setStyle({{chain:tc2}},{{cartoon:{{color:'#DDD',opacity:0.5}}}});Object.keys(ac).forEach(function(r){{vw.setStyle({{chain:bc,resn:r}},{{cartoon:{{color:ac[r]}},stick:{{color:ac[r]}}}});}});}}vw.render();['cartoon','surface','sticks','sequence'].forEach(function(mm){{var b=document.getElementById('btn_'+mm+'_'+i);if(b)b.classList.toggle('active',mm===m);}});var l=document.getElementById('seqleg_'+i);if(l)l.classList.toggle('visible',m==='sequence');}}
 function resetView(i){{if(vs[i]){{vs[i].viewer.zoomTo();vs[i].viewer.render();}}}}
 function resetTargetView(){{if(tv){{tv.zoomTo();tv.render();}}}}
+var sv=null,stratVis={{active_site:true,dimer_interface:true,surface:true}};
+var stratData={{active_site:{{color:'#FF6B6B',resi:[138,148,151,155,185,217]}},dimer_interface:{{color:'#9B59B6',resi:[146,153,161,167,168,171,172,206]}},surface:{{color:'#00CED1',resi:[]}}}};
+function initStratViewer(){{if(sv)return;var e=document.getElementById('viewer_strategies');if(!e||e.offsetParent===null)return;if(!tc)return;sv=$3Dmol.createViewer('viewer_strategies',{{backgroundColor:'white'}});sv.addModel(tc,'cif');applyStratStyles();sv.zoomTo();sv.render();}}
+function applyStratStyles(){{if(!sv)return;sv.setStyle({{}},{{cartoon:{{color:'#CCC',opacity:0.7}}}});for(var k in stratData){{var s=stratData[k];if(s.resi.length>0&&stratVis[k]){{sv.setStyle({{chain:'A',resi:s.resi}},{{cartoon:{{color:s.color}},stick:{{color:s.color}}}});}}}}sv.render();}}
+function toggleStrat(k){{stratVis[k]=!stratVis[k];var b=document.getElementById('strat_btn_'+k);if(b)b.classList.toggle('active');applyStratStyles();}}
+function resetStratView(){{if(sv){{sv.zoomTo();sv.render();}}}}
+var progressMetricDirs={{{",".join(f'"{k}":"{d}"' for k, _, d in PROGRESS_METRICS)}}};
+function buildRoundData(){{var byRound={{}};tableData.forEach(function(r){{var rnd=r.round;if(rnd===''||rnd===null||rnd===undefined)return;if(!byRound[rnd])byRound[rnd]=[];byRound[rnd].push(r);}});return byRound;}}
+function aggValues(vals,agg,dir){{if(agg==='count')return vals.length;var nums=vals.map(parseFloat).filter(function(v){{return!isNaN(v);}});if(nums.length===0)return null;if(agg==='mean')return nums.reduce(function(a,b){{return a+b;}},0)/nums.length;if(agg==='median'){{nums.sort(function(a,b){{return a-b;}});var m=Math.floor(nums.length/2);return nums.length%2?nums[m]:(nums[m-1]+nums[m])/2;}}if(agg==='best')return dir==='low'?Math.min.apply(null,nums):Math.max.apply(null,nums);return null;}}
+function initProgressChart(){{updateProgressChart();}}
+function updateProgressChart(){{var metric=document.getElementById('progress-metric').value;var agg=document.getElementById('progress-agg').value;var dir=progressMetricDirs[metric]||'high';var byRound=buildRoundData();var rounds=Object.keys(byRound).map(Number).sort(function(a,b){{return a-b;}});var values=rounds.map(function(r){{var rows=byRound[r];if(agg==='count')return rows.length;var vals=rows.map(function(row){{return row[metric];}}).filter(function(v){{return v!==''&&v!==null&&v!==undefined;}});return aggValues(vals,agg,dir);}});var labels=rounds.map(function(r){{return'Round '+r;}});var ctx=document.getElementById('progress-canvas');if(progressChart)progressChart.destroy();var color='#4361ee';progressChart=new Chart(ctx,{{type:'line',data:{{labels:labels,datasets:[{{label:agg.charAt(0).toUpperCase()+agg.slice(1)+' '+document.getElementById('progress-metric').selectedOptions[0].text,data:values,borderColor:color,backgroundColor:color+'20',fill:true,tension:0.3,pointRadius:6,pointHoverRadius:9,pointBackgroundColor:color,borderWidth:2.5}}]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:{{display:true,position:'top'}}}},scales:{{x:{{grid:{{display:false}}}},y:{{beginAtZero:agg==='count',title:{{display:true,text:agg==='count'?'Number of designs':document.getElementById('progress-metric').selectedOptions[0].text}}}}}}}}}});var statsDiv=document.getElementById('progress-stats');if(statsDiv){{var sh='';rounds.forEach(function(r,i){{var v=values[i];var vt=v===null?'—':(agg==='count'?v:parseFloat(v).toFixed(3));sh+='<div class="progress-stat"><div class="ps-label">Round '+r+'</div><div class="ps-value">'+vt+'</div></div>';}});statsDiv.innerHTML=sh;}}}}
 (function(){{var rs={{}};tableData.forEach(function(r){{var v=r.round;if(v!==''&&v!==null&&v!==undefined)rs[v]=1;}});var sel=document.getElementById('table-round-filter');if(sel){{Object.keys(rs).sort(function(a,b){{return parseInt(a)-parseInt(b);}}).forEach(function(r){{var o=document.createElement('option');o.value=r;o.textContent='Round '+r;sel.appendChild(o);}});}}}})();
 document.addEventListener('DOMContentLoaded',ivv);
 document.addEventListener('click',function(e){{var tt=document.getElementById('score-tooltip');if(tt&&tt.classList.contains('visible')&&!tt.contains(e.target)&&!e.target.classList.contains('score-help'))tt.classList.remove('visible');}});
