@@ -553,7 +553,7 @@ def build_html(skip_sync=False):
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Molecular Agentic Rationality (P.G.D.H)</title>
+<title>Molecular Agentic Rationality Portal (PGDH module)</title>
 <script src="https://3Dmol.org/build/3Dmol-min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <style>
@@ -696,7 +696,7 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
   <p class="note"><span style="display:inline-block;background:#e67e22;color:white;padding:2px 8px;border-radius:10px;border:2px dashed rgba(255,255,255,0.5);font-size:11px;margin-right:4px">orange</span> = partial score (no Boltz-2 cross-validation). Not directly comparable to fully evaluated designs.</p>
 </div>
 <div class="header">
-  <h1>Molecular Agentic Rationality (P.G.D.H)</h1>
+  <h1>Molecular Agentic Rationality Portal (PGDH module)</h1>
   <p>Protein binder design campaign &mdash; Target: 2GDZ (15-hydroxyprostaglandin dehydrogenase)</p>
   <div class="nav-links">
     <a href="production_runs.html">Production Runs (legacy)</a>
