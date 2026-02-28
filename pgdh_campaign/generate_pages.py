@@ -723,7 +723,7 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
 {eval_cards if eval_cards else '<div class="empty">No evaluated designs yet. Run evaluate_designs.py then generate_pages.py.</div>'}
 </div>
 <div class="tab-panel" id="panel_unevaluated">
-<div class="tab-quote">&ldquo;The simulacrum is never that which conceals the truth &mdash; it is the truth which conceals that there is none.&rdquo;<span class="tq-attr">&mdash; Jean Baudrillard, <em>Simulacra and Simulation</em></span></div>
+<div class="tab-quote">&ldquo;The machinic phylum is materiality, natural or artificial, and both simultaneously; it is matter in movement, in flux, in variation.&rdquo;<span class="tq-attr">&mdash; Gilles Deleuze &amp; F&eacute;lix Guattari, <em>A Thousand Plateaus</em></span></div>
 {uneval_cards if uneval_cards else '<div class="empty">No unevaluated designs.</div>'}
 </div>
 <div class="tab-panel" id="panel_all">
