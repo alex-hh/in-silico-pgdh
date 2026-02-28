@@ -4,7 +4,7 @@ Document utils required for pgdh design by my user account on lyceum in pgdh_cam
 Document generic biolyceum features in biolyceum/README.md
 
 ## Campaign Round
-**Current round: 2** (config adjustments — shorter active site binders, narrowed dimer range)
+**Current round: 3** (scaled RFD3 dimer, BoltzGen dimer x20, partial diffusion of top designs)
 - Warmup designs (pre-ipSAE baseline) are archived, not part of any round
 - Output dir convention: `output/{tool}/r{N}/{strategy}/`
 - Submission name convention: `-f "pgdh_{tool}_r{N}_{strategy}"`

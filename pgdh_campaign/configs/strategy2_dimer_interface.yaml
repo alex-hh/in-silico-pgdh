@@ -6,7 +6,7 @@ entities:
 
   # 15-PGDH target (PDB 2GDZ, chain A)
   - file:
-      path: ../structures/2GDZ.cif
+      path: 2GDZ.cif
       include:
         - chain:
             id: A

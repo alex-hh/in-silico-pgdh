@@ -314,8 +314,8 @@ class LyceumClient:
     # ── BoltzGen ────────────────────────────────────────────────────────
 
     def run_boltzgen(self, yaml_path, structure_files=None, output_dir="./output/boltzgen",
-                     protocol="protein-anything", num_designs=10, machine="gpu.a100",
-                     timeout=600):
+                     s3_output_subdir="", protocol="protein-anything",
+                     num_designs=10, machine="gpu.a100", timeout=600):
         """Run BoltzGen protein design on Lyceum via Docker execution.
 
         Args:
@@ -323,6 +323,8 @@ class LyceumClient:
             structure_files: List of local paths to structure files (CIF/PDB)
                 referenced in the YAML.
             output_dir: Local directory to download results to.
+            s3_output_subdir: Subdirectory under output/boltzgen/ on S3
+                (e.g. "r2/s1_active_site"). Empty string = root.
             protocol: Design protocol.
             num_designs: Number of designs to generate.
             machine: Machine type.
@@ -337,12 +339,17 @@ class LyceumClient:
         for f in (structure_files or []):
             self.upload_file(f, f"input/boltzgen/{Path(f).name}")
 
+        # Build S3 output path
+        s3_output = "output/boltzgen"
+        if s3_output_subdir:
+            s3_output = f"output/boltzgen/{s3_output_subdir.strip('/')}"
+
         # Build command
         yaml_name = Path(yaml_path).name
         cmd = (
             f"bash /mnt/s3/scripts/boltzgen/run_boltzgen.sh"
             f" --input-yaml /root/boltzgen_work/{yaml_name}"
-            f" --output-dir /mnt/s3/output/boltzgen"
+            f" --output-dir /mnt/s3/{s3_output}"
             f" --protocol {protocol}"
             f" --num-designs {num_designs}"
             f" --cache /mnt/s3/models/boltzgen"
@@ -366,8 +373,9 @@ class LyceumClient:
         print("BoltzGen execution completed.")
 
         # Download results
+        s3_download = f"{s3_output}/final_ranked_designs/"
         print(f"Downloading results to {output_dir}...")
-        downloaded = self.download_prefix("output/boltzgen/final_ranked_designs/", output_dir)
+        downloaded = self.download_prefix(s3_download, output_dir)
         print(f"  downloaded {len(downloaded)} files")
         return True, downloaded
 

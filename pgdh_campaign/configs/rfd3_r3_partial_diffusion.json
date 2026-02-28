@@ -1,0 +1,42 @@
+{
+    "partial_diff_r2s2_0_t8": {
+        "dialect": 2,
+        "input": "/mnt/s3/input/rfdiffusion3/r3_templates/boltzgen_r2_s2_config_r2_s2_0.cif",
+        "contig": "A0-101,/0,B0-265",
+        "partial_t": 8.0,
+        "select_fixed_atoms": "B0-265",
+        "select_unfixed_sequence": "A0-101",
+        "infer_ori_strategy": "com",
+        "is_non_loopy": true
+    },
+    "partial_diff_r2s2_0_t12": {
+        "dialect": 2,
+        "input": "/mnt/s3/input/rfdiffusion3/r3_templates/boltzgen_r2_s2_config_r2_s2_0.cif",
+        "contig": "A0-101,/0,B0-265",
+        "partial_t": 12.0,
+        "select_fixed_atoms": "B0-265",
+        "select_unfixed_sequence": "A0-101",
+        "infer_ori_strategy": "com",
+        "is_non_loopy": true
+    },
+    "partial_diff_r2s2_8_t8": {
+        "dialect": 2,
+        "input": "/mnt/s3/input/rfdiffusion3/r3_templates/boltzgen_r2_s2_config_r2_s2_8.cif",
+        "contig": "A0-104,/0,B0-265",
+        "partial_t": 8.0,
+        "select_fixed_atoms": "B0-265",
+        "select_unfixed_sequence": "A0-104",
+        "infer_ori_strategy": "com",
+        "is_non_loopy": true
+    },
+    "partial_diff_r2s2_8_t12": {
+        "dialect": 2,
+        "input": "/mnt/s3/input/rfdiffusion3/r3_templates/boltzgen_r2_s2_config_r2_s2_8.cif",
+        "contig": "A0-104,/0,B0-265",
+        "partial_t": 12.0,
+        "select_fixed_atoms": "B0-265",
+        "select_unfixed_sequence": "A0-104",
+        "infer_ori_strategy": "com",
+        "is_non_loopy": true
+    }
+}

@@ -1,0 +1,41 @@
+{
+  "design_id": "rfd3_r2_s2_rfd3_pgdh_binder_pgdh_dimer_interface_0_model_1",
+  "tool": "rfdiffusion3",
+  "strategy": "dimer_interface",
+  "round": 2,
+  "status": "validated",
+  "evaluation_stage": "validated",
+  "created_at": "2026-02-28T15:35:18.362975+00:00",
+  "sequence": "AAAALAALAALLAAALALAATGTPAAEIAAGVLLSAALLLAALICDAAVGTAAAASDAATAASLLALTVATFIALGNATGAVANGDVATAAALAAAALALLAAIIAAAAAV",
+  "num_residues": 111,
+  "hotspots": "A161, A150, A206, A167, A172",
+  "source_files": {
+    "metadata_json": "output/rfdiffusion3/r2/rfd3_pgdh_binder_pgdh_dimer_interface_0_model_1.json",
+    "structure": "output/rfdiffusion3/r2/rfd3_pgdh_binder_pgdh_dimer_interface_0_model_1.cif.gz",
+    "refolded_structure": "output/refolding/rfd3_r2_s2_rfd3_pgdh_binder_pgdh_dimer_interface_0_model_1/refold_rfd3_r2_s2_rfd3_pgdh_binder_pgdh_dimer_interface_0_model_1.cif"
+  },
+  "design_metrics": {
+    "helix": 0.9369369369369369,
+    "sheet": 0.0,
+    "loop": 0.06306306306306306,
+    "radius_of_gyration": 14.396492260297892,
+    "max_ca_deviation": 0.2147510051727295,
+    "n_chainbreaks": 0,
+    "num_ss_elements": 4,
+    "alanine_content": 0.21220159151193635,
+    "glycine_content": 0.08222811671087533,
+    "source": "rfdiffusion3"
+  },
+  "validation": null,
+  "scoring": null,
+  "composite_score": null,
+  "refolding": {
+    "source": "boltzgen_folding",
+    "refolded_at": "2026-02-28T15:36:13.620417+00:00",
+    "boltzgen_rmsd": null,
+    "boltzgen_plddt": null,
+    "boltzgen_iptm": null,
+    "min_interaction_pae": null
+  },
+  "rank": 73
+}

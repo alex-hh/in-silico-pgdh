@@ -144,11 +144,10 @@ def _generate_refold_yaml(design_id: str, sequence: str, target_cif: str = "2GDZ
 def submit_refold_jobs(client: LyceumClient, designs: list[dict]) -> list[tuple[str, str]]:
     """Submit a single BoltzGen batch job to refold all designs needing refolding.
 
-    Uploads all refolding YAMLs, generates a batch script that processes each
-    sequentially, and submits one Docker job.
-
-    Passes --write_full_pae via --extra-args so PAE files are saved for
-    downstream ipSAE scoring.
+    NOTE: BoltzGen folding-only mode doesn't properly refold external designs —
+    it only outputs the target chain, not the binder. For RFD3 designs, use
+    Boltz-2 cross-validation (--slow) instead. This function is kept for future
+    use if BoltzGen adds proper external-design refolding support.
 
     Skips BoltzGen designs (they get free promotion via promote_boltzgen_refolding).
 
@@ -200,8 +199,8 @@ def submit_refold_jobs(client: LyceumClient, designs: list[dict]) -> list[tuple[
     batch_script = "\n".join(batch_lines)
     client.upload_bytes(batch_script.encode(), "input/boltzgen/batch_refold.sh")
 
-    # ~30s per design for folding, plus ~120s setup overhead
-    timeout = 120 + len(candidates) * 40
+    # ~60s per design for inverse_folding+folding+analysis, plus ~120s setup
+    timeout = 120 + len(candidates) * 70
     cmd = "bash /mnt/s3/input/boltzgen/batch_refold.sh"
 
     try:
@@ -318,20 +317,116 @@ def submit_boltz2_validation_jobs(client: LyceumClient, designs: list[dict]) -> 
 # SCORE — submit ipSAE jobs (--score)
 # ══════════════════════════════════════════════════════════════════════════
 
-def submit_scoring_jobs(client: LyceumClient, designs: list[dict]) -> int:
-    """Submit ipSAE scoring for validated designs without scores."""
+def _find_boltz2_files(client: LyceumClient, design_id: str) -> tuple[str | None, str | None]:
+    """Find the best-model PAE (.npz) and CIF files for a design in output/boltz2/.
+
+    Boltz-2 outputs are at:
+      output/boltz2/{design_id}/boltz_results_validate_{design_id}/predictions/validate_{design_id}/
+    with files like pae_validate_{design_id}_model_0.npz and validate_{design_id}_model_0.cif.
+
+    Returns (pae_key, cif_key) for model_0, or (None, None) if not found.
+    """
+    prefix = f"output/boltz2/{design_id}/"
+    files = client.list_files(prefix)
+    if not files:
+        return None, None
+
+    pae_files = [f for f in files if "/pae_" in f and f.endswith(".npz")]
+    cif_files = [f for f in files if f.endswith(".cif")]
+
+    # Pick model_0 (default best)
+    pae_key = next((f for f in pae_files if "model_0" in f), pae_files[0] if pae_files else None)
+    cif_key = next((f for f in cif_files if "model_0" in f), cif_files[0] if cif_files else None)
+
+    return pae_key, cif_key
+
+
+def submit_scoring_jobs(client: LyceumClient, designs: list[dict]) -> list[tuple[str, str]]:
+    """Submit ipSAE scoring for validated designs without scores.
+
+    Finds PAE and CIF files from Boltz-2 validation output, uploads the ipSAE
+    script to S3, and submits a CPU Docker batch job.
+
+    Returns:
+        List of (batch_id, execution_id) pairs for tracking.
+    """
     candidates = [
         d for d in designs
         if d.get("validation") and not d.get("scoring")
     ]
     if not candidates:
         print("  No designs need scoring (all scored or not yet validated)")
-        return 0
+        return []
 
     print(f"  {len(candidates)} designs to score")
-    print(f"  NOTE: ipSAE job submission not yet implemented in this script.")
-    print(f"  Use the /pgdh_ipsae skill to submit manually.")
-    return 0
+
+    # Upload ipSAE script and requirements to S3
+    ipsae_script = Path(__file__).resolve().parent.parent / "projects" / "biolyceum" / "src" / "lyceum_ipsae.py"
+    ipsae_reqs = Path(__file__).resolve().parent.parent / "projects" / "biolyceum" / "src" / "requirements" / "ipsae.txt"
+    if ipsae_script.exists():
+        client.upload_bytes(ipsae_script.read_bytes(), "scripts/ipsae/lyceum_ipsae.py")
+    else:
+        print(f"  ERROR: {ipsae_script} not found")
+        return []
+    if ipsae_reqs.exists():
+        client.upload_bytes(ipsae_reqs.read_bytes(), "scripts/ipsae/requirements.txt")
+
+    # Find input files for each candidate
+    to_score = []
+    for d in candidates:
+        did = d["design_id"]
+        pae_key, cif_key = _find_boltz2_files(client, did)
+        if pae_key and cif_key:
+            to_score.append((did, pae_key, cif_key))
+        else:
+            print(f"    Skip {did}: missing PAE or CIF in output/boltz2/")
+
+    if not to_score:
+        print("  No designs have Boltz-2 PAE+CIF files for scoring")
+        return []
+
+    print(f"  {len(to_score)} designs with PAE+CIF ready for ipSAE scoring")
+
+    # Build batch script
+    batch_lines = [
+        "#!/bin/bash",
+        "set -e",
+        "",
+        "pip install numpy -q",
+        "",
+    ]
+    for did, pae_key, cif_key in to_score:
+        batch_lines.append(f'echo "=== Scoring {did} ==="')
+        batch_lines.append(
+            f"python /mnt/s3/scripts/ipsae/lyceum_ipsae.py"
+            f" --pae-file /mnt/s3/{pae_key}"
+            f" --structure-file /mnt/s3/{cif_key}"
+            f" --pae-cutoff 10 --dist-cutoff 10"
+            f" --output-dir /mnt/s3/output/ipsae/{did}/"
+        )
+        batch_lines.append("")
+    batch_lines.append('echo "=== Batch ipSAE scoring complete ==="')
+
+    script_key = "input/ipsae/batch_score.sh"
+    client.upload_bytes("\n".join(batch_lines).encode(), script_key)
+
+    # Submit CPU Docker job (~2s per design + pip install overhead)
+    timeout = min(600, 120 + len(to_score) * 10)
+    submitted = []
+    try:
+        exec_id, _ = client.submit_docker_job(
+            docker_image="python:3.12-slim",
+            command=f"bash /mnt/s3/{script_key}",
+            execution_type="cpu",
+            timeout=timeout,
+        )
+        submitted.append(("batch_ipsae", exec_id))
+        print(f"  Submitted ipSAE batch scoring job: {exec_id}")
+        print(f"  {len(to_score)} designs, CPU-only, timeout={timeout}s")
+    except Exception as e:
+        print(f"  Failed to submit ipSAE job: {e}")
+
+    return submitted
 
 
 # ══════════════════════════════════════════════════════════════════════════

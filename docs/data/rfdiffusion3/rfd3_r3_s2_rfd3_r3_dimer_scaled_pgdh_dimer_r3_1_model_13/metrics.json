@@ -1,0 +1,33 @@
+{
+  "design_id": "rfd3_r3_s2_rfd3_r3_dimer_scaled_pgdh_dimer_r3_1_model_13",
+  "tool": "rfdiffusion3",
+  "strategy": "dimer_interface",
+  "round": 3,
+  "status": "designed",
+  "evaluation_stage": "collected",
+  "created_at": "2026-02-28T15:35:30.939571+00:00",
+  "sequence": "AATAAAIAANDFATISLLTATAVGAAAVAFALAGSPDAAVATAILGAVAIATILSLIANDTLSAATTALLLAVVLAGLAALAALAAGNLDAAVAAAATVVALLASLL",
+  "num_residues": 107,
+  "hotspots": "A161, A150, A206, A167, A172",
+  "source_files": {
+    "metadata_json": "output/rfdiffusion3/r3/rfd3_r3_dimer_scaled_pgdh_dimer_r3_1_model_13.json",
+    "structure": "output/rfdiffusion3/r3/rfd3_r3_dimer_scaled_pgdh_dimer_r3_1_model_13.cif.gz"
+  },
+  "design_metrics": {
+    "helix": 0.9065420560747663,
+    "sheet": 0.0,
+    "loop": 0.09345794392523364,
+    "radius_of_gyration": 13.274161290292184,
+    "max_ca_deviation": 0.2147510051727295,
+    "n_chainbreaks": 0,
+    "num_ss_elements": 5,
+    "alanine_content": 0.18498659517426275,
+    "glycine_content": 0.08042895442359249,
+    "source": "rfdiffusion3"
+  },
+  "validation": null,
+  "scoring": null,
+  "composite_score": null,
+  "refolding": null,
+  "rank": 97
+}

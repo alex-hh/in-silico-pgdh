@@ -7,7 +7,7 @@ entities:
   # 15-PGDH target (PDB 2GDZ, chain A)
   # No binding_types specified — let BoltzGen auto-detect binding site
   - file:
-      path: ../structures/2GDZ.cif
+      path: 2GDZ.cif
       include:
         - chain:
             id: A

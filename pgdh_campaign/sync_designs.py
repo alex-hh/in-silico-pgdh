@@ -443,8 +443,17 @@ def _merge_designs(new: list[dict], existing: dict[str, dict]) -> list[dict]:
 # ══════════════════════════════════════════════════════════════════════════
 
 def attach_ipsae_scores(client: LyceumClient, designs: list[dict]) -> int:
-    """Scan output/ipsae/ for existing scoring results and attach them."""
-    score_files = [f for f in client.list_files("output/ipsae/") if f.endswith(".txt")]
+    """Scan output/ipsae/ for existing scoring results and attach them.
+
+    ipSAE output files are CSV with header:
+      Chn1,Chn2,PAE,Dist,Type,ipSAE,ipSAE_d0chn,ipSAE_d0dom,ipTM_af,
+      ipTM_d0chn,pDockQ,pDockQ2,LIS,...,Model
+
+    We extract ipSAE (col 5), pDockQ (col 10), pDockQ2 (col 11), LIS (col 12)
+    from the first 'asym' row (A->B direction). The design_id is matched from
+    the file path (output/ipsae/{design_id}/...).
+    """
+    score_files = [f for f in client.list_files("output/ipsae/") if f.endswith(".txt") and "_byres" not in f]
     if not score_files:
         return 0
 
@@ -452,32 +461,51 @@ def attach_ipsae_scores(client: LyceumClient, designs: list[dict]) -> int:
     for sf in score_files:
         try:
             content = client.download_bytes(sf).decode()
+
+            # Extract design_id from path: output/ipsae/{design_id}/{stem}_10_10.txt
+            path_parts = sf.replace("output/ipsae/", "").split("/")
+            file_design_id = path_parts[0] if len(path_parts) > 1 else None
+
             for line in content.strip().split("\n"):
-                if line.startswith("#") or not line.strip():
+                line = line.strip()
+                if not line or line.startswith("Chn1") or line.startswith("#"):
+                    continue  # Skip header and comments
+
+                parts = line.split(",")
+                if len(parts) < 13:
                     continue
-                parts = line.split("\t")
-                if len(parts) < 2:
+
+                # Only take the first asymmetric row (A,B,... type=asym)
+                row_type = parts[4].strip() if len(parts) > 4 else ""
+                if row_type != "asym":
                     continue
-                name = parts[0]
+
                 scores = {}
-                if len(parts) > 1:
-                    scores["ipsae"] = float(parts[1])
-                if len(parts) > 2:
-                    scores["pdockq"] = float(parts[2])
-                if len(parts) > 3:
-                    scores["pdockq2"] = float(parts[3])
-                if len(parts) > 4:
-                    scores["lis"] = float(parts[4])
+                try:
+                    scores["ipsae"] = float(parts[5])
+                    scores["pdockq"] = float(parts[10])
+                    scores["pdockq2"] = float(parts[11])
+                    scores["lis"] = float(parts[12])
+                except (ValueError, IndexError):
+                    continue
+
+                # Match to a design by design_id from path or Model column
+                model_name = parts[-1].strip() if parts else ""
+                match_keys = [k for k in [file_design_id, model_name] if k]
 
                 for d in designs:
                     if d.get("scoring"):
                         continue
-                    if d["design_id"] in name or name in d["design_id"]:
+                    did = d["design_id"]
+                    if any(did in mk or mk in did for mk in match_keys):
                         d["scoring"] = {"source": "ipsae", "scored_at": _now(), **scores}
                         d["status"] = "scored" if d["status"] == "designed" else d["status"]
                         d["evaluation_stage"] = "scored"
                         updated += 1
                         break
+
+                break  # Only process first asym row per file
+
         except Exception as e:
             print(f"    Warning: could not parse {sf}: {e}")
 
@@ -485,40 +513,90 @@ def attach_ipsae_scores(client: LyceumClient, designs: list[dict]) -> int:
 
 
 def attach_boltz2_validation(client: LyceumClient, designs: list[dict]) -> int:
-    """Scan output/boltz2/ for existing validation results and attach them."""
-    json_files = [f for f in client.list_files("output/boltz2/") if f.endswith(".json")]
+    """Scan output/boltz2/ for existing validation results and attach them.
+
+    Boltz-2 produces multiple models per design. We collect all confidence
+    JSONs, group by design, and pick the best model (highest ipTM).
+    """
+    try:
+        all_boltz2 = client.list_files("output/boltz2/")
+    except Exception as e:
+        print(f"    Could not list output/boltz2/: {e}")
+        return 0
+    json_files = [f for f in all_boltz2
+                  if f.endswith(".json") and "confidence_" in f.rsplit("/", 1)[-1]]
+    print(f"    Found {len(json_files)} Boltz-2 confidence JSONs (from {len(all_boltz2)} total files)")
     if not json_files:
         return 0
 
-    updated = 0
+    def _parse_confidence(data):
+        cs = data.get("confidence_score")
+        if isinstance(cs, dict):
+            iptm = cs.get("iptm") or data.get("iptm")
+            ptm = cs.get("ptm") or data.get("ptm")
+            plddt = cs.get("plddt") or data.get("complex_plddt")
+        else:
+            iptm = data.get("iptm") or data.get("protein_iptm")
+            ptm = data.get("ptm")
+            plddt = data.get("complex_plddt")
+        return iptm, ptm, plddt
+
+    # Collect best model per design: design_id -> (iptm, ptm, plddt)
+    best_by_design = {}  # design_id -> best (iptm, ptm, plddt)
+    n_parsed, n_failed, n_matched = 0, 0, 0
     for jf in json_files:
         try:
             data = json.loads(client.download_bytes(jf).decode())
-            # Boltz-2 output JSON contains confidence metrics
-            iptm = data.get("confidence_score", {}).get("iptm") or data.get("iptm")
-            ptm = data.get("confidence_score", {}).get("ptm") or data.get("ptm")
-            plddt = data.get("confidence_score", {}).get("plddt") or data.get("plddt")
-
+            iptm, ptm, plddt = _parse_confidence(data)
+            n_parsed += 1
+            if iptm is None:
+                continue
+            # Match to a design
             stem = jf.rsplit("/", 1)[-1].rsplit(".", 1)[0]
             for d in designs:
-                if d.get("validation"):
-                    continue
-                if d["design_id"] in stem or stem in d["design_id"]:
-                    d["validation"] = {
-                        "source": "boltz2",
-                        "validated_at": _now(),
-                        "iptm": iptm,
-                        "ptm": ptm,
-                        "plddt": plddt,
-                    }
-                    if d["status"] == "designed":
-                        d["status"] = "validated"
-                    d["evaluation_stage"] = "validated"
-                    updated += 1
+                did = d["design_id"]
+                if did in stem or stem in did:
+                    prev = best_by_design.get(did)
+                    if prev is None or (iptm or 0) > (prev[0] or 0):
+                        best_by_design[did] = (iptm, ptm, plddt)
+                    n_matched += 1
                     break
         except Exception as e:
-            print(f"    Warning: could not parse {jf}: {e}")
+            n_failed += 1
+            if n_failed <= 3:
+                print(f"    Warning: could not parse {jf}: {e}")
+    if n_failed > 3:
+        print(f"    ... and {n_failed - 3} more failures")
+    print(f"    Parsed {n_parsed}, failed {n_failed}, matched {n_matched} to {len(best_by_design)} designs")
 
+    # Attach best results
+    updated = 0
+    n_has_val, n_not_in = 0, 0
+    for d in designs:
+        did = d["design_id"]
+        val = d.get("validation")
+        # Treat validation with all-None metrics as missing (from broken earlier runs)
+        has_real_val = val and any(val.get(k) is not None for k in ("iptm", "ptm", "plddt"))
+        if has_real_val:
+            n_has_val += 1
+            continue
+        if did not in best_by_design:
+            n_not_in += 1
+            continue
+        iptm, ptm, plddt = best_by_design[did]
+        d["validation"] = {
+            "source": "boltz2",
+            "validated_at": _now(),
+            "iptm": iptm,
+            "ptm": ptm,
+            "plddt": plddt,
+        }
+        if d["status"] == "designed":
+            d["status"] = "validated"
+        d["evaluation_stage"] = "validated"
+        updated += 1
+
+    print(f"    Attach: {updated} new, {n_has_val} already had validation, {n_not_in} not in boltz2 results")
     return updated
 
 
@@ -631,6 +709,112 @@ def attach_pyrosetta_scores(client: LyceumClient, designs: list[dict]) -> int:
     return updated
 
 
+def _parse_ca_coords(cif_text: str, chain_id: str | None = None) -> list[tuple[float, float, float]]:
+    """Extract CA atom coordinates from CIF text.
+
+    Dynamically parses _atom_site column headers to handle different CIF formats
+    (BoltzGen vs RFD3 vs standard PDB CIF have different column orderings).
+
+    If chain_id is given, only extract from that chain. Otherwise extract
+    from the first (binder) chain — the chain with the fewest residues.
+    """
+    lines = cif_text.splitlines()
+
+    # Parse _atom_site column definitions
+    col_names = []
+    for line in lines:
+        stripped = line.strip()
+        if stripped.startswith("_atom_site."):
+            col_names.append(stripped)
+
+    # Map column names to indices
+    col_map = {name: i for i, name in enumerate(col_names)}
+    atom_id_col = col_map.get("_atom_site.label_atom_id")
+    chain_col = col_map.get("_atom_site.label_asym_id")
+    x_col = col_map.get("_atom_site.Cartn_x")
+    y_col = col_map.get("_atom_site.Cartn_y")
+    z_col = col_map.get("_atom_site.Cartn_z")
+
+    if any(c is None for c in (atom_id_col, chain_col, x_col, y_col, z_col)):
+        return []
+
+    coords_by_chain: dict[str, list[tuple[float, float, float]]] = {}
+    for line in lines:
+        if not line.startswith("ATOM"):
+            continue
+        parts = line.split()
+        if len(parts) <= max(atom_id_col, chain_col, x_col, y_col, z_col):
+            continue
+        if parts[atom_id_col] != "CA":
+            continue
+        chain = parts[chain_col]
+        try:
+            x, y, z = float(parts[x_col]), float(parts[y_col]), float(parts[z_col])
+        except (ValueError, IndexError):
+            continue
+        coords_by_chain.setdefault(chain, []).append((x, y, z))
+
+    if chain_id and chain_id in coords_by_chain:
+        return coords_by_chain[chain_id]
+    if not coords_by_chain:
+        return []
+    # Return the shortest chain (likely the binder)
+    return min(coords_by_chain.values(), key=len)
+
+
+def _compute_ca_rmsd(designed_cif: str, refolded_cif: str, tool: str | None = None) -> float | None:
+    """Compute backbone CA-RMSD between designed and refolded CIFs.
+
+    For RFD3 designs, the binder is chain A in the designed CIF.
+    For BoltzGen, the binder is the shortest chain.
+    In the refolded CIF, the binder may be chain B (per refolding YAML).
+
+    Note: BoltzGen's --steps folding mode may only output the target chain,
+    missing the binder. In that case returns None.
+    """
+    import numpy as np
+
+    # For RFD3, binder = chain A in designed CIF
+    binder_chain_designed = "A" if tool and "rfd" in tool.lower() else None
+    designed_ca = _parse_ca_coords(designed_cif, binder_chain_designed)
+    if not designed_ca:
+        return None
+
+    binder_len = len(designed_ca)
+
+    # Try multiple strategies to find binder in refolded CIF
+    # 1. Same chain as designed
+    refolded_ca = _parse_ca_coords(refolded_cif, binder_chain_designed)
+    if len(refolded_ca) == binder_len:
+        pass  # Found matching chain
+    else:
+        # 2. Try chain B (refolding YAML puts binder as B)
+        refolded_ca = _parse_ca_coords(refolded_cif, "B")
+        if len(refolded_ca) != binder_len:
+            # 3. Try shortest chain
+            refolded_ca = _parse_ca_coords(refolded_cif)
+            if len(refolded_ca) != binder_len:
+                return None  # Binder not found in refolded CIF
+
+    p = np.array(designed_ca)
+    q = np.array(refolded_ca)
+
+    # Center both
+    p -= p.mean(axis=0)
+    q -= q.mean(axis=0)
+
+    # Kabsch algorithm for optimal rotation
+    H = p.T @ q
+    U, S, Vt = np.linalg.svd(H)
+    d = np.sign(np.linalg.det(Vt.T @ U.T))
+    D = np.diag([1, 1, d])
+    R = Vt.T @ D @ U.T
+
+    q_aligned = (R @ q.T).T
+    rmsd = float(np.sqrt(np.mean(np.sum((p - q_aligned) ** 2, axis=1))))
+    return round(rmsd, 5)
+
+
 def attach_refolding_results(client: LyceumClient, designs: list[dict], force: bool = False) -> int:
     """Scan output/refolding/ on S3 for completed BoltzGen folding results and attach them.
 
@@ -660,8 +844,12 @@ def attach_refolding_results(client: LyceumClient, designs: list[dict], force: b
 
     updated = 0
     for d in designs:
-        if d.get("refolding"):
-            continue  # Already has refolding data
+        refold = d.get("refolding")
+        # Skip if refolding has real metrics (non-null RMSD or pLDDT)
+        if refold and not force:
+            has_real = any(refold.get(k) is not None for k in ("boltzgen_rmsd", "boltzgen_plddt", "boltzgen_iptm"))
+            if has_real:
+                continue
 
         did = d["design_id"]
         if did not in by_design:
@@ -706,6 +894,31 @@ def attach_refolding_results(client: LyceumClient, designs: list[dict], force: b
                     break  # Only need first row for this design
             except Exception as e:
                 print(f"    Warning: could not parse refolding CSV for {did}: {e}")
+
+        # If no RMSD from CSV, compute CA-RMSD from designed vs refolded CIFs
+        if rmsd is None:
+            import gzip
+            designed_cif_key = (d.get("source_files") or {}).get("designed_structure")
+            if not designed_cif_key:
+                tool = d.get("tool", "unknown")
+                # Try .cif.gz first (RFD3), then .cif (BoltzGen)
+                for ext in (".cif.gz", ".cif"):
+                    designed_cif_key = f"designs/{tool}/{did}/designed{ext}"
+                    try:
+                        client.list_files(designed_cif_key)
+                        break
+                    except Exception:
+                        continue
+            try:
+                designed_raw = client.download_bytes(designed_cif_key)
+                if designed_cif_key.endswith(".gz"):
+                    designed_data = gzip.decompress(designed_raw).decode(errors="replace")
+                else:
+                    designed_data = designed_raw.decode(errors="replace")
+                refolded_data = client.download_bytes(refolded_cif).decode(errors="replace")
+                rmsd = _compute_ca_rmsd(designed_data, refolded_data, d.get("tool"))
+            except Exception as e:
+                print(f"    Warning: could not compute RMSD for {did}: {e}")
 
         # Also check for JSON confidence files (BoltzGen sometimes writes these)
         json_files = [f for f in files if f.endswith(".json") and "confidence" in f.lower()]

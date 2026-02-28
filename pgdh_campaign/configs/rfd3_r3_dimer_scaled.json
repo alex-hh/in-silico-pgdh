@@ -1,0 +1,16 @@
+{
+    "pgdh_dimer_r3": {
+        "dialect": 2,
+        "infer_ori_strategy": "hotspots",
+        "input": "/mnt/s3/input/rfdiffusion3/2GDZ.pdb",
+        "contig": "80-120,/0,A0-265",
+        "select_hotspots": {
+            "A161": "CZ",
+            "A150": "CG1",
+            "A206": "OH",
+            "A167": "CD2",
+            "A172": "SD"
+        },
+        "is_non_loopy": true
+    }
+}

@@ -5,10 +5,10 @@
   "round": 1,
   "status": "validated",
   "evaluation_stage": "collected",
-  "created_at": "2026-02-28T10:09:28.051303+00:00",
+  "created_at": "2026-02-28T15:33:28.715244+00:00",
   "sequence": "ATVKIVCKGPNGEVEKVVEGEGDSFDLESARKLIEELLREAIKGLEEAIEKTKATEIHVTLPEPVDPTRPAVSAAASAVVGYARSLAQQAARRYGIPSVKVTITYVGPDGRTGTREEELGDKSIGALT",
   "num_residues": 128,
-  "rank": 8,
+  "rank": 20,
   "source_files": {
     "metrics_csv": "output/boltzgen/r1/s3_surface/final_ranked_designs/final_designs_metrics_30.csv",
     "structure": "output/boltzgen/r1/s3_surface/final_ranked_designs/final_30_designs/before_refolding/rank03_config_4.cif"
@@ -30,9 +30,15 @@
     "quality_score": 0.7777777777777778,
     "source": "boltzgen"
   },
-  "validation": null,
+  "validation": {
+    "source": "boltz2",
+    "validated_at": "2026-02-28T13:18:43.666089+00:00",
+    "iptm": 0.9562031030654907,
+    "ptm": 0.9595569372177124,
+    "plddt": 0.9405336976051331
+  },
   "scoring": null,
-  "composite_score": 0.7315,
+  "composite_score": 0.7067,
   "refolding": {
     "source": "boltzgen_self_consistency",
     "boltzgen_rmsd": 1.44296,
