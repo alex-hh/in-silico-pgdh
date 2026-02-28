@@ -417,7 +417,7 @@ def design_card_html(d, idx):
     if seq:
         card += f'<div class="section-label">Sequence ({d.get("length", len(seq))} AA)</div><div class="sequence-box">{seq}</div>'
     else:
-        card += '<div class="section-label">Backbone Only</div><div class="sequence-box" style="color:#999">Use ProteinMPNN for inverse folding.</div>'
+        card += '<div class="section-label">Backbone Only</div><div class="sequence-box" style="color:#8b949e">Use ProteinMPNN for inverse folding.</div>'
 
     card += "</div></div></div>\n"
     return card
@@ -557,104 +557,105 @@ def build_html(skip_sync=False):
 <script src="https://3Dmol.org/build/3Dmol-min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <style>
+:root{{--bg:#0d1117;--surface:#161b22;--surface2:#21262d;--border:#30363d;--text:#e6edf3;--text2:#8b949e;--accent:#58a6ff;--green:#3fb950;--yellow:#d29922;--red:#f85149;--pink:#e94560;--blue:#4361ee}}
 *{{box-sizing:border-box;margin:0;padding:0}}
-body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f5;color:#333}}
-.header{{background:#1a1a2e;color:white;padding:24px 32px}}
+body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text)}}
+.header{{background:var(--surface);border-bottom:1px solid var(--border);padding:24px 32px}}
 .header h1{{font-size:24px;font-weight:600}}
-.header p{{color:#aaa;margin-top:4px;font-size:14px}}
-.header a{{color:#4361ee;text-decoration:none}}
+.header p{{color:var(--text2);margin-top:4px;font-size:14px}}
+.header a{{color:var(--accent);text-decoration:none}}
 .container{{max-width:1400px;margin:0 auto;padding:24px}}
 .summary{{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:16px;margin-bottom:24px}}
-.stat{{background:white;border-radius:8px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,0.1)}}
-.stat .value{{font-size:28px;font-weight:700;color:#1a1a2e}}
-.stat .label{{font-size:13px;color:#888;margin-top:4px}}
-.tabs{{display:flex;gap:0;margin-bottom:24px;border-bottom:2px solid #ddd}}
-.tab{{padding:12px 24px;cursor:pointer;font-size:14px;font-weight:600;color:#666;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all 0.2s}}
-.tab:hover{{color:#333}}
-.tab.active{{color:#1a1a2e;border-bottom-color:#e94560}}
-.tab .count{{background:#eee;color:#666;padding:1px 8px;border-radius:10px;font-size:12px;margin-left:6px}}
-.tab.active .count{{background:#e94560;color:white}}
+.stat{{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px}}
+.stat .value{{font-size:28px;font-weight:700;color:var(--accent)}}
+.stat .label{{font-size:13px;color:var(--text2);margin-top:4px}}
+.tabs{{display:flex;gap:0;margin-bottom:24px;border-bottom:2px solid var(--border)}}
+.tab{{padding:12px 24px;cursor:pointer;font-size:14px;font-weight:600;color:var(--text2);border-bottom:3px solid transparent;margin-bottom:-2px;transition:all 0.2s}}
+.tab:hover{{color:var(--text)}}
+.tab.active{{color:var(--text);border-bottom-color:var(--pink)}}
+.tab .count{{background:var(--surface2);color:var(--text2);padding:1px 8px;border-radius:10px;font-size:12px;margin-left:6px}}
+.tab.active .count{{background:var(--pink);color:white}}
 .tab-panel{{display:none}}
 .tab-panel.active{{display:block}}
-.design-card{{background:white;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:24px;overflow:hidden}}
-.card-header{{background:#16213e;color:white;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}}
+.design-card{{background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:24px;overflow:hidden}}
+.card-header{{background:var(--surface2);color:var(--text);padding:16px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}}
 .card-header h2{{font-size:16px;font-weight:600}}
-.rank-badge{{background:#e94560;color:white;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600}}
-.score-badge{{background:#4361ee;color:white;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600}}
+.rank-badge{{background:var(--pink);color:white;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600}}
+.score-badge{{background:var(--blue);color:white;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600}}
 .score-partial{{background:#e67e22;border:2px dashed rgba(255,255,255,0.5)}}
 .score-help{{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:rgba(255,255,255,0.3);font-size:10px;font-weight:700;cursor:pointer;margin-left:4px;vertical-align:middle}}
 .score-help:hover{{background:rgba(255,255,255,0.5)}}
-#score-tooltip{{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#1a1a2e;color:#e0e0e0;padding:24px;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.4);z-index:10000;max-width:480px;font-size:13px;line-height:1.6}}
+#score-tooltip{{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--surface);color:var(--text);padding:24px;border-radius:12px;border:1px solid var(--border);box-shadow:0 8px 32px rgba(0,0,0,0.6);z-index:10000;max-width:480px;font-size:13px;line-height:1.6}}
 #score-tooltip.visible{{display:block}}
-#score-tooltip h3{{color:white;margin:0 0 12px 0;font-size:15px}}
+#score-tooltip h3{{color:var(--text);margin:0 0 12px 0;font-size:15px}}
 #score-tooltip table{{width:100%;border-collapse:collapse;margin:8px 0}}
-#score-tooltip th,#score-tooltip td{{text-align:left;padding:4px 8px;border-bottom:1px solid #333}}
-#score-tooltip th{{color:#a0a0a0;font-weight:400;font-size:12px}}
-#score-tooltip td{{color:white}}
-#score-tooltip .formula{{color:#4361ee;font-weight:600}}
-#score-tooltip .note{{color:#a0a0a0;font-size:11px;margin-top:8px}}
-#score-tooltip .close-btn{{position:absolute;top:8px;right:12px;color:#888;cursor:pointer;font-size:18px;background:none;border:none}}
-#score-tooltip .close-btn:hover{{color:white}}
+#score-tooltip th,#score-tooltip td{{text-align:left;padding:4px 8px;border-bottom:1px solid var(--border)}}
+#score-tooltip th{{color:var(--text2);font-weight:400;font-size:12px}}
+#score-tooltip td{{color:var(--text)}}
+#score-tooltip .formula{{color:var(--accent);font-weight:600}}
+#score-tooltip .note{{color:var(--text2);font-size:11px;margin-top:8px}}
+#score-tooltip .close-btn{{position:absolute;top:8px;right:12px;color:var(--text2);cursor:pointer;font-size:18px;background:none;border:none}}
+#score-tooltip .close-btn:hover{{color:var(--text)}}
 .tool-badge{{color:white;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;margin-left:4px}}
 .card-body{{display:grid;grid-template-columns:1fr 1fr;gap:0}}
-.viewer-container{{height:500px;position:relative;border-right:1px solid #eee}}
+.viewer-container{{height:500px;position:relative;border-right:1px solid var(--border)}}
 .viewer-controls{{position:absolute;bottom:12px;left:12px;z-index:10;display:flex;gap:6px}}
-.viewer-controls button{{background:rgba(255,255,255,0.9);border:1px solid #ddd;border-radius:6px;padding:6px 12px;font-size:12px;cursor:pointer}}
-.viewer-controls button:hover{{background:#e94560;color:white;border-color:#e94560}}
-.viewer-controls button.active{{background:#e94560;color:white;border-color:#e94560}}
+.viewer-controls button{{background:rgba(22,27,34,0.9);border:1px solid var(--border);border-radius:6px;padding:6px 12px;font-size:12px;cursor:pointer;color:var(--text2)}}
+.viewer-controls button:hover{{background:var(--pink);color:white;border-color:var(--pink)}}
+.viewer-controls button.active{{background:var(--pink);color:white;border-color:var(--pink)}}
 .metrics-panel{{padding:20px;overflow-y:auto;max-height:500px}}
-.metric-row{{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f0f0f0}}
-.metric-label{{color:#666;font-size:13px}}
+.metric-row{{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border)}}
+.metric-label{{color:var(--text2);font-size:13px}}
 .metric-value{{font-weight:600;font-size:13px}}
-.metric-value.good{{color:#27ae60}}
-.metric-value.warn{{color:#f39c12}}
-.metric-value.bad{{color:#e74c3c}}
-.sequence-box{{background:#f8f9fa;border:1px solid #e9ecef;border-radius:6px;padding:12px;margin-top:12px;font-family:'Courier New',monospace;font-size:12px;word-break:break-all;line-height:1.6;max-height:120px;overflow-y:auto}}
-.section-label{{font-size:14px;font-weight:600;color:#1a1a2e;margin:14px 0 6px}}
+.metric-value.good{{color:var(--green)}}
+.metric-value.warn{{color:var(--yellow)}}
+.metric-value.bad{{color:var(--red)}}
+.sequence-box{{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:12px;margin-top:12px;font-family:'Courier New',monospace;font-size:12px;word-break:break-all;line-height:1.6;max-height:120px;overflow-y:auto;color:var(--text)}}
+.section-label{{font-size:14px;font-weight:600;color:var(--text);margin:14px 0 6px}}
 .ss-bar{{display:flex;height:18px;border-radius:4px;overflow:hidden;margin-top:4px}}
-.ss-bar .helix{{background:#e94560}}.ss-bar .sheet{{background:#4361ee}}.ss-bar .loop{{background:#ddd}}
-.legend{{display:flex;gap:16px;margin-top:6px;font-size:12px;color:#888}}
+.ss-bar .helix{{background:var(--pink)}}.ss-bar .sheet{{background:var(--blue)}}.ss-bar .loop{{background:var(--surface2)}}
+.legend{{display:flex;gap:16px;margin-top:6px;font-size:12px;color:var(--text2)}}
 .legend span::before{{content:'';display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:middle}}
-.legend .h::before{{background:#e94560}}.legend .s::before{{background:#4361ee}}.legend .l::before{{background:#ddd}}
-.seq-legend{{position:absolute;top:12px;left:12px;z-index:10;background:rgba(255,255,255,0.92);border-radius:6px;padding:8px 12px;font-size:11px;display:none;box-shadow:0 1px 4px rgba(0,0,0,0.15)}}
+.legend .h::before{{background:var(--pink)}}.legend .s::before{{background:var(--blue)}}.legend .l::before{{background:var(--surface2)}}
+.seq-legend{{position:absolute;top:12px;left:12px;z-index:10;background:rgba(22,27,34,0.95);border:1px solid var(--border);border-radius:6px;padding:8px 12px;font-size:11px;display:none;box-shadow:0 1px 4px rgba(0,0,0,0.4)}}
 .seq-legend.visible{{display:block}}
 .seq-legend-item{{display:inline-block;margin-right:10px}}
 .seq-legend-dot{{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:3px;vertical-align:middle}}
-.empty{{text-align:center;padding:48px;color:#999;font-size:16px}}
+.empty{{text-align:center;padding:48px;color:var(--text2);font-size:16px}}
 .nav-links{{margin-top:8px;font-size:13px}}
-.nav-links a{{color:#4361ee;margin-right:16px}}
+.nav-links a{{color:var(--accent);margin-right:16px}}
 /* Table view */
 .table-wrap{{overflow-x:auto;margin-top:8px}}
-.design-table{{width:100%;border-collapse:collapse;font-size:13px;background:white;border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.1)}}
-.design-table th{{background:#16213e;color:white;padding:10px 12px;text-align:left;font-weight:600;cursor:pointer;white-space:nowrap;user-select:none;position:sticky;top:0}}
-.design-table th:hover{{background:#1a2744}}
+.design-table{{width:100%;border-collapse:collapse;font-size:13px;background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden}}
+.design-table th{{background:var(--surface2);color:var(--text);padding:10px 12px;text-align:left;font-weight:600;cursor:pointer;white-space:nowrap;user-select:none;position:sticky;top:0;border-bottom:1px solid var(--border)}}
+.design-table th:hover{{background:#2d333b}}
 .design-table th .sort-arrow{{margin-left:4px;font-size:10px;opacity:0.5}}
 .design-table th.sorted .sort-arrow{{opacity:1}}
-.design-table td{{padding:8px 12px;border-bottom:1px solid #f0f0f0;white-space:nowrap}}
-.design-table tr:hover td{{background:#f8f9ff}}
-.design-table td.good{{color:#27ae60;font-weight:600}}
-.design-table td.warn{{color:#f39c12;font-weight:600}}
-.design-table td.bad{{color:#e74c3c;font-weight:600}}
-.design-table td.partial{{background:#fef3e2;border-left:3px solid #e67e22}}
+.design-table td{{padding:8px 12px;border-bottom:1px solid var(--border);white-space:nowrap}}
+.design-table tr:hover td{{background:rgba(88,166,255,0.06)}}
+.design-table td.good{{color:var(--green);font-weight:600}}
+.design-table td.warn{{color:var(--yellow);font-weight:600}}
+.design-table td.bad{{color:var(--red);font-weight:600}}
+.design-table td.partial{{background:rgba(219,109,40,0.1);border-left:3px solid #e67e22}}
 .table-filter{{margin-bottom:12px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}}
-.table-filter input{{padding:8px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px;width:240px}}
-.table-filter select{{padding:8px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px}}
-.strat-card{{background:white;border-radius:8px;padding:16px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,0.06)}}
-.strat-toggle{{background:rgba(255,255,255,0.9);border:1px solid #ddd;border-radius:6px;padding:6px 12px;font-size:12px;cursor:pointer}}
+.table-filter input{{padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;width:240px;background:var(--surface2);color:var(--text)}}
+.table-filter select{{padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;background:var(--surface2);color:var(--text)}}
+.strat-card{{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:12px}}
+.strat-toggle{{background:rgba(22,27,34,0.9);border:1px solid var(--border);border-radius:6px;padding:6px 12px;font-size:12px;cursor:pointer;color:var(--text2)}}
 .strat-toggle:hover{{opacity:0.8}}
-.strat-toggle.active{{font-weight:700}}
+.strat-toggle.active{{font-weight:700;color:var(--text)}}
 .strat-toggle:not(.active){{opacity:0.5}}
 .hotspot-tag{{display:inline-block;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:600}}
 /* Progress chart */
 .progress-controls{{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:16px}}
-.progress-controls select{{padding:8px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px}}
-.progress-controls label{{font-size:13px;color:#666;font-weight:600}}
-.chart-container{{background:white;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.08);padding:24px;position:relative;height:420px}}
+.progress-controls select{{padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;background:var(--surface2);color:var(--text)}}
+.progress-controls label{{font-size:13px;color:var(--text2);font-weight:600}}
+.chart-container{{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;position:relative;height:420px}}
 .progress-stats{{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-top:16px}}
-.progress-stat{{background:white;border-radius:8px;padding:12px 16px;box-shadow:0 1px 3px rgba(0,0,0,0.08)}}
-.progress-stat .ps-label{{font-size:12px;color:#888}}
-.progress-stat .ps-value{{font-size:20px;font-weight:700;color:#1a1a2e}}
-@media(max-width:900px){{.card-body{{grid-template-columns:1fr}}.viewer-container{{border-right:none;border-bottom:1px solid #eee}}}}
+.progress-stat{{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px}}
+.progress-stat .ps-label{{font-size:12px;color:var(--text2)}}
+.progress-stat .ps-value{{font-size:20px;font-weight:700;color:var(--accent)}}
+@media(max-width:900px){{.card-body{{grid-template-columns:1fr}}.viewer-container{{border-right:none;border-bottom:1px solid var(--border)}}}}
 </style>
 </head>
 <body>
@@ -792,10 +793,10 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
         <div class="strat-card" style="border-left:4px solid {si['color']}">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
             <span class="tool-badge" style="background:{si['color']}">{si['label']}</span>
-            <span style="font-size:13px;color:#888">{count} design{"s" if count != 1 else ""}</span>
+            <span style="font-size:13px;color:#8b949e">{count} design{"s" if count != 1 else ""}</span>
           </div>
-          <p style="font-size:13px;color:#555;margin:0 0 8px">{si['desc']}</p>
-          <p style="font-size:12px;color:#888;margin:0 0 8px">Binder length: {si['length']}</p>
+          <p style="font-size:13px;color:#c9d1d9;margin:0 0 8px">{si['desc']}</p>
+          <p style="font-size:12px;color:#8b949e;margin:0 0 8px">Binder length: {si['length']}</p>
           <div style="display:flex;flex-wrap:wrap;gap:6px">{hotspot_tags}</div>
         </div>"""
 
@@ -848,8 +849,8 @@ var tableData={json.dumps(table_rows)};
 var tableCols={json.dumps([c[0] for c in TABLE_COLUMNS])};
 var vs={{}},tv=null,init={{}};
 var tableInit=false,curSort=null,curDir=1,progressInit=false,progressChart=null;
-function iv(i){{if(init[i])return;var e=document.getElementById('viewer_'+i);if(!e||e.offsetParent===null)return;var d=vd[i];if(!d)return;if(!d.cif){{e.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#999;font-size:14px">3D view available for top {MAX_CIF_EMBEDS} designs</div>';init[i]=true;return;}}var v=$3Dmol.createViewer(e,{{backgroundColor:'white'}});v.addModel(d.cif,'cif');var bc=d.binderChain,tc2=bc==='A'?'B':'A',c=tclr[d.tool]||'#00CED1';v.setStyle({{chain:tc2}},{{cartoon:{{color:'#999',opacity:0.8}}}});v.setStyle({{chain:bc}},{{cartoon:{{color:c}}}});v.zoomTo();v.render();vs[i]={{viewer:v,binderChain:bc,targetChain:tc2,color:c}};init[i]=true;}}
-function itv(){{if(tv)return;var e=document.getElementById('viewer_target');if(!e||e.offsetParent===null)return;tv=$3Dmol.createViewer('viewer_target',{{backgroundColor:'white'}});tv.addModel(tc,'cif');tv.setStyle({{}},{{cartoon:{{color:'#CCC',opacity:0.7}}}});tv.setStyle({{chain:'A',resi:as}},{{cartoon:{{color:'#FF4500'}},stick:{{color:'#FF4500'}}}});tv.setStyle({{chain:'A',resi:di}},{{cartoon:{{color:'#1E90FF'}},stick:{{color:'#1E90FF'}}}});tv.zoomTo();tv.render();}}
+function iv(i){{if(init[i])return;var e=document.getElementById('viewer_'+i);if(!e||e.offsetParent===null)return;var d=vd[i];if(!d)return;if(!d.cif){{e.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#8b949e;font-size:14px">3D view available for top {MAX_CIF_EMBEDS} designs</div>';init[i]=true;return;}}var v=$3Dmol.createViewer(e,{{backgroundColor:'#0d1117'}});v.addModel(d.cif,'cif');var bc=d.binderChain,tc2=bc==='A'?'B':'A',c=tclr[d.tool]||'#00CED1';v.setStyle({{chain:tc2}},{{cartoon:{{color:'#6e7681',opacity:0.8}}}});v.setStyle({{chain:bc}},{{cartoon:{{color:c}}}});v.zoomTo();v.render();vs[i]={{viewer:v,binderChain:bc,targetChain:tc2,color:c}};init[i]=true;}}
+function itv(){{if(tv)return;var e=document.getElementById('viewer_target');if(!e||e.offsetParent===null)return;tv=$3Dmol.createViewer('viewer_target',{{backgroundColor:'#0d1117'}});tv.addModel(tc,'cif');tv.setStyle({{}},{{cartoon:{{color:'#6e7681',opacity:0.7}}}});tv.setStyle({{chain:'A',resi:as}},{{cartoon:{{color:'#FF4500'}},stick:{{color:'#FF4500'}}}});tv.setStyle({{chain:'A',resi:di}},{{cartoon:{{color:'#1E90FF'}},stick:{{color:'#1E90FF'}}}});tv.zoomTo();tv.render();}}
 function ivv(){{for(var i=0;i<vd.length;i++){{var e=document.getElementById('viewer_'+i);if(e&&e.offsetParent!==null&&!init[i])iv(i);}}if(document.getElementById('viewer_target')&&document.getElementById('viewer_target').offsetParent!==null)itv();if(document.getElementById('viewer_strategies')&&document.getElementById('viewer_strategies').offsetParent!==null)initStratViewer();}}
 function switchTab(t){{var ts=['evaluated','unevaluated','all','table','progress','strategies','target'];document.querySelectorAll('.tab').forEach(function(e,i){{e.classList.toggle('active',ts[i]===t);}});document.querySelectorAll('.tab-panel').forEach(function(p){{p.classList.remove('active');}});var p=document.getElementById('panel_'+t);if(p)p.classList.add('active');if(t==='table'&&!tableInit){{renderTable();tableInit=true;}}if(t==='progress'&&!progressInit){{initProgressChart();progressInit=true;}}setTimeout(ivv,100);}}
 function clsCell(val,dir){{if(val===''||val===null||val===undefined)return'';var v=parseFloat(val);if(isNaN(v))return'';if(dir==='high')return v>=0.7?'good':v>=0.5?'warn':'bad';if(dir==='low')return v<=2.0?'good':v<=3.0?'warn':'bad';return'';}}
@@ -857,20 +858,20 @@ var colDirs={{{",".join(f'"{c[0]}":"{c[2] or ""}"' for c in TABLE_COLUMNS)}}};
 function renderTable(){{var tb=document.getElementById('table-body');if(!tb)return;var q=(document.getElementById('table-search')||{{}}).value||'';q=q.toLowerCase();var tf=(document.getElementById('table-tool-filter')||{{}}).value||'';var sf=(document.getElementById('table-strategy-filter')||{{}}).value||'';var rf=(document.getElementById('table-round-filter')||{{}}).value||'';var rows=tableData.filter(function(r){{if(q&&r.design_id.toLowerCase().indexOf(q)<0)return false;if(tf&&r.tool!==tf)return false;if(sf&&r.strategy!==sf)return false;if(rf&&String(r.round||'')!==rf)return false;return true;}});if(curSort){{rows.sort(function(a,b){{var av=a[curSort],bv=b[curSort];var an=parseFloat(av),bn=parseFloat(bv);if(!isNaN(an)&&!isNaN(bn))return(an-bn)*curDir;av=String(av||'');bv=String(bv||'');return av.localeCompare(bv)*curDir;}});}}var h='';rows.forEach(function(r){{h+='<tr>';tableCols.forEach(function(c){{var v=r[c];if(v===''||v===null||v===undefined)v='—';else if(typeof v==='number')v=Number.isInteger(v)?v:parseFloat(v).toFixed(3);var cls=clsCell(r[c],colDirs[c]);if(c==='composite'&&r.score_partial)cls=(cls?cls+' ':'')+'partial';h+='<td'+(cls?' class="'+cls+'"':'')+'>'+(c==='design_id'?'<span title="'+v+'">'+v+'</span>':v)+'</td>';}});h+='</tr>';}});tb.innerHTML=h;}}
 function filterTable(){{renderTable();}}
 function sortTable(th){{var col=th.getAttribute('data-col');if(curSort===col){{curDir*=-1;}}else{{curSort=col;curDir=1;}}document.querySelectorAll('.design-table th').forEach(function(h){{h.classList.remove('sorted');h.querySelector('.sort-arrow').innerHTML='&#9650;';}});th.classList.add('sorted');th.querySelector('.sort-arrow').innerHTML=curDir>0?'&#9650;':'&#9660;';renderTable();}}
-function toggleStyle(i,m){{var v=vs[i];if(!v)return;var vw=v.viewer;vw.removeAllSurfaces();var bc=v.binderChain,tc2=v.targetChain,c=v.color;if(m==='cartoon'){{vw.setStyle({{chain:tc2}},{{cartoon:{{color:'#999',opacity:0.8}}}});vw.setStyle({{chain:bc}},{{cartoon:{{color:c}}}});}}else if(m==='surface'){{vw.setStyle({{chain:tc2}},{{cartoon:{{color:'#999',opacity:0.5}}}});vw.setStyle({{chain:bc}},{{cartoon:{{color:c,opacity:0.5}}}});vw.addSurface($3Dmol.SurfaceType.VDW,{{opacity:0.6,color:'#999'}},{{chain:tc2}});vw.addSurface($3Dmol.SurfaceType.VDW,{{opacity:0.6,color:c}},{{chain:bc}});}}else if(m==='sticks'){{vw.setStyle({{chain:tc2}},{{cartoon:{{color:'#999',opacity:0.8}}}});vw.setStyle({{chain:bc}},{{cartoon:{{color:c}}}});vw.addStyle({{chain:bc,within:{{distance:5,sel:{{chain:tc2}}}}}},{{stick:{{color:c}}}});vw.addStyle({{chain:tc2,within:{{distance:5,sel:{{chain:bc}}}}}},{{stick:{{color:'#FF6347'}}}});}}else if(m==='sequence'){{var ac={{'ALA':'#E8860C','VAL':'#E8860C','LEU':'#E8860C','ILE':'#E8860C','MET':'#E8860C','PHE':'#E8860C','TRP':'#E8860C','PRO':'#E8860C','SER':'#2ECC71','THR':'#2ECC71','ASN':'#2ECC71','GLN':'#2ECC71','TYR':'#2ECC71','CYS':'#2ECC71','LYS':'#3498DB','ARG':'#3498DB','HIS':'#3498DB','ASP':'#E74C3C','GLU':'#E74C3C','GLY':'#95A5A6'}};vw.setStyle({{chain:tc2}},{{cartoon:{{color:'#DDD',opacity:0.5}}}});Object.keys(ac).forEach(function(r){{vw.setStyle({{chain:bc,resn:r}},{{cartoon:{{color:ac[r]}},stick:{{color:ac[r]}}}});}});}}vw.render();['cartoon','surface','sticks','sequence'].forEach(function(mm){{var b=document.getElementById('btn_'+mm+'_'+i);if(b)b.classList.toggle('active',mm===m);}});var l=document.getElementById('seqleg_'+i);if(l)l.classList.toggle('visible',m==='sequence');}}
+function toggleStyle(i,m){{var v=vs[i];if(!v)return;var vw=v.viewer;vw.removeAllSurfaces();var bc=v.binderChain,tc2=v.targetChain,c=v.color;if(m==='cartoon'){{vw.setStyle({{chain:tc2}},{{cartoon:{{color:'#6e7681',opacity:0.8}}}});vw.setStyle({{chain:bc}},{{cartoon:{{color:c}}}});}}else if(m==='surface'){{vw.setStyle({{chain:tc2}},{{cartoon:{{color:'#6e7681',opacity:0.5}}}});vw.setStyle({{chain:bc}},{{cartoon:{{color:c,opacity:0.5}}}});vw.addSurface($3Dmol.SurfaceType.VDW,{{opacity:0.6,color:'#6e7681'}},{{chain:tc2}});vw.addSurface($3Dmol.SurfaceType.VDW,{{opacity:0.6,color:c}},{{chain:bc}});}}else if(m==='sticks'){{vw.setStyle({{chain:tc2}},{{cartoon:{{color:'#6e7681',opacity:0.8}}}});vw.setStyle({{chain:bc}},{{cartoon:{{color:c}}}});vw.addStyle({{chain:bc,within:{{distance:5,sel:{{chain:tc2}}}}}},{{stick:{{color:c}}}});vw.addStyle({{chain:tc2,within:{{distance:5,sel:{{chain:bc}}}}}},{{stick:{{color:'#FF6347'}}}});}}else if(m==='sequence'){{var ac={{'ALA':'#E8860C','VAL':'#E8860C','LEU':'#E8860C','ILE':'#E8860C','MET':'#E8860C','PHE':'#E8860C','TRP':'#E8860C','PRO':'#E8860C','SER':'#2ECC71','THR':'#2ECC71','ASN':'#2ECC71','GLN':'#2ECC71','TYR':'#2ECC71','CYS':'#2ECC71','LYS':'#3498DB','ARG':'#3498DB','HIS':'#3498DB','ASP':'#E74C3C','GLU':'#E74C3C','GLY':'#95A5A6'}};vw.setStyle({{chain:tc2}},{{cartoon:{{color:'#484f58',opacity:0.5}}}});Object.keys(ac).forEach(function(r){{vw.setStyle({{chain:bc,resn:r}},{{cartoon:{{color:ac[r]}},stick:{{color:ac[r]}}}});}});}}vw.render();['cartoon','surface','sticks','sequence'].forEach(function(mm){{var b=document.getElementById('btn_'+mm+'_'+i);if(b)b.classList.toggle('active',mm===m);}});var l=document.getElementById('seqleg_'+i);if(l)l.classList.toggle('visible',m==='sequence');}}
 function resetView(i){{if(vs[i]){{vs[i].viewer.zoomTo();vs[i].viewer.render();}}}}
 function resetTargetView(){{if(tv){{tv.zoomTo();tv.render();}}}}
 var sv=null,stratVis={{active_site:true,dimer_interface:true,surface:true}};
 var stratData={{active_site:{{color:'#FF6B6B',resi:[138,148,151,155,185,217]}},dimer_interface:{{color:'#9B59B6',resi:[146,153,161,167,168,171,172,206]}},surface:{{color:'#00CED1',resi:[]}}}};
-function initStratViewer(){{if(sv)return;var e=document.getElementById('viewer_strategies');if(!e||e.offsetParent===null)return;if(!tc)return;sv=$3Dmol.createViewer('viewer_strategies',{{backgroundColor:'white'}});sv.addModel(tc,'cif');applyStratStyles();sv.zoomTo();sv.render();}}
-function applyStratStyles(){{if(!sv)return;sv.setStyle({{}},{{cartoon:{{color:'#CCC',opacity:0.7}}}});for(var k in stratData){{var s=stratData[k];if(s.resi.length>0&&stratVis[k]){{sv.setStyle({{chain:'A',resi:s.resi}},{{cartoon:{{color:s.color}},stick:{{color:s.color}}}});}}}}sv.render();}}
+function initStratViewer(){{if(sv)return;var e=document.getElementById('viewer_strategies');if(!e||e.offsetParent===null)return;if(!tc)return;sv=$3Dmol.createViewer('viewer_strategies',{{backgroundColor:'#0d1117'}});sv.addModel(tc,'cif');applyStratStyles();sv.zoomTo();sv.render();}}
+function applyStratStyles(){{if(!sv)return;sv.setStyle({{}},{{cartoon:{{color:'#6e7681',opacity:0.7}}}});for(var k in stratData){{var s=stratData[k];if(s.resi.length>0&&stratVis[k]){{sv.setStyle({{chain:'A',resi:s.resi}},{{cartoon:{{color:s.color}},stick:{{color:s.color}}}});}}}}sv.render();}}
 function toggleStrat(k){{stratVis[k]=!stratVis[k];var b=document.getElementById('strat_btn_'+k);if(b)b.classList.toggle('active');applyStratStyles();}}
 function resetStratView(){{if(sv){{sv.zoomTo();sv.render();}}}}
 var progressMetricDirs={{{",".join(f'"{k}":"{d}"' for k, _, d in PROGRESS_METRICS)}}};
 function buildRoundData(){{var byRound={{}};tableData.forEach(function(r){{var rnd=r.round;if(rnd===''||rnd===null||rnd===undefined)return;if(!byRound[rnd])byRound[rnd]=[];byRound[rnd].push(r);}});return byRound;}}
 function aggValues(vals,agg,dir){{if(agg==='count')return vals.length;var nums=vals.map(parseFloat).filter(function(v){{return!isNaN(v);}});if(nums.length===0)return null;if(agg==='mean')return nums.reduce(function(a,b){{return a+b;}},0)/nums.length;if(agg==='median'){{nums.sort(function(a,b){{return a-b;}});var m=Math.floor(nums.length/2);return nums.length%2?nums[m]:(nums[m-1]+nums[m])/2;}}if(agg==='best')return dir==='low'?Math.min.apply(null,nums):Math.max.apply(null,nums);return null;}}
 function initProgressChart(){{updateProgressChart();}}
-function updateProgressChart(){{var metric=document.getElementById('progress-metric').value;var agg=document.getElementById('progress-agg').value;var dir=progressMetricDirs[metric]||'high';var byRound=buildRoundData();var rounds=Object.keys(byRound).map(Number).sort(function(a,b){{return a-b;}});var values=rounds.map(function(r){{var rows=byRound[r];if(agg==='count')return rows.length;var vals=rows.map(function(row){{return row[metric];}}).filter(function(v){{return v!==''&&v!==null&&v!==undefined;}});return aggValues(vals,agg,dir);}});var labels=rounds.map(function(r){{return'Round '+r;}});var ctx=document.getElementById('progress-canvas');if(progressChart)progressChart.destroy();var color='#4361ee';progressChart=new Chart(ctx,{{type:'line',data:{{labels:labels,datasets:[{{label:agg.charAt(0).toUpperCase()+agg.slice(1)+' '+document.getElementById('progress-metric').selectedOptions[0].text,data:values,borderColor:color,backgroundColor:color+'20',fill:true,tension:0.3,pointRadius:6,pointHoverRadius:9,pointBackgroundColor:color,borderWidth:2.5}}]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:{{display:true,position:'top'}}}},scales:{{x:{{grid:{{display:false}}}},y:{{beginAtZero:agg==='count',title:{{display:true,text:agg==='count'?'Number of designs':document.getElementById('progress-metric').selectedOptions[0].text}}}}}}}}}});var statsDiv=document.getElementById('progress-stats');if(statsDiv){{var sh='';rounds.forEach(function(r,i){{var v=values[i];var vt=v===null?'—':(agg==='count'?v:parseFloat(v).toFixed(3));sh+='<div class="progress-stat"><div class="ps-label">Round '+r+'</div><div class="ps-value">'+vt+'</div></div>';}});statsDiv.innerHTML=sh;}}}}
+function updateProgressChart(){{var metric=document.getElementById('progress-metric').value;var agg=document.getElementById('progress-agg').value;var dir=progressMetricDirs[metric]||'high';var byRound=buildRoundData();var rounds=Object.keys(byRound).map(Number).sort(function(a,b){{return a-b;}});var values=rounds.map(function(r){{var rows=byRound[r];if(agg==='count')return rows.length;var vals=rows.map(function(row){{return row[metric];}}).filter(function(v){{return v!==''&&v!==null&&v!==undefined;}});return aggValues(vals,agg,dir);}});var labels=rounds.map(function(r){{return'Round '+r;}});var ctx=document.getElementById('progress-canvas');if(progressChart)progressChart.destroy();var color='#58a6ff';progressChart=new Chart(ctx,{{type:'line',data:{{labels:labels,datasets:[{{label:agg.charAt(0).toUpperCase()+agg.slice(1)+' '+document.getElementById('progress-metric').selectedOptions[0].text,data:values,borderColor:color,backgroundColor:color+'20',fill:true,tension:0.3,pointRadius:6,pointHoverRadius:9,pointBackgroundColor:color,borderWidth:2.5}}]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:{{display:true,position:'top',labels:{{color:'#e6edf3'}}}}}},scales:{{x:{{grid:{{display:false}},ticks:{{color:'#8b949e'}}}},y:{{beginAtZero:agg==='count',grid:{{color:'#21262d'}},ticks:{{color:'#8b949e'}},title:{{display:true,text:agg==='count'?'Number of designs':document.getElementById('progress-metric').selectedOptions[0].text,color:'#8b949e'}}}}}}}}}});var statsDiv=document.getElementById('progress-stats');if(statsDiv){{var sh='';rounds.forEach(function(r,i){{var v=values[i];var vt=v===null?'—':(agg==='count'?v:parseFloat(v).toFixed(3));sh+='<div class="progress-stat"><div class="ps-label">Round '+r+'</div><div class="ps-value">'+vt+'</div></div>';}});statsDiv.innerHTML=sh;}}}}
 (function(){{var rs={{}};tableData.forEach(function(r){{var v=r.round;if(v!==''&&v!==null&&v!==undefined)rs[v]=1;}});var sel=document.getElementById('table-round-filter');if(sel){{Object.keys(rs).sort(function(a,b){{return parseInt(a)-parseInt(b);}}).forEach(function(r){{var o=document.createElement('option');o.value=r;o.textContent='Round '+r;sel.appendChild(o);}});}}}})();
 document.addEventListener('DOMContentLoaded',ivv);
 document.addEventListener('click',function(e){{var tt=document.getElementById('score-tooltip');if(tt&&tt.classList.contains('visible')&&!tt.contains(e.target)&&!e.target.classList.contains('score-help'))tt.classList.remove('visible');}});
