@@ -61,9 +61,9 @@ STRATEGY_INFO = [
 ]
 
 TOOL_COLORS = {
-    "boltzgen": "#3498DB",
-    "rfdiffusion3": "#E67E22",
-    "custom": "#2ECC71",
+    "boltzgen": "#3fb950",
+    "rfdiffusion3": "#f0883e",
+    "custom": "#58a6ff",
 }
 
 
