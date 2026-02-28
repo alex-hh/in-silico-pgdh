@@ -1,0 +1,29 @@
+{
+    "segment_replace_len15_25": {
+        "dialect": 2,
+        "input": "/mnt/s3/input/rfdiffusion3/helix_hairpin_binder.pdb",
+        "contig": "A96-121,15-25,A141-177",
+        "infer_ori_strategy": "com",
+        "is_non_loopy": true
+    },
+    "partial_diffusion_A122_140_t6": {
+        "dialect": 2,
+        "input": "/mnt/s3/input/rfdiffusion3/helix_hairpin_binder.pdb",
+        "contig": "A96-177",
+        "partial_t": 6.0,
+        "select_fixed_atoms": "A96-121,A141-177",
+        "select_unfixed_sequence": "A122-140",
+        "infer_ori_strategy": "com",
+        "is_non_loopy": true
+    },
+    "partial_diffusion_A122_140_t10": {
+        "dialect": 2,
+        "input": "/mnt/s3/input/rfdiffusion3/helix_hairpin_binder.pdb",
+        "contig": "A96-177",
+        "partial_t": 10.0,
+        "select_fixed_atoms": "A96-121,A141-177",
+        "select_unfixed_sequence": "A122-140",
+        "infer_ori_strategy": "com",
+        "is_non_loopy": true
+    }
+}
