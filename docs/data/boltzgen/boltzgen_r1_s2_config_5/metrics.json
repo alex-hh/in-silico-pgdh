@@ -1,0 +1,43 @@
+{
+  "design_id": "boltzgen_r1_s2_config_5",
+  "tool": "boltzgen",
+  "strategy": "dimer_interface",
+  "round": 1,
+  "status": "validated",
+  "evaluation_stage": "collected",
+  "created_at": "2026-02-28T10:09:17.552993+00:00",
+  "sequence": "SAAAALAGALAAAAAGLAAGEAGDVEGALALARAGVMAARQPGKTLAEAVVSAIIAAGGGAAAGAAARRALEAGDQALIDELNALFNSPLPGTGFANTGPTTESGA",
+  "num_residues": 106,
+  "rank": 14,
+  "source_files": {
+    "metrics_csv": "output/boltzgen/r1/s2_dimer/final_ranked_designs/final_designs_metrics_30.csv",
+    "structure": "output/boltzgen/r1/s2_dimer/final_ranked_designs/final_30_designs/before_refolding/rank04_config_5.cif"
+  },
+  "design_metrics": {
+    "iptm": 0.59941,
+    "min_pae": 2.87387,
+    "interaction_pae": 2.87387,
+    "interaction_pae_full": 12.29695,
+    "ptm": 0.71614,
+    "filter_rmsd": 1.67772,
+    "plip_hbonds": 2.0,
+    "delta_sasa": 2534.51074,
+    "helix": 0.69811,
+    "sheet": 0.0,
+    "loop": 0.30189,
+    "num_designed": 106.0,
+    "filters_passed": 3.0,
+    "quality_score": 0.6666666666666667,
+    "source": "boltzgen"
+  },
+  "validation": null,
+  "scoring": null,
+  "composite_score": 0.6656,
+  "refolding": {
+    "source": "boltzgen_self_consistency",
+    "boltzgen_rmsd": 1.67772,
+    "boltzgen_plddt": null,
+    "boltzgen_iptm": 0.59941,
+    "min_interaction_pae": 2.87387
+  }
+}

@@ -46,7 +46,7 @@ class LyceumClient:
         resp = httpx.post(
             f"{self.base_url}/api/v2/external/storage/credentials",
             headers=self._headers,
-            timeout=120.0,
+            timeout=300.0,
         )
         resp.raise_for_status()
         creds = resp.json()
@@ -163,7 +163,7 @@ class LyceumClient:
             f"{self.base_url}/api/v2/external/execution/streaming/start",
             headers={**self._headers, "Content-Type": "application/json"},
             json=payload,
-            timeout=120.0,
+            timeout=300.0,
         )
         resp.raise_for_status()
         data = resp.json()
@@ -199,7 +199,7 @@ class LyceumClient:
             f"{self.base_url}/api/v2/external/execution/image/start",
             headers={**self._headers, "Content-Type": "application/json"},
             json=payload,
-            timeout=120.0,
+            timeout=300.0,
         )
         resp.raise_for_status()
         data = resp.json()

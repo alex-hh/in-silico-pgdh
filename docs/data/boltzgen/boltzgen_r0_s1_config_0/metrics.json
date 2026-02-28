@@ -4,11 +4,11 @@
   "strategy": "active_site",
   "round": 0,
   "status": "validated",
-  "evaluation_stage": "validated",
-  "created_at": "2026-02-28T05:48:58.922152+00:00",
+  "evaluation_stage": "collected",
+  "created_at": "2026-02-28T10:09:00.526228+00:00",
   "sequence": "IVPSREELQKLIDEHLKKAEEALKAGKPHEAVEHAVKALDVANALATLATVDLVVEAGIRAGELLLKANKLAEEQGLPLAPVFIS",
   "num_residues": 85,
-  "rank": 3,
+  "rank": 21,
   "source_files": {
     "metrics_csv": "output/boltzgen/r0/s1_active_site/final_ranked_designs/final_designs_metrics_30.csv",
     "structure": "output/boltzgen/r0/s1_active_site/final_ranked_designs/final_30_designs/before_refolding/rank2_config_0.cif"
